@@ -52,6 +52,7 @@
         #mon-code { font-size: 32px; font-weight: bold; color: #2196F3; letter-spacing: 2px; margin: 20px 0; }
         #status { font-weight: bold; color: #ff9800; }
         #message-recu { font-size: 24px; color: #e91e63; font-weight: bold; min-height: 30px; }
+        #boite-erreur { color: white; background-color: #f44336; padding: 10px; border-radius: 6px; margin-top: 10px; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -80,6 +81,7 @@
         <input type="text" id="code-cible" placeholder="Entrez le code du PC ici" autocomplete="off">
         <br>
         <button onclick="connecterAuPC()" class="btn-blue">Connecter au PC</button>
+        <div id="boite-erreur"></div>
         <hr>
         <div id="zone-action" class="hidden">
             <p>✅ Connecté ! (Ici tournera OpenCV.js)</p>
@@ -93,6 +95,23 @@
     <script>
         let peer = null;
         let connexion = null;
+
+        // Configuration STUN pour aider à traverser les pare-feux (réseaux mobiles 4G/Wifi)
+        const configPeer = {
+            config: {
+                'iceServers': [
+                    { url: 'stun:stun.l.google.com:19302' },
+                    { url: 'stun:stun1.l.google.com:19302' }
+                ]
+            }
+        };
+
+        function afficherErreur(message) {
+            const boite = document.getElementById('boite-erreur');
+            boite.innerText = message;
+            boite.style.display = 'block';
+            setTimeout(() => boite.style.display = 'none', 6000);
+        }
 
         function choisirRole(role) {
             document.getElementById('choix-role').classList.add('hidden');
@@ -110,7 +129,7 @@
         function initierPC() {
             // Création d'un ID aléatoire court pour faciliter la saisie
             let idAleatoire = Math.floor(1000 + Math.random() * 9000).toString(); 
-            peer = new Peer('mon-app-vision-' + idAleatoire);
+            peer = new Peer('mon-app-vision-' + idAleatoire, configPeer);
 
             peer.on('open', function(id) {
                 // On affiche le code généré (ex: 4582)
@@ -134,16 +153,27 @@
                     }
                 });
             });
+
+            peer.on('error', function(err) {
+                console.error("Erreur PC:", err);
+                document.getElementById('status-pc').innerText = "❌ Erreur: " + err.type;
+                document.getElementById('status-pc').style.color = "red";
+            });
         }
 
         // --- LOGIQUE CÔTÉ SMARTPHONE ---
         function initierSmartphone() {
-            peer = new Peer(); // Le tel n'a pas besoin d'ID spécifique
+            peer = new Peer(configPeer); // Ajout de la config STUN
+            
+            peer.on('error', function(err) {
+                console.error("Erreur Smartphone:", err);
+                afficherErreur("Erreur de connexion serveur: " + err.type);
+            });
         }
 
         function connecterAuPC() {
             let codeSaisi = document.getElementById('code-cible').value;
-            if(!codeSaisi) { alert("Veuillez entrer un code"); return; }
+            if(!codeSaisi) { afficherErreur("Veuillez entrer un code"); return; }
 
             document.getElementById('status-phone').innerText = "Connexion en cours...";
             
@@ -157,7 +187,8 @@
             });
 
             connexion.on('error', function(err) {
-                alert("Erreur de connexion. Vérifiez le code.");
+                console.error("Erreur DataChannel:", err);
+                afficherErreur("Échec de la connexion Peer-to-Peer. Vérifiez le code et le réseau.");
             });
         }
 
@@ -166,7 +197,7 @@
                 // C'est ce message que tu déclencheras depuis ton code OpenCV !
                 connexion.send({ type: 'DETECTION_OK' });
             } else {
-                alert("Non connecté au PC !");
+                afficherErreur("Erreur : Non connecté au PC !");
             }
         }
     </script>
