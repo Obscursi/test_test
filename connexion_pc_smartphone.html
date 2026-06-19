@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion PC - Smartphone</title>
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #45a049; }
+        .btn-blue { background-color: #2196F3; }
+        .btn-blue:hover { background-color: #0b7dda; }
+        input {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            width: 80%;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .hidden { display: none; }
+        #mon-code { font-size: 32px; font-weight: bold; color: #2196F3; letter-spacing: 2px; margin: 20px 0; }
+        #status { font-weight: bold; color: #ff9800; }
+        #message-recu { font-size: 24px; color: #e91e63; font-weight: bold; min-height: 30px; }
+    </style>
+</head>
+<body>
+
+    <div id="choix-role" class="card">
+        <h2>Qui êtes-vous ?</h2>
+        <button onclick="choisirRole('pc')" class="btn-blue">💻 Je suis le PC (Récepteur)</button>
+        <button onclick="choisirRole('smartphone')">📱 Je suis le Smartphone (Caméra)</button>
+    </div>
+
+    <!-- Interface du PC -->
+    <div id="interface-pc" class="card hidden">
+        <h2>Écran du PC</h2>
+        <p>Statut : <span id="status-pc">En attente de connexion...</span></p>
+        <p>Entrez ce code sur le smartphone :</p>
+        <div id="mon-code">Chargement...</div>
+        <hr>
+        <h3>Signal de la caméra :</h3>
+        <div id="message-recu">Rien pour le moment</div>
+    </div>
+
+    <!-- Interface du Smartphone -->
+    <div id="interface-smartphone" class="card hidden">
+        <h2>Écran du Smartphone</h2>
+        <p>Statut : <span id="status-phone">Prêt</span></p>
+        <input type="text" id="code-cible" placeholder="Entrez le code du PC ici" autocomplete="off">
+        <br>
+        <button onclick="connecterAuPC()" class="btn-blue">Connecter au PC</button>
+        <hr>
+        <div id="zone-action" class="hidden">
+            <p>✅ Connecté ! (Ici tournera OpenCV.js)</p>
+            <p>Pour la démo, clique sur ce bouton pour simuler que l'analyse vidéo a trouvé la bonne forme :</p>
+            <button onclick="envoyerSignalValidation()" style="background-color: #e91e63; font-size: 20px;">
+                🟢 Détection Réussie !
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let peer = null;
+        let connexion = null;
+
+        function choisirRole(role) {
+            document.getElementById('choix-role').classList.add('hidden');
+            
+            if (role === 'pc') {
+                document.getElementById('interface-pc').classList.remove('hidden');
+                initierPC();
+            } else {
+                document.getElementById('interface-smartphone').classList.remove('hidden');
+                initierSmartphone();
+            }
+        }
+
+        // --- LOGIQUE CÔTÉ PC ---
+        function initierPC() {
+            // Création d'un ID aléatoire court pour faciliter la saisie
+            let idAleatoire = Math.floor(1000 + Math.random() * 9000).toString(); 
+            peer = new Peer('mon-app-vision-' + idAleatoire);
+
+            peer.on('open', function(id) {
+                // On affiche le code généré (ex: 4582)
+                document.getElementById('mon-code').innerText = idAleatoire;
+            });
+
+            // Quand le PC reçoit une connexion du smartphone
+            peer.on('connection', function(conn) {
+                document.getElementById('status-pc').innerText = "✅ Connecté au Smartphone !";
+                document.getElementById('status-pc').style.color = "green";
+                
+                // Quand le PC reçoit un message du smartphone
+                conn.on('data', function(data) {
+                    if(data.type === 'DETECTION_OK') {
+                        let affichage = document.getElementById('message-recu');
+                        affichage.innerText = "🎯 FORME DÉTECTÉE ! (" + new Date().toLocaleTimeString() + ")";
+                        
+                        // Effet visuel
+                        document.body.style.backgroundColor = "#c8e6c9";
+                        setTimeout(() => document.body.style.backgroundColor = "#f4f4f9", 500);
+                    }
+                });
+            });
+        }
+
+        // --- LOGIQUE CÔTÉ SMARTPHONE ---
+        function initierSmartphone() {
+            peer = new Peer(); // Le tel n'a pas besoin d'ID spécifique
+        }
+
+        function connecterAuPC() {
+            let codeSaisi = document.getElementById('code-cible').value;
+            if(!codeSaisi) { alert("Veuillez entrer un code"); return; }
+
+            document.getElementById('status-phone').innerText = "Connexion en cours...";
+            
+            // On tente de se connecter à l'ID généré par le PC
+            connexion = peer.connect('mon-app-vision-' + codeSaisi);
+
+            connexion.on('open', function() {
+                document.getElementById('status-phone').innerText = "✅ Connecté au PC !";
+                document.getElementById('status-phone').style.color = "green";
+                document.getElementById('zone-action').classList.remove('hidden');
+            });
+
+            connexion.on('error', function(err) {
+                alert("Erreur de connexion. Vérifiez le code.");
+            });
+        }
+
+        function envoyerSignalValidation() {
+            if (connexion && connexion.open) {
+                // C'est ce message que tu déclencheras depuis ton code OpenCV !
+                connexion.send({ type: 'DETECTION_OK' });
+            } else {
+                alert("Non connecté au PC !");
+            }
+        }
+    </script>
+</body>
+</html>
