@@ -1,82 +1,322 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
-  <link rel="shortcut icon" href="favicon.ico" />
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.1/control_utils.css" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.1/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.1/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.1/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.0/face_detection.js" crossorigin="anonymous"></script>
-</head>
-
-<body>
-  
-  <!-- BULMA NAVBAR -->
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="index.html">
-        <img src="https://camo.githubusercontent.com/82f2bfa2005e2755362d419da02d788b366506b0d55212c160abd5100f3a8822/68747470733a2f2f312e62702e626c6f6773706f742e636f6d2f2d7753746b30565a44664d6b2f59434330474952507244492f41414141414141414147632f31796a37494f556564766f654f3143754378713745544c57304671586e69366d77434c63424741735948512f733332302f6c6f676f746578742e706e67" >
-      </a>
-  
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-  
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start">
-        <a class="navbar-item" href="hands.html">
-          Hands
-        </a>
-        </div>
-      </div>
-  
-    </div>
-  </nav>
-
-  <!-- CONTENTS -->
-  <div class="container" style="margin-top: 20px;">
-
-    <div class="columns">
-      
-      <!-- WEBCAM INPUT -->
-      <div class="column">
-        <article class="panel is-info">
-          <p class="panel-heading">
-            Webcam Input
-          </p>
-          <div class="panel-block">
-            <video class="input_video1"></video>
-          </div>
-        </article>
-      </div>
-
-      <!-- MEDIAPIPE OUTPUT -->
-      <div class="column">
-        <article class="panel is-info">
-          <p class="panel-heading">
-            Mediapipe Face Detection
-          </p>
-          <div class="panel-block">
-            <canvas class="output1" width="480px" height="480px"></canvas>
-          </div>
-        </article>
-      </div>
-    </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Fusionnée : Onglets MediaPipe & OpenCV</title>
     
-    <div class="loading">
-      <div class="spinner"></div>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            margin: 2em;
+            color: #3d3d3d;
+            background-color: #f4f6f8;
+        }
+        h1 { color: #007f8b; }
+
+        /* Style des Onglets */
+        .tab-container {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            color: #007f8b;
+            border-bottom-color: #007f8b;
+        }
+
+        /* Conteneurs d'affichage */
+        .view-panel {
+            display: none;
+        }
+        .view-panel.active {
+            display: block;
+        }
+        
+        .videoView {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #webcam { display: none; }
+        
+        /* Ajustements des Canvas */
+        canvas {
+            position: absolute;
+            left: 0; top: 0;
+            width: 640px; height: 480px;
+            transform: scaleX(-1); /* Mode miroir */
+        }
+        
+        #mp_canvas { z-index: 2; pointer-events: none; }
+        #cv_canvas { z-index: 1; }
+
+        .output-box {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #007f8b;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            width: 616px;
+            min-height: 24px;
+        }
+        
+        #gesture_output { display: none; }
+        
+        .controls {
+            margin-bottom: 20px;
+        }
+        #loadingMessage {
+            color: #007f8b;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Analyse Vidéo Temps Réel</h1>
+    
+    <div class="controls">
+        <button id="webcamButton" class="mdc-button mdc-button--raised" disabled>
+            <span class="mdc-button__label">ATTENTE DU CHARGEMENT...</span>
+        </button>
+        <span id="loadingMessage">Chargement des modules IA...</span>
     </div>
-  </div>
 
-  <div style="visibility: hidden;" class="control1">
-  </div>
+    <div class="tab-container">
+        <button class="tab-button active" onclick="switchTab('mediapipe')">Mains & Gestes (MediaPipe)</button>
+        <button class="tab-button" onclick="switchTab('opencv')">Formes & Couleurs (OpenCV)</button>
+    </div>
 
-  <script type="text/javascript" src="./js/face.js"></script>
+    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+
+    <div id="panel-mediapipe" class="view-panel active">
+        <h2>Reconnaissance des Gestes de la Main</h2>
+        <div class="videoView">
+            <canvas id="mp_canvas" width="640" height="480"></canvas>
+        </div>
+        <div id="gesture_output" class="output-box">Geste : Aucun</div>
+    </div>
+
+    <div id="panel-opencv" class="view-panel">
+        <h2>Suivi des Formes Géométriques et Couleurs</h2>
+        <div class="videoView">
+            <canvas id="cv_canvas" width="640" height="480"></canvas>
+        </div>
+        <div id="shape_output" class="output-box">Détection active (Regardez la console pour le détail des formes)</div>
+    </div>
+
+    <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="onOpenCvReady()"></script>
+    <script>
+        window.cvReady = false;
+        function onOpenCvReady() {
+            console.log("OpenCV.js chargé avec succès.");
+            window.cvReady = true;
+        }
+
+        // Système global de basculement des onglets
+        window.activeTab = 'mediapipe';
+        function switchTab(tabName) {
+            window.activeTab = tabName;
+            
+            // Gestion des classes actives sur les boutons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Gestion de l'affichage des panneaux
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(`panel-${tabName}`).classList.add('active');
+        }
+    </script>
+
+    <script type="module">
+        import {
+            GestureRecognizer,
+            FilesetResolver,
+            DrawingUtils
+        } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+
+        const video = document.getElementById("webcam");
+        const mpCanvas = document.getElementById("mp_canvas");
+        const mpCtx = mpCanvas.getContext("2d");
+        const cvCanvas = document.getElementById("cv_canvas");
+        const gestureOutput = document.getElementById("gesture_output");
+        const enableWebcamButton = document.getElementById("webcamButton");
+        const loadingMessage = document.getElementById("loadingMessage");
+
+        let gestureRecognizer;
+        let webcamRunning = false;
+        let lastVideoTime = -1;
+
+        // Configuration Couleurs OpenCV YCrCb
+        const colors_YCrCb = {
+            "vert": { lower: [0, 70, 90, 0], upper: [255, 110, 130, 255], bgr: [0, 255, 0, 255] },
+            "bleu": { lower: [0, 60, 160, 0], upper: [255, 100, 200, 255], bgr: [255, 0, 0, 255] },
+            "rouge": { lower: [0, 190, 80, 0], upper: [255, 230, 120, 255], bgr: [0, 0, 255, 255] }
+        };
+
+        let cap, srcFrame, blurredFrame, ycrcbFrame, mask, kernel;
+
+        // Initialisation de l'environnement MediaPipe Gestures
+        async function initMediaPipe() {
+            try {
+                const vision = await FilesetResolver.forVisionTasks(
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+                );
+                gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+                    baseOptions: {
+                        modelAssetPath: "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
+                        delegate: "GPU"
+                    },
+                    runningMode: "VIDEO"
+                });
+                loadingMessage.style.display = "none";
+                enableWebcamButton.disabled = false;
+                enableWebcamButton.querySelector('.mdc-button__label').innerText = "ACTIVER LA WEBCAM";
+                enableWebcamButton.addEventListener("click", toggleWebcam);
+            } catch (error) {
+                loadingMessage.innerText = "Erreur de chargement des modèles.";
+                console.error(error);
+            }
+        }
+        initMediaPipe();
+
+        function initOpenCVStructures() {
+            if (!cap && window.cvReady) {
+                cap = new cv.VideoCapture(video);
+                srcFrame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+                blurredFrame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+                ycrcbFrame = new cv.Mat(video.height, video.width, cv.CV_8UC3);
+                mask = new cv.Mat(video.height, video.width, cv.CV_8UC1);
+                kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+            }
+        }
+
+        function toggleWebcam() {
+            if (webcamRunning) {
+                webcamRunning = false;
+                enableWebcamButton.querySelector('.mdc-button__label').innerText = "ACTIVER LA WEBCAM";
+                if (video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                }
+            } else {
+                webcamRunning = true;
+                enableWebcamButton.querySelector('.mdc-button__label').innerText = "COUPE LA WEBCAM";
+                navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+                    video.srcObject = stream;
+                    video.addEventListener("loadeddata", renderLoop);
+                }).catch(err => {
+                    alert("Impossible d'accéder à la webcam. Vérifiez le protocole (HTTP/HTTPS).");
+                    webcamRunning = false;
+                });
+            }
+        }
+
+        // Boucle de traitement centralisée avec routage par onglet actif
+        async function renderLoop() {
+            if (!webcamRunning) return;
+
+            if (video.currentTime !== lastVideoTime) {
+                lastVideoTime = video.currentTime;
+                let nowInMs = Date.now();
+
+                // --- ROUTAGE : LOGIQUE MEDIAPIPE (Onglet actif = mediapipe) ---
+                if (window.activeTab === 'mediapipe' && gestureRecognizer) {
+                    const results = gestureRecognizer.recognizeForVideo(video, nowInMs);
+                    
+                    mpCtx.clearRect(0, 0, mpCanvas.width, mpCanvas.height);
+                    const drawingUtils = new DrawingUtils(mpCtx);
+
+                    if (results.landmarks) {
+                        for (const landmarks of results.landmarks) {
+                            drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
+                            drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
+                        }
+                    }
+
+                    if (results.gestures.length > 0) {
+                        gestureOutput.style.display = "block";
+                        const name = results.gestures[0][0].categoryName;
+                        const score = (results.gestures[0][0].score * 100).toFixed(1);
+                        gestureOutput.innerText = `Geste détecté : ${name} (Confiance : ${score}%)`;
+                    } else {
+                        gestureOutput.innerText = "Geste : Aucun";
+                    }
+                }
+
+                // --- ROUTAGE : LOGIQUE OPENCV (Onglet actif = opencv) ---
+                if (window.activeTab === 'opencv' && window.cvReady) {
+                    initOpenCVStructures();
+                    
+                    cap.read(srcFrame);
+                    cv.GaussianBlur(srcFrame, blurredFrame, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+                    cv.cvtColor(blurredFrame, ycrcbFrame, cv.COLOR_BGR2YCrCb);
+
+                    for (let color in colors_YCrCb) {
+                        let cfg = colors_YCrCb[color];
+                        let lower = new cv.Mat(ycrcbFrame.rows, ycrcbFrame.cols, ycrcbFrame.type(), cfg.lower);
+                        let upper = new cv.Mat(ycrcbFrame.rows, ycrcbFrame.cols, ycrcbFrame.type(), cfg.upper);
+
+                        cv.inRange(ycrcbFrame, lower, upper, mask);
+                        cv.morphologyEx(mask, mask, cv.MORPH_OPEN, kernel);
+                        cv.morphologyEx(mask, mask, cv.MORPH_CLOSE, kernel);
+
+                        let contours = new cv.MatVector();
+                        let hierarchy = new cv.Mat();
+                        cv.findContours(mask, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                        let clr = new cv.Scalar(cfg.bgr[0], cfg.bgr[1], cfg.bgr[2], cfg.bgr[3]);
+
+                        for (let i = 0; i < contours.size(); ++i) {
+                            let c = contours.get(i);
+                            let area = cv.contourArea(c);
+                            if (area > 500) {
+                                let approx = new cv.Mat();
+                                cv.approxPolyDP(c, approx, 0.02 * cv.arcLength(c, true), true);
+                                
+                                let vec = new cv.MatVector();
+                                vec.push_back(approx);
+                                cv.drawContours(srcFrame, vec, -1, clr, 3);
+                                
+                                // Analyse basique de la forme selon le nombre de sommets
+                                let vertices = approx.rows;
+                                if (vertices === 3) console.log(`Triangle ${color} détecté.`);
+                                else if (vertices === 4) console.log(`Quadrilatère ${color} détecté.`);
+                                
+                                approx.delete();
+                                vec.delete();
+                            }
+                            c.delete();
+                        }
+                        lower.delete(); upper.delete();
+                        contours.delete(); hierarchy.delete();
+                    }
+                    cv.imshow("cv_canvas", srcFrame);
+                }
+            }
+
+            requestAnimationFrame(renderLoop);
+        }
+    </script>
 </body>
 </html>
