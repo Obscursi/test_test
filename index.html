@@ -40,12 +40,8 @@
         }
 
         /* Conteneurs d'affichage */
-        .view-panel {
-            display: none;
-        }
-        .view-panel.active {
-            display: block;
-        }
+        .view-panel { display: none; }
+        .view-panel.active { display: block; }
         
         .videoView {
             position: relative;
@@ -82,9 +78,7 @@
         
         #gesture_output { display: none; }
         
-        .controls {
-            margin-bottom: 20px;
-        }
+        .controls { margin-bottom: 20px; }
         #loadingMessage {
             color: #007f8b;
             font-weight: bold;
@@ -104,8 +98,8 @@
     </div>
 
     <div class="tab-container">
-        <button class="tab-button active" onclick="switchTab('mediapipe')">Mains & Gestes (MediaPipe)</button>
-        <button class="tab-button" onclick="switchTab('opencv')">Formes & Couleurs (OpenCV)</button>
+        <button class="tab-button active" onclick="switchTab(event, 'mediapipe')">Mains & Gestes (MediaPipe)</button>
+        <button class="tab-button" onclick="switchTab(event, 'opencv')">Formes & Couleurs (OpenCV)</button>
     </div>
 
     <video id="webcam" autoplay playsinline width="640" height="480"></video>
@@ -134,28 +128,23 @@
             window.cvReady = true;
         }
 
-        // Système global de basculement des onglets
         window.activeTab = 'mediapipe';
-        function switchTab(tabName) {
+        
+        function switchTab(e, tabName) {
             window.activeTab = tabName;
             
-            // Gestion des classes actives sur les boutons
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            e.currentTarget.classList.add('active'); 
             
-            // Gestion de l'affichage des panneaux
             document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
             document.getElementById(`panel-${tabName}`).classList.add('active');
         }
     </script>
 
-    <script type="module">
-        import {
-            GestureRecognizer,
-            FilesetResolver,
-            DrawingUtils
-        } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+    <script>
+        console.log("Le script principal démarre !");
 
+        // Récupération des éléments DOM
         const video = document.getElementById("webcam");
         const mpCanvas = document.getElementById("mp_canvas");
         const mpCtx = mpCanvas.getContext("2d");
@@ -167,8 +156,9 @@
         let gestureRecognizer;
         let webcamRunning = false;
         let lastVideoTime = -1;
+        let DrawingUtils; 
+        let GestureRecognizerClass;
 
-        // Configuration Couleurs OpenCV YCrCb
         const colors_YCrCb = {
             "vert": { lower: [0, 70, 90, 0], upper: [255, 110, 130, 255], bgr: [0, 255, 0, 255] },
             "bleu": { lower: [0, 60, 160, 0], upper: [255, 100, 200, 255], bgr: [255, 0, 0, 255] },
@@ -177,30 +167,48 @@
 
         let cap, srcFrame, blurredFrame, ycrcbFrame, mask, kernel;
 
-        // Initialisation de l'environnement MediaPipe Gestures
-        async function initMediaPipe() {
+        // Initialisation de l'IA MediaPipe
+        async function runLApp() {
             try {
+                console.log("Étape 1 : Téléchargement du module IA (.mjs)...");
+                
+                // CORRECTION : Utilisation de vision_bundle.mjs pour forcer le bon type MIME
+                const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/vision_bundle.mjs");
+                
+                const FilesetResolver = visionModule.FilesetResolver;
+                GestureRecognizerClass = visionModule.GestureRecognizer;
+                DrawingUtils = visionModule.DrawingUtils;
+
+                console.log("Étape 2 : Chargement des fichiers WebAssembly...");
                 const vision = await FilesetResolver.forVisionTasks(
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
                 );
-                gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+
+                console.log("Étape 3 : Configuration du modèle...");
+                gestureRecognizer = await GestureRecognizerClass.createFromOptions(vision, {
                     baseOptions: {
                         modelAssetPath: "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
-                        delegate: "GPU"
+                        delegate: "CPU"
                     },
                     runningMode: "VIDEO"
                 });
+
+                console.log("Étape 4 : IA prête !");
                 loadingMessage.style.display = "none";
                 enableWebcamButton.disabled = false;
                 enableWebcamButton.querySelector('.mdc-button__label').innerText = "ACTIVER LA WEBCAM";
                 enableWebcamButton.addEventListener("click", toggleWebcam);
+
             } catch (error) {
-                loadingMessage.innerText = "Erreur de chargement des modèles.";
-                console.error(error);
+                loadingMessage.innerText = "Erreur de format de fichier (CORS/MIME).";
+                loadingMessage.style.color = "red";
+                console.error("🚨 ERREUR DÉTECTÉE :", error);
             }
         }
-        initMediaPipe();
+        // Lancement immédiat
+        runLApp();
 
+        // Initialisation OpenCV
         function initOpenCVStructures() {
             if (!cap && window.cvReady) {
                 cap = new cv.VideoCapture(video);
@@ -212,6 +220,7 @@
             }
         }
 
+        // Contrôle Webcam
         function toggleWebcam() {
             if (webcamRunning) {
                 webcamRunning = false;
@@ -226,22 +235,22 @@
                     video.srcObject = stream;
                     video.addEventListener("loadeddata", renderLoop);
                 }).catch(err => {
-                    alert("Impossible d'accéder à la webcam. Vérifiez le protocole (HTTP/HTTPS).");
+                    alert("Impossible d'accéder à la webcam.");
                     webcamRunning = false;
                 });
             }
         }
 
-        // Boucle de traitement centralisée avec routage par onglet actif
-        async function renderLoop() {
+        // Boucle d'analyse vidéo
+        function renderLoop() {
             if (!webcamRunning) return;
 
             if (video.currentTime !== lastVideoTime) {
                 lastVideoTime = video.currentTime;
                 let nowInMs = Date.now();
 
-                // --- ROUTAGE : LOGIQUE MEDIAPIPE (Onglet actif = mediapipe) ---
-                if (window.activeTab === 'mediapipe' && gestureRecognizer) {
+                // Traitement MediaPipe
+                if (window.activeTab === 'mediapipe' && gestureRecognizer && DrawingUtils) {
                     const results = gestureRecognizer.recognizeForVideo(video, nowInMs);
                     
                     mpCtx.clearRect(0, 0, mpCanvas.width, mpCanvas.height);
@@ -249,7 +258,7 @@
 
                     if (results.landmarks) {
                         for (const landmarks of results.landmarks) {
-                            drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
+                            drawingUtils.drawConnectors(landmarks, GestureRecognizerClass.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
                             drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
                         }
                     }
@@ -264,7 +273,7 @@
                     }
                 }
 
-                // --- ROUTAGE : LOGIQUE OPENCV (Onglet actif = opencv) ---
+                // Traitement OpenCV
                 if (window.activeTab === 'opencv' && window.cvReady) {
                     initOpenCVStructures();
                     
@@ -289,22 +298,13 @@
 
                         for (let i = 0; i < contours.size(); ++i) {
                             let c = contours.get(i);
-                            let area = cv.contourArea(c);
-                            if (area > 500) {
+                            if (cv.contourArea(c) > 500) {
                                 let approx = new cv.Mat();
                                 cv.approxPolyDP(c, approx, 0.02 * cv.arcLength(c, true), true);
-                                
                                 let vec = new cv.MatVector();
                                 vec.push_back(approx);
                                 cv.drawContours(srcFrame, vec, -1, clr, 3);
-                                
-                                // Analyse basique de la forme selon le nombre de sommets
-                                let vertices = approx.rows;
-                                if (vertices === 3) console.log(`Triangle ${color} détecté.`);
-                                else if (vertices === 4) console.log(`Quadrilatère ${color} détecté.`);
-                                
-                                approx.delete();
-                                vec.delete();
+                                approx.delete(); vec.delete();
                             }
                             c.delete();
                         }
@@ -314,7 +314,6 @@
                     cv.imshow("cv_canvas", srcFrame);
                 }
             }
-
             requestAnimationFrame(renderLoop);
         }
     </script>
