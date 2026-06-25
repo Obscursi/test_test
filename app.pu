@@ -1,0 +1,76 @@
+@startuml
+skinparam roundcorner 10
+skinparam packageBackgroundColor #eef2f5
+skinparam classBackgroundColor #ffffff
+skinparam classBorderColor #007f8b
+skinparam classArrowColor #007f8b
+
+package "📁 Network (Communication)" {
+  class NetworkManager {
+    + initialiser()
+    + envoyerMessage()
+  }
+}
+
+package "📁 Inputs (Les Contrôles)" {
+  class InputManager {
+    + getEtatActuel()
+    + nettoyerBuffer()
+  }
+  class VisionController {
+    + detecterMains()
+    + detecterFormes()
+  }
+  class KeyboardController {
+    - touchesPressees: Array
+    + getDerniereTouche()
+  }
+}
+
+package "📁 Core (Le Cerveau)" {
+  class GameEngine {
+    + demarrerJeu()
+    + bouclePrincipale()
+  }
+  class InventorySystem {
+    + ajouterObjet()
+  }
+}
+
+package "📁 UI (L'Interface)" {
+  class UIManager {
+    + actualiserEcran()
+  }
+  class TabsController {
+    + changerOnglet()
+  }
+  class Alerts {
+    + addPopUp
+  }
+}
+
+package "📁 Enigmas (Les Niveaux)" {
+  abstract class Enigma {
+    + id: Integer
+    + checkCondition(inputs)
+  }
+  class LsfEnigma
+  class ColorEnigma
+  class TerminalEnigma
+}
+
+' --- Relations ---
+GameEngine --> NetworkManager : communique via >
+GameEngine --> UIManager : met à jour >
+GameEngine "1" *-- "*" Enigma : évalue >
+GameEngine --> InventorySystem : modifie >
+
+' La nouveauté : Le GameEngine ne parle qu'au InputManager
+GameEngine --> InputManager : interroge >
+InputManager *-- VisionController : agrège >
+InputManager *-- KeyboardController : agrège >
+
+LsfEnigma -up-|> Enigma
+ColorEnigma -up-|> Enigma
+TerminalEnigma -up-|> Enigma
+@enduml

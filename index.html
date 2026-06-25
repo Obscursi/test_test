@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Game Connecté</title>
+
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            margin: 2em;
+            color: #3d3d3d;
+            background-color: #f4f6f8;
+        }
+
+        h1 {
+            color: #007f8b;
+        }
+
+        /* Navigation (Onglets) */
+        .tab-container {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #007f8b;
+            border-bottom-color: #007f8b;
+        }
+
+        /* Conteneurs de panneaux */
+        .view-panel {
+            display: none;
+        }
+
+        /* Zone Vidéo */
+        .videoView {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        #webcam {
+            display: none;
+        }
+
+        /* La vraie vidéo est toujours cachée, on regarde le canvas */
+        canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 640px;
+            height: 480px;
+        }
+
+        /* Boîte de debug */
+        .output-box {
+            padding: 12px;
+            background-color: #007f8b;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            width: 616px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Boutons globaux */
+        button {
+            cursor: pointer;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            color: white;
+            background-color: #007f8b;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #loadingMessage {
+            font-weight: bold;
+            margin-left: 15px;
+            color: #007f8b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Escape Game Connecté</h1>
+
+    <div style="margin-bottom: 20px;">
+        <button id="webcamButton" disabled>CHARGEMENT EN COURS...</button>
+        <span id="loadingMessage">Initialisation du moteur de jeu...</span>
+    </div>
+
+
+
+    <div class="tab-container">
+        <button class="tab-button active" data-target="accueil">🏠 Accueil</button>
+        <button class="tab-button" data-target="lsf">🖐️ Langue des Signes</button>
+        <div id="ongletsACacher">
+            <button class="tab-button" data-target="opencv">🎨 Scanner de Formes</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("ongletsACacher").style.display = "none";
+    </script>
+
+    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+    <div class="videoView">
+        <canvas id="mp_canvas" width="640" height="480"></canvas>
+    </div>
+
+    <div id="gesture_output" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
+
+    <hr style="margin: 30px 0;">
+
+    <div id="panel-accueil" class="view-panel" style="display: block;">
+        <h2>Salle d'Attente</h2>
+        <p>Bienvenue. Connectez-vous avec l'ordinateur central (Admin) pour commencer votre mission.</p>
+    </div>
+
+    <div id="panel-victoire" class="view-panel" style="text-align: center; color: #007f8b;">
+        <h2 style="font-size: 2.5rem;">🏆 MISSION ACCOMPLIE ! 🏆</h2>
+        <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre équipe a résolu toutes les énigmes.</p>
+    </div>
+
+    <div id="notification-banner"
+        style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4CAF50; color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
+    </div>
+
+    <div id="panel-opencv" class="view-panel">
+        <h2>Scanner de Formes (Désactivé)</h2>
+        <p>Ce module nécessite une clé d'activation.</p>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
