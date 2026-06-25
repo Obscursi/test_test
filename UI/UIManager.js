@@ -112,4 +112,15 @@ export class UIManager {
         this.gestureOutput.style.color = "#000"; // Texte en noir pour que ce soit lisible
         this.gestureOutput.innerText = "SYSTÈME DÉVERROUILLÉ !";
     }
+
+    // ==========================================
+    // MÉTHODES DE PROGRESSION DU JEU
+    // ==========================================
+
+    unlockTab(idBouton) {
+        const bouton = document.getElementById(idBouton);
+        if (bouton) {
+            bouton.style.display = "block";
+        }
+    }
 }

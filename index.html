@@ -121,15 +121,15 @@
 
     <div class="tab-container">
         <button class="tab-button active" data-target="accueil">🏠 Accueil</button>
-        <button class="tab-button" data-target="lsf">🖐️ Langue des Signes</button>
-        <div id="ongletsACacher">
-            <button class="tab-button" data-target="opencv">🎨 Scanner de Formes</button>
-        </div>
+        <button id="btn-tab-lsf" class="tab-button" data-target="lsf">🖐️ Langue des
+            Signes</button>
+        <button id="btn-tab-opencv" class="tab-button" data-target="opencv" style="display: none;">🎨 Scanner
+            de Formes</button>
     </div>
 
-    <script>
+    <!-- <script>
         document.getElementById("ongletsACacher").style.display = "none";
-    </script>
+    </script> -->
 
     <video id="webcam" autoplay playsinline width="640" height="480"></video>
     <div class="videoView">

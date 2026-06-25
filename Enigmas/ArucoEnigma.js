@@ -1,9 +1,9 @@
 import { Enigma } from './Enigma.js';
 
-export class LsfEnigma extends Enigma {
+export class ArucoEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
-        super("enigme_lsf", "Le mot de passe signé");
+        super("enigme_lsf", "Le Mot de Passe Multijoueur");
 
         // Les 4 lettres qui doivent être vues en même temps
         //this.lettresRequises = ["P", "I", "E", "D"];
@@ -30,8 +30,10 @@ export class LsfEnigma extends Enigma {
     }
 
     onSuccess() {
+        // C'est ici que tu pourras dire au UIManager d'afficher la suite !
         console.log("🔓 Le cadenas LSF est ouvert !");
-        //document.getElementById().style.display = "block";
 
+        // Exemple d'action : 
+        // document.getElementById("panel-opencv").style.display = "block";
     }
 }

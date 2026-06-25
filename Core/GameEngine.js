@@ -11,14 +11,17 @@ export class GameEngine {
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
-        const lsfEnigma = new LsfEnigma;
-        this.enigmas = [lsfEnigma]; // La liste de tous les niveaux
-        this.currentEnigmaIndex = 0; // L'index du niveau en cours
-        this.isRunning = false; // Sécurité pour ne pas lancer 2 boucles
+        const lsfEnigma = new LsfEnigma();
+        this.enigmas = [lsfEnigma]; // List of all enigmas we will do
+        this.currentEnigmaIndex = 0; // index of the level we are doing (maybe we will need to change this if we have several enigmas at the same time)
+        this.isRunning = false;
+
+        this.listOfTabs = ["btn-tab-opencv"]; //here we put IN ORDER the list of tabs that we will unlock when the player is progressing EXCEPT those we already display at the beginning
+        this.indexOfTab = 0;
 
         //to lower the fps rendering
-        this.fpsTarget = 15; // Ton objectif
-        this.frameInterval = 1000 / this.fpsTarget; // Temps exigé entre 2 images (~66.6ms)
+        this.fpsTarget = 15;
+        this.frameInterval = 1000 / this.fpsTarget;
         this.lastFrameTime = 0;
     }
 
@@ -68,7 +71,6 @@ export class GameEngine {
         if (this.enigmas.length > 0) {
             this.enigmas[this.currentEnigmaIndex].start();
         }
-        console.log("aa");
         // On initialise le chronomètre juste avant de lancer la boucle
         this.lastFrameTime = performance.now();
         requestAnimationFrame((timestamp) => this.loop(timestamp));
@@ -95,8 +97,11 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
+            this.uiManager.unlockTab(this.listOfTabs[this.indexOfTab]); //we display the next tab for the next enigma
+            this.indexOfTab++;
             this.nextEnigma();
         }
+
 
         // --- ÉTAPE 3 : RENDER (Interface) ---
         this.uiManager.updateGestureDebugText(playerState.gestures);
@@ -105,12 +110,12 @@ export class GameEngine {
     // Passage au niveau suivant
     nextEnigma() {
         this.currentEnigmaIndex++;
-
         if (this.currentEnigmaIndex < this.enigmas.length) {
             console.log(`GameEngine: 🔓 Niveau complété. Passage à l'énigme ${this.currentEnigmaIndex + 1}`);
             this.enigmas[this.currentEnigmaIndex].start();
 
             this.uiManager.afficherNotification("Niveau Suivant !");
+
         } else {
             console.log("GameEngine: 🏆 JEU TERMINÉ ! VICTOIRE !");
             this.isRunning = false; // On coupe la boucle, le jeu est fini
