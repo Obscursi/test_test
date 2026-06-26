@@ -3,11 +3,10 @@ import { Enigma } from './Enigma.js';
 export class ArucoEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
-        super("enigme_lsf", "Le Mot de Passe Multijoueur");
+        super("enigme_vrai-faux", "Aruco");
 
         // Les 4 lettres qui doivent être vues en même temps
         //this.lettresRequises = ["P", "I", "E", "D"];
-        this.lettresRequises = ["P", "I"];
     }
 
     // Le GameEngine appelle cette fonction 15 fois par seconde

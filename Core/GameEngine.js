@@ -11,12 +11,12 @@ export class GameEngine {
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
-        const lsfEnigma = new LsfEnigma();
-        this.enigmas = [lsfEnigma]; // List of all enigmas we will do
+
+        this.listOfEnigmas = []; // ordered list of all enigmas we will do 
         this.currentEnigmaIndex = 0; // index of the level we are doing (maybe we will need to change this if we have several enigmas at the same time)
         this.isRunning = false;
 
-        this.listOfTabs = ["btn-tab-opencv"]; //here we put IN ORDER the list of tabs that we will unlock when the player is progressing EXCEPT those we already display at the beginning
+        this.listOfTabs = []; // ordered list of all the tabs the players will unlock
         this.indexOfTab = 0;
 
         //to lower the fps rendering
@@ -41,24 +41,27 @@ export class GameEngine {
         }
 
         // Initialisation des autres systèmes
-        // this.uiManager.init();
         // this.networkManager.init();
 
         this.loadEnigmas();
+        this.loadTabs();
 
-        // 4. NOUVEAUTÉ : C'EST PRÊT ! On active le bouton pour l'utilisateur
+        // 4. C'EST PRÊT ! On active le bouton pour l'utilisateur
         console.log("✅ GameEngine: Modèles IA chargés. Le bouton est actif !");
         this.uiManager.hideLoading();
         this.uiManager.updateWebcamButton(false, true); // Bouton actif "ACTIVER LA WEBCAM"
     }
 
-    // Construit la ligne de progression de ton Escape Game
+    //here we load all the enigmas in the list IN ORDER
     loadEnigmas() {
-        // C'est ici que tu brancheras tes futurs fichiers :
-        // this.enigmas.push(new LsfEnigma());
-        // this.enigmas.push(new ColorEnigma());
+        this.listOfEnigmas.push(new LsfEnigma());
+        console.log(`GameEngine: ${this.listOfEnigmas.length} énigmes chargées.`);
+    }
 
-        console.log(`GameEngine: ${this.enigmas.length} énigmes chargées.`);
+    //here we put IN ORDER the list of tabs that we will unlock when the player is progressing EXCEPT those we are already displaying at the beginning
+    loadTabs() {
+        this.listOfTabs.push("btn-tab-opencv");
+        console.log(`GameEngine: ${this.listOfEnigmas.length} onglets chargés.`);
     }
 
     // Le bouton "Play"
@@ -68,8 +71,8 @@ export class GameEngine {
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
         // Si on a des énigmes, on lance la première
-        if (this.enigmas.length > 0) {
-            this.enigmas[this.currentEnigmaIndex].start();
+        if (this.listOfEnigmas.length > 0) {
+            this.listOfEnigmas[this.currentEnigmaIndex].start();
         }
         // On initialise le chronomètre juste avant de lancer la boucle
         this.lastFrameTime = performance.now();
@@ -91,7 +94,7 @@ export class GameEngine {
         const playerState = this.inputManager.getState();
 
         // --- ÉTAPE 2 : UPDATE (Logique) ---
-        const currentEnigma = this.enigmas[this.currentEnigmaIndex];
+        const currentEnigma = this.listOfEnigmas[this.currentEnigmaIndex];
 
         if (currentEnigma && !currentEnigma.estResolu) {
             currentEnigma.checkCondition(playerState);
@@ -110,9 +113,9 @@ export class GameEngine {
     // Passage au niveau suivant
     nextEnigma() {
         this.currentEnigmaIndex++;
-        if (this.currentEnigmaIndex < this.enigmas.length) {
+        if (this.currentEnigmaIndex < this.listOfEnigmas.length) {
             console.log(`GameEngine: 🔓 Niveau complété. Passage à l'énigme ${this.currentEnigmaIndex + 1}`);
-            this.enigmas[this.currentEnigmaIndex].start();
+            this.listOfEnigmas[this.currentEnigmaIndex].start();
 
             this.uiManager.afficherNotification("Niveau Suivant !");
 
