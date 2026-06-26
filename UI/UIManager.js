@@ -6,6 +6,8 @@ export class UIManager {
         this.gestureOutput = document.getElementById("gesture_output");
         this.notificationBanner = document.getElementById("notification-banner");
 
+        this.cameraContainer = document.getElementById("camera-container");
+
         // Liste des onglets
         this.tabs = {
             accueil: document.getElementById("panel-accueil"),
@@ -14,8 +16,14 @@ export class UIManager {
             victoire: document.getElementById("panel-victoire")
         };
 
+        this.lockedTabButtons = ["btn-tab-opencv"]; // Ajoute les futurs boutons ici
+        this.currentUnlockIndex = 0; // L'index du prochain bouton à révéler
+
         this.activeTabId = 'accueil'; // Onglet par défaut
         this.initEventListeners();
+
+        // NOUVEAU : Au démarrage, on range la caméra dans l'onglet actif
+        this.showTab(this.activeTabId);
     }
 
     // Gère les clics sur les boutons de navigation (les vrais onglets HTML)
@@ -35,18 +43,36 @@ export class UIManager {
         });
     }
 
+
+
     // Cache tous les onglets et affiche le bon
     showTab(tabId) {
         this.activeTabId = tabId;
 
+        // 1. On cache tous les panneaux
         for (const key in this.tabs) {
             if (this.tabs[key]) {
                 this.tabs[key].style.display = "none";
             }
         }
 
-        if (this.tabs[tabId]) {
-            this.tabs[tabId].style.display = "block";
+        // 2. On affiche le panneau demandé
+        const activePanel = this.tabs[tabId];
+        if (activePanel) {
+            activePanel.style.display = "block";
+        }
+
+        // 3. Gestion de l'affichage de la caméra (SANS la déplacer)
+        const ongletsAvecCamera = ['lsf', 'opencv'];
+
+        if (this.cameraContainer) {
+            if (ongletsAvecCamera.includes(tabId)) {
+                // Si l'onglet a besoin de la caméra, on affiche le bloc
+                this.cameraContainer.style.display = "block";
+            } else {
+                // Sinon (Accueil, Victoire), on le cache
+                this.cameraContainer.style.display = "none";
+            }
         }
     }
 
@@ -117,10 +143,28 @@ export class UIManager {
     // MÉTHODES DE PROGRESSION DU JEU
     // ==========================================
 
-    unlockTab(idBouton) {
-        const bouton = document.getElementById(idBouton);
-        if (bouton) {
-            bouton.style.display = "block";
+    unlockNextTabButton() {
+        if (this.currentUnlockIndex < this.lockedTabButtons.length) {
+
+            const idBouton = this.lockedTabButtons[this.currentUnlockIndex];
+            const bouton = document.getElementById(idBouton);
+
+            if (bouton) {
+                // 1. On le rend visible (il doit s'afficher à côté des autres)
+                bouton.style.display = "inline-block";
+
+                // 2. On lance notre belle animation CSS
+                bouton.classList.add("unlock-animation");
+
+                // 3. On nettoie la classe une fois l'animation terminée pour éviter les bugs si on re-clique
+                setTimeout(() => {
+                    bouton.classList.remove("unlock-animation");
+                }, 1500); // 1.5s correspond à la durée définie dans le CSS
+            } else {
+                this.showError("le bouton d'onglet n'a pas le bon id");
+            }
+
+            this.currentUnlockIndex++;
         }
     }
 }

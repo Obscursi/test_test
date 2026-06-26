@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape Game Connecté</title>
+    <title>JEPEIA</title>
 
     <style>
         body {
@@ -105,38 +105,61 @@
             margin-left: 15px;
             color: #007f8b;
         }
+
+        /* animation for tab unlocking */
+        .unlock-animation {
+            animation: popAndGlow 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popAndGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(-20px);
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1.05) translateY(0);
+                box-shadow: 0px 10px 20px rgba(76, 175, 80, 0.6);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                box-shadow: 0px 0px 0px transparent;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>Escape Game Connecté</h1>
-
-    <div style="margin-bottom: 20px;">
-        <button id="webcamButton" disabled>CHARGEMENT EN COURS...</button>
-        <span id="loadingMessage">Initialisation du moteur de jeu...</span>
-    </div>
-
-
+    <h1>JEPEIA</h1>
 
     <div class="tab-container">
-        <button class="tab-button active" data-target="accueil">🏠 Accueil</button>
-        <button id="btn-tab-lsf" class="tab-button" data-target="lsf">🖐️ Langue des
+        <button class="tab-button active" data-target="accueil">Accueil</button>
+        <button id="btn-tab-lsf" class="tab-button" data-target="lsf">Langue des
             Signes</button>
-        <button id="btn-tab-opencv" class="tab-button" data-target="opencv" style="display: none;">🎨 Scanner
-            de Formes</button>
+        <button id="btn-tab-opencv" class="tab-button" data-target="opencv" style="display: none;">Cartes aruco</button>
     </div>
 
     <!-- <script>
         document.getElementById("ongletsACacher").style.display = "none";
     </script> -->
 
-    <video id="webcam" autoplay playsinline width="640" height="480"></video>
-    <div class="videoView">
-        <canvas id="mp_canvas" width="640" height="480"></canvas>
+
+    <div style="margin-bottom: 20px;">
+        <button id="webcamButton" disabled>CHARGEMENT EN COURS...</button>
+        <span id="loadingMessage">Initialisation du moteur de jeu...</span>
     </div>
 
-    <div id="gesture_output" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
+    <div id="camera-container" style="display: none;">
+        <video id="webcam" autoplay playsinline width="640" height="480"></video>
+        <div class="videoView">
+            <canvas id="mp_canvas" width="640" height="480"></canvas>
+        </div>
+        <div id="gesture_output" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
+    </div>
 
     <hr style="margin: 30px 0;">
 
@@ -146,7 +169,7 @@
     </div>
 
     <div id="panel-victoire" class="view-panel" style="text-align: center; color: #007f8b;">
-        <h2 style="font-size: 2.5rem;">🏆 MISSION ACCOMPLIE ! 🏆</h2>
+        <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
         <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre équipe a résolu toutes les énigmes.</p>
     </div>
 

@@ -19,10 +19,10 @@ export class GameEngine {
         this.listOfTabs = []; // ordered list of all the tabs the players will unlock
         this.indexOfTab = 0;
 
-        //to lower the fps rendering
-        this.fpsTarget = 15;
-        this.frameInterval = 1000 / this.fpsTarget;
-        this.lastFrameTime = 0;
+        //to lower the fps rendering (not used because it works well for now without it)
+        // this.fpsTarget = 15;
+        // this.frameInterval = 1000 / this.fpsTarget;
+        // this.lastFrameTime = 0;
     }
 
     // Phase de démarrage asynchrone (pour attendre le chargement des gros fichiers)
@@ -44,7 +44,7 @@ export class GameEngine {
         // this.networkManager.init();
 
         this.loadEnigmas();
-        this.loadTabs();
+        //this.loadTabs();
 
         // 4. C'EST PRÊT ! On active le bouton pour l'utilisateur
         console.log("✅ GameEngine: Modèles IA chargés. Le bouton est actif !");
@@ -59,10 +59,10 @@ export class GameEngine {
     }
 
     //here we put IN ORDER the list of tabs that we will unlock when the player is progressing EXCEPT those we are already displaying at the beginning
-    loadTabs() {
-        this.listOfTabs.push("btn-tab-opencv");
-        console.log(`GameEngine: ${this.listOfEnigmas.length} onglets chargés.`);
-    }
+    // loadTabs() {
+    //     this.listOfTabs.push("btn-tab-opencv");
+    //     console.log(`GameEngine: ${this.listOfEnigmas.length} onglets chargés.`);
+    // }
 
     // Le bouton "Play"
     start() {
@@ -86,6 +86,7 @@ export class GameEngine {
     loop() {
         if (!this.isRunning) return;
 
+
         // 1. On rappelle la boucle immédiatement pour le prochain cycle de l'écran
         requestAnimationFrame(() => this.loop());
 
@@ -100,8 +101,10 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
-            this.uiManager.unlockTab(this.listOfTabs[this.indexOfTab]); //we display the next tab for the next enigma
-            this.indexOfTab++;
+            // this.uiManager.unlockTab(this.listOfTabs[this.indexOfTab]); //we display the next tab for the next enigma
+            // this.indexOfTab++;
+            // this.nextEnigma();
+            this.uiManager.unlockNextTabButton();
             this.nextEnigma();
         }
 
