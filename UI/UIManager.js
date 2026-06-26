@@ -24,6 +24,12 @@ export class UIManager {
 
         // NOUVEAU : Au démarrage, on range la caméra dans l'onglet actif
         this.showTab(this.activeTabId);
+
+
+        //for animation
+        this.cinematicOverlay = document.getElementById("unlock-cinematic");
+        this.cinematicText = document.getElementById("cinematic-tab-name");
+        this.cinematicContent = this.cinematicOverlay.querySelector(".cinematic-content");
     }
 
     // Gère les clics sur les boutons de navigation (les vrais onglets HTML)
@@ -145,23 +151,43 @@ export class UIManager {
 
     unlockNextTabButton() {
         if (this.currentUnlockIndex < this.lockedTabButtons.length) {
-
             const idBouton = this.lockedTabButtons[this.currentUnlockIndex];
             const bouton = document.getElementById(idBouton);
 
-            if (bouton) {
-                // 1. On le rend visible (il doit s'afficher à côté des autres)
-                bouton.style.display = "inline-block";
+            if (bouton && this.cinematicOverlay) {
+                // 1. we copy the real name of the button
+                this.cinematicText.innerText = bouton.innerText;
 
-                // 2. On lance notre belle animation CSS
-                bouton.classList.add("unlock-animation");
+                // 2. On allume l'écran noir
+                this.cinematicOverlay.style.display = "flex";
 
-                // 3. On nettoie la classe une fois l'animation terminée pour éviter les bugs si on re-clique
+                // Petit délai pour laisser le "display: flex" s'appliquer avant de faire le fondu
                 setTimeout(() => {
-                    bouton.classList.remove("unlock-animation");
-                }, 1500); // 1.5s correspond à la durée définie dans le CSS
-            } else {
-                this.showError("le bouton d'onglet n'a pas le bon id");
+                    this.cinematicOverlay.style.opacity = "1";
+                    // 3. On lance la grosse animation 3D
+                    this.cinematicContent.classList.add("cinematic-animate");
+                }, 10);
+
+                // 4. On attend la fin de l'animation (2.5 secondes)
+                setTimeout(() => {
+
+                    // On fait disparaître l'écran noir en fondu
+                    this.cinematicOverlay.style.opacity = "0";
+                    setTimeout(() => {
+                        this.cinematicOverlay.style.display = "none";
+                        this.cinematicContent.classList.remove("cinematic-animate"); // Nettoyage
+                    }, 300);
+
+                    // 5. BOUM ! Le vrai bouton apparaît exactement au moment où l'animation s'est envolée
+                    bouton.style.display = "inline-block";
+                    void bouton.offsetWidth; // Reflow
+                    bouton.classList.add("unlock-animation"); // Le petit rebond final (celui de ton ancienne animation)
+
+                    setTimeout(() => {
+                        bouton.classList.remove("unlock-animation");
+                    }, 1500);
+
+                }, 2500); // 2500ms correspond exactement à la durée de l'animation CSS
             }
 
             this.currentUnlockIndex++;

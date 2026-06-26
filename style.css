@@ -9,6 +9,131 @@ h1 {
     color: #007f8b;
 }
 
+/* Navigation (Onglets) */
+.tab-container {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #666;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button.active {
+    color: #007f8b;
+    border-bottom-color: #007f8b;
+}
+
+/* Conteneurs de panneaux */
+.view-panel {
+    display: none;
+}
+
+/* Zone Vidéo */
+.videoView {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+#webcam {
+    display: none;
+}
+
+/* La vraie vidéo est toujours cachée, on regarde le canvas */
+canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 640px;
+    height: 480px;
+}
+
+/* Boîte de debug */
+.output-box {
+    padding: 12px;
+    background-color: #007f8b;
+    color: white;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    width: 616px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Boutons globaux */
+button {
+    cursor: pointer;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    background-color: #007f8b;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#loadingMessage {
+    font-weight: bold;
+    margin-left: 15px;
+    color: #007f8b;
+}
+
+/* animation for tab unlocking */
+.unlock-animation {
+    animation: popAndGlow 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popAndGlow {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-20px);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1.05) translateY(0);
+        box-shadow: 0px 10px 20px rgba(76, 175, 80, 0.6);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        box-shadow: 0px 0px 0px transparent;
+    }
+}
+
+
+
+body {
+    font-family: Roboto, sans-serif;
+    margin: 2em;
+    color: #3d3d3d;
+    background-color: #f4f6f8;
+}
+
+h1 {
+    color: #007f8b;
+}
+
 /* Style des Onglets */
 .tab-container {
     display: flex;
@@ -99,4 +224,67 @@ canvas {
     color: #007f8b;
     font-weight: bold;
     margin-left: 15px;
+}
+
+/* L'écran noir transparent */
+.unlock-cinematic {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    /* Caché par défaut */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    /* Par-dessus tout le reste */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Le conteneur du texte */
+.cinematic-content {
+    text-align: center;
+    transform: scale(0);
+}
+
+.cinematic-title {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #007f8b;
+    text-shadow: 0px 5px 15px rgba(0, 127, 139, 0.5);
+    margin-top: 15px;
+}
+
+/* La séquence d'animation complète */
+.cinematic-animate {
+    animation: cinematicSequence 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes cinematicSequence {
+    0% {
+        transform: scale(0) translateY(50px);
+        opacity: 0;
+    }
+
+    15% {
+        transform: scale(1.1) translateY(0);
+        opacity: 1;
+        text-shadow: 0 0 40px #007f8b;
+    }
+
+    70% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        text-shadow: 0 0 10px #007f8b;
+    }
+
+    100% {
+        transform: scale(0.2) translateY(-400px);
+        opacity: 0;
+    }
+
+    /* S'envole et rétrécit vers les onglets */
 }
