@@ -10,63 +10,89 @@ export function playTabUnlockingSound() {
 
     const ctx = new AudioContext();
     const t0 = ctx.currentTime;
-    const dureeMontee = 2.5;
 
-    // --- PISTE 1 : La montée de suspense (Sawtooth) ---
-    const nbNotesMontee = 25;
-    const interval = dureeMontee / nbNotesMontee;
+    // --- PISTE 1 : Le Glissando de Harpe (Arpège ascendant fluide) ---
+    // Un accord magique très large (Do Majeur 9 : Do, Mi, Sol, Si, Ré, Mi, Sol, Do)
+    const notesHarpe = [
+        261.63, // C4
+        329.63, // E4
+        392.00, // G4
+        493.88, // B4
+        587.33, // D5
+        659.25, // E5
+        783.99, // G5
+        1046.50 // C6
+    ];
 
-    for (let i = 0; i < nbNotesMontee; i++) {
+    const dureeGlissando = 2.0; // Le balayage des cordes dure 2 secondes
+    const intervalle = dureeGlissando / notesHarpe.length;
+
+    notesHarpe.forEach((freq, index) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.value = 220 * Math.pow(1.05946, i);
 
-        gain.gain.setValueAtTime(0, t0 + i * interval);
-        gain.gain.linearRampToValueAtTime(0.1, t0 + i * interval + 0.02);
-        gain.gain.linearRampToValueAtTime(0, t0 + i * interval + interval);
+        // L'onde 'sine' est parfaite pour imiter le son pur et rond d'une corde pincée
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+
+        const time = t0 + (index * intervalle);
+
+        // L'enveloppe Harpe : Attaque instantanée (le doigt lâche la corde) et résonance très longue
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.25, time + 0.02); // Impact rapide
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 3.0); // La corde vibre et s'éteint lentement
 
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(t0 + i * interval);
-        osc.stop(t0 + i * interval + interval);
-    }
 
-    // --- PISTE 2 : Les étoiles scintillantes (Sine) ---
-    for (let i = 0; i < 20; i++) {
+        osc.start(time);
+        osc.stop(time + 3.0);
+    });
+
+    // --- PISTE 2 : La Poussière d'étoiles pendant le tourbillon ---
+    for (let i = 0; i < 15; i++) {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.value = 1200 + Math.random() * 1300;
 
-        const time = t0 + Math.random() * dureeMontee;
+        // Fréquences très aiguës et cristallines
+        osc.frequency.value = 1500 + Math.random() * 1500;
+
+        // Jouées au hasard pendant le vol de l'animation (avant l'impact à 2.5s)
+        const time = t0 + Math.random() * 2.4;
 
         gain.gain.setValueAtTime(0, time);
-        gain.gain.linearRampToValueAtTime(0.06, time + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+        gain.gain.linearRampToValueAtTime(0.04, time + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.8);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(time);
-        osc.stop(time + 0.5);
+        osc.stop(time + 0.8);
     }
 
-    // --- PISTE 3 : L'accord de triomphe (Sawtooth) ---
-    const notesTriomphe = [523.25, 659.25, 783.99, 1046.50];
+    // --- PISTE 3 : L'Accord final d'illumination ---
+    // Se déclenche pile à 2.5s, quand le texte s'arrête de tourner au milieu de l'écran
+    const impactTime = t0 + 2.5;
+    const notesAccordFinal = [523.25, 659.25, 783.99]; // Un accord parfait (Do, Mi, Sol)
 
-    notesTriomphe.forEach(freq => {
+    notesAccordFinal.forEach(freq => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'sawtooth';
+
+        // Un mix subtil : le triangle donne un tout petit peu plus de corps à l'accord final
+        osc.type = 'triangle';
         osc.frequency.value = freq;
 
-        gain.gain.setValueAtTime(0, t0 + dureeMontee);
-        gain.gain.linearRampToValueAtTime(0.15, t0 + dureeMontee + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dureeMontee + 2.5);
+        // Une belle nappe qui apparaît en douceur et s'évanouit avec le texte
+        gain.gain.setValueAtTime(0, impactTime);
+        gain.gain.linearRampToValueAtTime(0.15, impactTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, impactTime + 4.0);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(t0 + dureeMontee);
-        osc.stop(t0 + dureeMontee + 2.5);
+
+        osc.start(impactTime);
+        osc.stop(impactTime + 4.0);
     });
 }
