@@ -250,41 +250,100 @@ canvas {
     transform: scale(0);
 }
 
+
+/* Le texte passe en Doré Zelda */
 .cinematic-title {
     font-size: 4rem;
     font-weight: bold;
-    color: #007f8b;
-    text-shadow: 0px 5px 15px rgba(0, 127, 139, 0.5);
+    color: #FFD700;
+    text-shadow: 0px 5px 20px rgba(255, 215, 0, 0.6);
     margin-top: 15px;
+    position: relative;
+    display: inline-block;
 }
 
-/* La séquence d'animation complète */
-.cinematic-animate {
-    animation: cinematicSequence 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+/* Les petites étoiles autour des mots */
+.cinematic-title::before,
+.cinematic-title::after {
+    content: "✨";
+    position: absolute;
+    font-size: 2.5rem;
+    animation: clignotementEtoile 0.4s infinite alternate;
 }
 
-@keyframes cinematicSequence {
+.cinematic-title::before {
+    top: -20px;
+    left: -40px;
+    animation-delay: 0s;
+}
+
+.cinematic-title::after {
+    bottom: -20px;
+    right: -40px;
+    animation-delay: 0.2s;
+}
+
+@keyframes clignotementEtoile {
     0% {
-        transform: scale(0) translateY(50px);
-        opacity: 0;
-    }
-
-    15% {
-        transform: scale(1.1) translateY(0);
-        opacity: 1;
-        text-shadow: 0 0 40px #007f8b;
-    }
-
-    70% {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-        text-shadow: 0 0 10px #007f8b;
+        transform: scale(0.8) rotate(-15deg);
+        opacity: 0.4;
     }
 
     100% {
-        transform: scale(0.2) translateY(-400px);
+        transform: scale(1.5) rotate(15deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 10px white);
+    }
+}
+
+/* La séquence d'animation complète (5 Secondes) */
+.cinematic-animate {
+    animation: spiraleZelda 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes spiraleZelda {
+
+    /* 1. Départ en haut à gauche */
+    0% {
+        transform: translate(-45vw, -45vh) rotate(-1080deg) scale(0.1);
         opacity: 0;
     }
 
-    /* S'envole et rétrécit vers les onglets */
+    /* 2. Tour le long des bords (Droite, puis Bas, puis Gauche) */
+    12% {
+        transform: translate(40vw, -25vh) rotate(-810deg) scale(0.3);
+        opacity: 1;
+    }
+
+    25% {
+        transform: translate(25vw, 40vh) rotate(-540deg) scale(0.5);
+    }
+
+    38% {
+        transform: translate(-35vw, 25vh) rotate(-270deg) scale(0.7);
+    }
+
+    /* 3. Impact au centre (Temps = 50% soit 2.5s) */
+    50% {
+        transform: translate(0, 0) rotate(0deg) scale(1.2);
+        text-shadow: 0 0 60px #FFD700;
+    }
+
+    /* 4. Stabilisation et lecture (Temps = 55% à 85%) */
+    55% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        text-shadow: 0 0 20px #FFD700;
+    }
+
+    85% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+        text-shadow: 0 0 20px #FFD700;
+    }
+
+    /* 5. Aspiration dans les onglets */
+    100% {
+        transform: translateY(-500px) rotate(360deg) scale(0.1);
+        opacity: 0;
+    }
 }

@@ -148,49 +148,122 @@ export class UIManager {
     // ==========================================
     // MÉTHODES DE PROGRESSION DU JEU
     // ==========================================
-
     unlockNextTabButton() {
         if (this.currentUnlockIndex < this.lockedTabButtons.length) {
             const idBouton = this.lockedTabButtons[this.currentUnlockIndex];
             const bouton = document.getElementById(idBouton);
 
             if (bouton && this.cinematicOverlay) {
-                // 1. we copy the real name of the button
                 this.cinematicText.innerText = bouton.innerText;
 
-                // 2. On allume l'écran noir
+                // ON JOUE LA NOUVELLE MÉLODIE ZELDA
+                this.jouerSonVictoire();
+
                 this.cinematicOverlay.style.display = "flex";
 
-                // Petit délai pour laisser le "display: flex" s'appliquer avant de faire le fondu
                 setTimeout(() => {
                     this.cinematicOverlay.style.opacity = "1";
-                    // 3. On lance la grosse animation 3D
                     this.cinematicContent.classList.add("cinematic-animate");
                 }, 10);
 
-                // 4. On attend la fin de l'animation (2.5 secondes)
+                // --- MODIFICATION ICI : On attend 5 secondes (5000ms) ---
                 setTimeout(() => {
 
-                    // On fait disparaître l'écran noir en fondu
                     this.cinematicOverlay.style.opacity = "0";
                     setTimeout(() => {
                         this.cinematicOverlay.style.display = "none";
-                        this.cinematicContent.classList.remove("cinematic-animate"); // Nettoyage
+                        this.cinematicContent.classList.remove("cinematic-animate");
                     }, 300);
 
-                    // 5. BOUM ! Le vrai bouton apparaît exactement au moment où l'animation s'est envolée
                     bouton.style.display = "inline-block";
-                    void bouton.offsetWidth; // Reflow
-                    bouton.classList.add("unlock-animation"); // Le petit rebond final (celui de ton ancienne animation)
+                    void bouton.offsetWidth;
+                    bouton.classList.add("unlock-animation");
 
                     setTimeout(() => {
                         bouton.classList.remove("unlock-animation");
                     }, 1500);
 
-                }, 2500); // 2500ms correspond exactement à la durée de l'animation CSS
+                }, 5000); // <-- 5000ms pour matcher le CSS et l'Audio
             }
 
             this.currentUnlockIndex++;
         }
+    }
+
+    // ==========================================
+    // AUDIO SYNTHÉTIQUE (Zéro fichier MP3 requis)
+    // ==========================================
+    jouerSonVictoire() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const t0 = ctx.currentTime;
+
+        const dureeMontee = 2.5; // Doit correspondre aux 50% de l'animation CSS
+
+        // --- PISTE 1 : La montée de suspense (Sawtooth) ---
+        const nbNotesMontee = 25;
+        const interval = dureeMontee / nbNotesMontee; // Très rapide (0.1s par note)
+
+        for (let i = 0; i < nbNotesMontee; i++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+
+            // Fréquence qui monte progressivement (base 220Hz)
+            osc.frequency.value = 220 * Math.pow(1.05946, i);
+
+            // Pings agressifs et courts
+            gain.gain.setValueAtTime(0, t0 + i * interval);
+            gain.gain.linearRampToValueAtTime(0.1, t0 + i * interval + 0.02);
+            gain.gain.linearRampToValueAtTime(0, t0 + i * interval + interval);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t0 + i * interval);
+            osc.stop(t0 + i * interval + interval);
+        }
+
+        // --- PISTE 2 : Les étoiles scintillantes (Sine) ---
+        for (let i = 0; i < 20; i++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine'; // Son pur comme une clochette
+
+            // Fréquences très aiguës aléatoires (entre 1200Hz et 2500Hz)
+            osc.frequency.value = 1200 + Math.random() * 1300;
+
+            // Jouées au hasard pendant que le texte tourbillonne
+            const time = t0 + Math.random() * dureeMontee;
+
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(0.06, time + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.5);
+        }
+
+        // --- PISTE 3 : L'accord de triomphe (Item Get!) ---
+        // Se déclenche exactement au moment de l'impact au centre de l'écran (à 2.5s)
+        const notesTriomphe = [523.25, 659.25, 783.99, 1046.50]; // Do5, Mi5, Sol5, Do6
+
+        notesTriomphe.forEach(freq => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.value = freq;
+
+            gain.gain.setValueAtTime(0, t0 + dureeMontee);
+            gain.gain.linearRampToValueAtTime(0.15, t0 + dureeMontee + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, t0 + dureeMontee + 2.5); // Résonne longtemps
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t0 + dureeMontee);
+            osc.stop(t0 + dureeMontee + 2.5);
+        });
     }
 }
