@@ -24,7 +24,7 @@ export class UIManager {
             victoire: document.getElementById("panel-victoire")
         };
 
-        this.lockedTabButtons = ["btn-tab-opencv"]; //here we will have all the buttons to unlock all the enigmas
+        this.lockedTabButtons = ["btn-tab-opencv"]; //here we will have all the references to the buttons to unlock all the enigmas
         this.currentUnlockIndex = 0;
         this.activeTabId = 'accueil';
 
@@ -159,7 +159,7 @@ export class UIManager {
                     this.cinematicContent.classList.remove("cinematic-animate");
                 }, 300);
 
-                bouton.style.display = "inline-block";
+                bouton.style.display = "inline-block"; //we show the new enigma tab
                 void bouton.offsetWidth;
                 bouton.classList.add("unlock-animation");
 

@@ -16,20 +16,17 @@ export class GameEngine {
         this.currentEnigmaIndex = 0; // index of the level we are doing (maybe we will need to change this if we have several enigmas at the same time)
         this.isRunning = false;
 
-        this.listOfTabs = []; // ordered list of all the tabs the players will unlock
-        this.indexOfTab = 0;
-
         //to lower the fps rendering (not used because it works well for now without it)
         // this.fpsTarget = 15;
         // this.frameInterval = 1000 / this.fpsTarget;
         // this.lastFrameTime = 0;
     }
 
-    // Phase de démarrage asynchrone (pour attendre le chargement des gros fichiers)
+    // asynchronous initialisation (async waits for the files to load instead of interpreting the lines of code without stopping)
     async init() {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
 
-        // 3. NOUVEAUTÉ : On utilise l'UI pour montrer qu'on travaille
+
         this.uiManager.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
         const inputsReady = await this.inputManager.init();
@@ -44,12 +41,10 @@ export class GameEngine {
         // this.networkManager.init();
 
         this.loadEnigmas();
-        //this.loadTabs();
 
-        // 4. C'EST PRÊT ! On active le bouton pour l'utilisateur
         console.log("✅ GameEngine: Modèles IA chargés. Le bouton est actif !");
         this.uiManager.hideLoading();
-        this.uiManager.updateWebcamButton(false, true); // Bouton actif "ACTIVER LA WEBCAM"
+        this.uiManager.updateWebcamButton(false, true); // We make the webcam button ready
     }
 
     //here we load all the enigmas in the list IN ORDER
@@ -57,12 +52,6 @@ export class GameEngine {
         this.listOfEnigmas.push(new LsfEnigma());
         console.log(`GameEngine: ${this.listOfEnigmas.length} énigmes chargées.`);
     }
-
-    //here we put IN ORDER the list of tabs that we will unlock when the player is progressing EXCEPT those we are already displaying at the beginning
-    // loadTabs() {
-    //     this.listOfTabs.push("btn-tab-opencv");
-    //     console.log(`GameEngine: ${this.listOfEnigmas.length} onglets chargés.`);
-    // }
 
     // Le bouton "Play"
     start() {
@@ -79,10 +68,9 @@ export class GameEngine {
         requestAnimationFrame((timestamp) => this.loop(timestamp));
     }
 
-    // La boucle principale (Heartbeat)
-    // Le navigateur envoie automatiquement un 'timestamp' à la fonction
-    //this time stamp is used to reduce the frequency of rendering, because this loop is called by requestAnimationFrame, which works at the frequency of usually 60Hz
-    //sometimes more depending on the screen.
+    // The main loop, heartbeat of the program
+    // THIS IS NOT ACTUALLY USED : (this time stamp is used to reduce the frequency of rendering, because this loop is called by requestAnimationFrame, which works at the frequency of usually 60Hz
+    //sometimes more depending on the screen).
     loop() {
         if (!this.isRunning) return;
 
@@ -101,9 +89,6 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
-            // this.uiManager.unlockTab(this.listOfTabs[this.indexOfTab]); //we display the next tab for the next enigma
-            // this.indexOfTab++;
-            // this.nextEnigma();
             this.uiManager.unlockNextTabButton();
             this.nextEnigma();
         }
