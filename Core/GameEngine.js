@@ -120,12 +120,12 @@ export class GameEngine {
             console.log(`GameEngine: 🔓 Niveau complété. Passage à l'énigme ${this.currentEnigmaIndex + 1}`);
             this.listOfEnigmas[this.currentEnigmaIndex].start();
 
-            this.uiManager.afficherNotification("Niveau Suivant !");
+            this.uiManager.showNotification("Niveau Suivant !");
 
         } else {
             console.log("GameEngine: 🏆 JEU TERMINÉ ! VICTOIRE !");
             this.isRunning = false; // On coupe la boucle, le jeu est fini
-            this.uiManager.afficherEcranVictoire();
+            this.uiManager.showVictoryScreen();
         }
     }
 }
