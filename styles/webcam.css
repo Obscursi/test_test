@@ -1,0 +1,49 @@
+.videoView {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+#webcam {
+    display: none;
+}
+
+canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 640px;
+    height: 480px;
+    transform: scaleX(-1);
+    /* Mode miroir */
+}
+
+#mp_canvas {
+    z-index: 2;
+    pointer-events: none;
+}
+
+#cv_canvas {
+    z-index: 1;
+}
+
+.output-box {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #007f8b;
+    color: white;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    width: 616px;
+    min-height: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#gesture_output {
+    display: none;
+}

@@ -1,0 +1,35 @@
+body {
+    font-family: Roboto, sans-serif;
+    margin: 2em;
+    color: #3d3d3d;
+    background-color: #f4f6f8;
+}
+
+h1 {
+    color: #007f8b;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    background-color: #007f8b;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+#loadingMessage {
+    color: #007f8b;
+    font-weight: bold;
+    margin-left: 15px;
+}
