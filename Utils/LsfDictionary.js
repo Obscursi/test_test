@@ -1,4 +1,4 @@
-import { getDistance, isFingerFolded } from './handMaths.js';
+import { getDistance, isFingerFolded } from './HandMaths.js';
 
 export function whichLetterIsDetected(landmarks) {
 

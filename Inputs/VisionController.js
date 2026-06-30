@@ -3,7 +3,7 @@ import {
     FilesetResolver,
     DrawingUtils
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/vision_bundle.mjs";
-import { whichLetterIsDetected } from '../Utils/lsfDictionary.js';
+import { whichLetterIsDetected } from '../Utils/LsfDictionary.js';
 
 export class VisionController {
     // On passe la vidéo et le canvas en paramètres pour ne pas chercher dans le document HTML
