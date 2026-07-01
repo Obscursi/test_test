@@ -21,51 +21,56 @@ export function whichLetterIsDetected(landmarks) {
     //  If D or P are not getting detected try making 0.1 into 0.15 (if they are triggered too easily, make it lower like 0.08)
 
     // =======================================================================
-    //  DICTIONNAIRE LSF (10 Lettres)
+    //  DICTIONNAIRE LSF (P, I, E, D, H, U, L, B, T)
     //  Tolérance de distance : Ajuster les valeurs 0.08 / 0.1 selon la caméra
     // =======================================================================
 
+    // 1. Lettre "B" : Les 4 doigts tendus, pouce replié sur la paume
+    if (!isIndexFolded && !isMiddleFolded && !isRingFolded && !isPinkyFolded && getDistance(indexTip, middleTip) < 0.1 && getDistance(ringTip, middleTip) < 0.1) {
+        return "B";
+    }
 
     // 2. Lettre "D" : Index tendu, les autres pliés ET le bout du majeur touche le pouce
-    if (!isIndexFolded && isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(thumbTip, middleTip) < 0.1) {
+    else if (!isIndexFolded && isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(thumbTip, middleTip) < 0.1) {
         return "D";
     }
 
+    else if (isIndexFolded && isMiddleFolded && isRingFolded && isPinkyFolded && !isThumbFolded && getDistance(thumbTip, landmarks[5]) > 0.15) {
+        return "A";
+    }
+
     // 3. Lettre "E" : Forme de griffe fermée. Tous les doigts pliés.
-    // On s'assure que ce n'est pas un A en vérifiant que le bout de l'index n'est pas écrasé sur la paume (landmark 0)
+    // On vérifie que le bout de l'index n'est pas écrasé sur la paume (landmark 0)
     else if (isIndexFolded && isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(indexTip, landmarks[0]) > 0.1) {
         return "E";
     }
 
-    // 4. Lettre "I" : Petit doigt tendu, les 3 autres pliés
+    // 4. Lettre "P" : Index tendu, majeur tendu mais pointant vers le bas.
+    // On utilise la coordonnée 'y' pour s'assurer que le majeur est plus bas que l'index (sur MediaPipe, Y augmente vers le bas de l'écran).
+    else if (!isIndexFolded && !isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(indexTip, middleTip) > 0.08) {
+        return "P";
+    }
+
+    // 5. Lettre "H" : Index et majeur tendus et ÉCARTÉS (distance > 0.06), les autres pliés
+    else if (!isIndexFolded && isMiddleFolded && isRingFolded && !isPinkyFolded && getDistance(indexTip, middleTip) > 0.06) {
+        return "H";
+    }
+
+    // 6. Lettre "U" : Index et majeur tendus et COLLÉS (distance < 0.06)
+    else if (!isIndexFolded && !isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(indexTip, middleTip) < 0.1) {
+        return "U";
+    }
+
+    // 7. Lettre "I" : Petit doigt tendu, les 3 autres pliés
     else if (!isPinkyFolded && isIndexFolded && isMiddleFolded && isRingFolded) {
         return "I";
     }
 
-    // 5. Lettre "L" : Index tendu, pouce écarté (loin de la base du petit doigt: 17), autres pliés
+    // 8. Lettre "L" : Index tendu, pouce écarté (loin de la base du petit doigt: 17), autres pliés
     else if (!isIndexFolded && isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(thumbTip, landmarks[17]) > 0.15) {
         return "L";
     }
 
-    // 6. Lettre "O" : Tous les bouts des doigts se rejoignent sur le pouce
-    else if (getDistance(indexTip, thumbTip) < 0.09 && getDistance(middleTip, thumbTip) < 0.09 && getDistance(ringTip, thumbTip) < 0.09) {
-        return "O";
-    }
-
-    // 7. Lettre "U" : Index et majeur tendus, MAIS ils sont collés l'un à l'autre
-    else if (!isIndexFolded && !isMiddleFolded && isRingFolded && isPinkyFolded && getDistance(indexTip, middleTip) < 0.06) {
-        return "U";
-    }
-
-    // 8. Lettre "Y" : Pouce tendu, petit doigt tendu, les 3 du milieu pliés (Signe "Shaka" / Téléphone)
-    else if (!isPinkyFolded && isIndexFolded && isMiddleFolded && isRingFolded && getDistance(thumbTip, landmarks[17]) > 0.15) {
-        return "Y";
-    }
-
-    // 9. Ta définition d'origine pour le "P" (Je l'ai laissée à la fin, mais attention au conflit avec U/V s'il n'est pas parfait)
-    else if (!isIndexFolded && !isMiddleFolded && isRingFolded && isPinkyFolded) {
-        return "P";
-    }
-
+    // Si aucun geste ne correspond
     return "";
 }

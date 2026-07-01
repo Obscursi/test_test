@@ -54,19 +54,28 @@ export class UIManager {
     showTab(tabId) {
         this.activeTabId = tabId;
 
+        // 1. On cache tous les panneaux
         for (const key in this.tabs) {
             if (this.tabs[key]) {
                 this.tabs[key].style.display = "none";
             }
         }
 
+        // 2. On affiche le panneau demandé
         if (this.tabs[tabId]) {
             this.tabs[tabId].style.display = "block";
         }
 
+        // 3. Gestion de l'affichage de la CAMÉRA GLOBALE
         const tabsWithWebcam = ['lsf', 'opencv'];
         if (this.webcamContainer) {
             this.webcamContainer.style.display = tabsWithWebcam.includes(tabId) ? "block" : "none";
+        }
+
+        // 4. CORRECTION : Gestion de la boîte de texte LSF
+        if (this.gestureOutput) {
+            // Elle ne s'affiche QUE si on est sur l'onglet 'lsf'
+            this.gestureOutput.style.display = (tabId === 'lsf') ? "block" : "none";
         }
     }
 
