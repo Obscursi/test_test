@@ -31,6 +31,8 @@ export class UIManager {
         // NOUVEAU : Liste ordonnée des cibles ('data-target') pour savoir qui mettre en Vert
         this.ongletsChronologiques = ["lsf", "aruco"];
 
+        this.tabContainer = document.querySelector('.tab-container');
+
         this.initEventListeners();
         this.showTab(this.activeTabId);
     }
@@ -38,7 +40,11 @@ export class UIManager {
     /**
      * Listen to click on the global naviguation
      */
+    /**
+     * Écoute les clics sur l'interface globale.
+     */
     initEventListeners() {
+        // 1. Écouteurs pour la barre de navigation classique
         const tabButtons = document.querySelectorAll('.tab-button');
         tabButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -49,6 +55,73 @@ export class UIManager {
                 this.showTab(targetId);
             });
         });
+
+        // 2. NOUVEAU : Le clic sur le bouton de démarrage géant !
+        // 2. Le clic sur le bouton de démarrage géant avec pause pour l'autorisation
+        if (this.btnWebcam) {
+            this.btnWebcam.addEventListener('click', async () => {
+
+                // --- ÉTAPE 1 : CHANGEMENT DU TEXTE ---
+                this.btnWebcam.disabled = true;
+                this.btnWebcam.innerText = "AUTORISATION REQUISE (VOIR POP-UP)...";
+                this.btnWebcam.style.animation = "none";
+                this.btnWebcam.style.backgroundColor = "#f57c00";
+
+                // --- ÉTAPE 1.5 : LA MICRO-PAUSE VITALE ---
+                // Laisse 50ms au navigateur pour repeindre le bouton avant de geler l'écran
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                try {
+                    // --- ÉTAPE 2 : PAUSE JUSQU'À L'AUTORISATION ---
+                    await navigator.mediaDevices.getUserMedia({ video: true });
+
+                    // --- ÉTAPE 3 : L'EXPLOSION SÉQUENTIELLE VIOLENTE ---
+                    this.btnWebcam.innerText = "ACCÈS VALIDÉ. SURCHARGE DU SAS...";
+                    this.btnWebcam.style.backgroundColor = "#ff5252";
+
+                    const accueilPanel = this.tabs['accueil'];
+                    const elementsAccueil = Array.from(accueilPanel.children);
+
+                    elementsAccueil.forEach((element, index) => {
+                        element.style.animationDelay = `${index * 0.15}s`;
+                        element.classList.add("explode-out");
+                    });
+
+                    // Temps d'attente avant la fin de l'explosion
+                    const tempsAttente = (elementsAccueil.length * 150) + 600;
+
+                    // --- ÉTAPE 4 : LE FLASH GLOBAL SUR TOUT L'ÉCRAN ---
+                    setTimeout(() => {
+                        // On cache le sas détruit
+                        const ongletAccueil = document.querySelector('.tab-button[data-target="accueil"]');
+                        if (ongletAccueil) ongletAccueil.style.display = "none";
+
+                        // On bascule la logique sur le jeu LSF
+                        this.showTab('lsf');
+
+                        const ongletLsf = document.querySelector('.tab-button[data-target="lsf"]');
+                        if (ongletLsf) {
+                            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                            ongletLsf.classList.add('active');
+                        }
+
+                        // LA MAGIE : On applique le flash d'allumage à TOUT le corps de la page
+                        document.body.classList.add("global-boot");
+
+                        // Optionnel : on retire la classe après l'animation pour nettoyer le code (3.5s)
+                        setTimeout(() => {
+                            document.body.classList.remove("global-boot");
+                        }, 3500);
+
+                    }, tempsAttente);
+
+                } catch (erreur) {
+                    console.warn("Accès caméra refusé :", erreur);
+                    this.btnWebcam.innerText = "ACCÈS REFUSÉ. SYSTÈME VERROUILLÉ.";
+                    this.btnWebcam.style.backgroundColor = "#ff5252";
+                }
+            });
+        }
     }
 
     /**
@@ -81,6 +154,11 @@ export class UIManager {
             // Elle ne s'affiche QUE si on est sur l'onglet 'lsf'
             this.gestureOutput.style.display = (tabId === 'lsf') ? "block" : "none";
         }
+
+        if (this.tabContainer) {
+            // Invisible sur l'accueil, visible partout ailleurs
+            this.tabContainer.style.display = (tabId === 'accueil') ? "none" : "flex";
+        }
     }
     /**
      * Modifies the visuel state of the webcam button depending or wheter or not it is activated
@@ -92,14 +170,9 @@ export class UIManager {
             return;
         }
 
+        // L'IA est prête, le bouton s'allume !
         this.btnWebcam.disabled = false;
-        if (isRunning) {
-            this.btnWebcam.innerText = "COUPE LA WEBCAM";
-            this.btnWebcam.style.backgroundColor = "#ff5252";
-        } else {
-            this.btnWebcam.innerText = "ACTIVER LA WEBCAM";
-            this.btnWebcam.style.backgroundColor = "#007f8b";
-        }
+        this.btnWebcam.innerText = "DÉMARRER LA MISSION";
     }
 
     hideLoading() {

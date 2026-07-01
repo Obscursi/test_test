@@ -26,9 +26,16 @@
 
 
 
-    <div style="margin-bottom: 20px;">
-        <button id="webcamButton" disabled>CHARGEMENT EN COURS...</button>
-        <span id="loadingMessage">Initialisation du moteur de jeu...</span>
+    <div id="panel-accueil" class="view-panel active">
+        <h2>Interface de Connexion Centrale</h2>
+        <p>Bienvenue agent. Veuillez initialiser la liaison optique pour commencer votre mission.</p>
+
+        <div style="margin-top: 40px; text-align: center;">
+            <button id="webcamButton" class="big-start-btn" disabled>INITIALISATION EN COURS...</button>
+            <br>
+            <span id="loadingMessage" style="display: inline-block; margin-top: 15px;">Chargement des modules
+                IA...</span>
+        </div>
     </div>
 
     <div id="webcam-container" style="display: none;">
@@ -41,10 +48,6 @@
 
     <hr style="margin: 30px 0;">
 
-    <div id="panel-accueil" class="view-panel" style="display: block;">
-        <h2>Salle d'Attente</h2>
-        <p>Bienvenue. Connectez-vous avec l'ordinateur central (Admin) pour commencer votre mission.</p>
-    </div>
 
     <div id="panel-victoire" class="view-panel" style="text-align: center; color: #007f8b;">
         <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>

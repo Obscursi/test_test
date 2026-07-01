@@ -132,3 +132,63 @@
         opacity: 0;
     }
 }
+
+/* =========================================
+   ANIMATION D'ALLUMAGE GLOBAL (TOUT L'ÉCRAN)
+   ========================================= */
+
+.global-boot {
+    /* On force l'animation sur la racine du document */
+    animation: screenPowerOn 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes screenPowerOn {
+    0% {
+        opacity: 0;
+        filter: blur(30px) brightness(4);
+        /* Flash blanc intense et très flou */
+    }
+
+    50% {
+        opacity: 1;
+        filter: blur(5px) brightness(1.5);
+        /* L'image se stabilise doucement */
+    }
+
+    100% {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+        /* Netteté parfaite */
+    }
+}
+
+/* =========================================
+   ANIMATION DE DESTRUCTION DU SAS (ACCUEIL)
+   ========================================= */
+
+.explode-out {
+    /* L'animation dure 0.8s mais le délai sera géré en JavaScript */
+    animation: overloadExplosion 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes overloadExplosion {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    40% {
+        transform: scale(1.1) translateY(-5px);
+        opacity: 0.8;
+        filter: blur(2px) brightness(1.5);
+        /* Surcharge d'énergie */
+    }
+
+    100% {
+        transform: scale(1.8) translateY(-30px);
+        opacity: 0;
+        filter: blur(10px);
+        /* Disparition en fumée */
+    }
+}

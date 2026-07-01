@@ -33,3 +33,44 @@ button:disabled {
     font-weight: bold;
     margin-left: 15px;
 }
+
+
+/* Le bouton de démarrage géant */
+.big-start-btn {
+    font-size: 1.5rem;
+    padding: 20px 40px;
+    border-radius: 50px;
+    background-color: #007f8b;
+    box-shadow: 0 10px 20px rgba(0, 127, 139, 0.4);
+    transition: transform 0.2s, background-color 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Effet de survol */
+.big-start-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    background-color: #0096a6;
+}
+
+/* S'il est prêt, il palpite pour attirer l'attention */
+.big-start-btn:not(:disabled) {
+    animation: pulseStart 2s infinite alternate;
+}
+
+/* S'il est désactivé (chargement), on le grise et on coupe l'animation */
+.big-start-btn:disabled {
+    background-color: #7f8c8d;
+    box-shadow: none;
+    animation: none;
+}
+
+@keyframes pulseStart {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 127, 139, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 30px rgba(0, 127, 139, 0.9);
+    }
+}
