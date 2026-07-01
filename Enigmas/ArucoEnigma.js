@@ -33,6 +33,6 @@ export class ArucoEnigma extends Enigma {
         console.log("🔓 Le cadenas LSF est ouvert !");
 
         // Exemple d'action : 
-        // document.getElementById("panel-opencv").style.display = "block";
+        // document.getElementById("panel-aruco").style.display = "block";
     }
 }

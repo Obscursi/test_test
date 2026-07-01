@@ -65,7 +65,7 @@ export class GameEngine {
         }
         // On initialise le chronomètre juste avant de lancer la boucle
         this.lastFrameTime = performance.now();
-        requestAnimationFrame((timestamp) => this.loop(timestamp));
+        requestAnimationFrame(() => this.loop());
     }
 
     // The main loop, heartbeat of the program

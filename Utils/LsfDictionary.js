@@ -16,12 +16,10 @@ export function whichLetterIsDetected(landmarks) {
     const isRingFolded = isFingerFolded(landmarks, 16, 14);
     const isPinkyFolded = isFingerFolded(landmarks, 20, 18);
 
-
-    //  Detectables letters : P, I, E, D
     //  If D or P are not getting detected try making 0.1 into 0.15 (if they are triggered too easily, make it lower like 0.08)
 
     // =======================================================================
-    //  DICTIONNAIRE LSF (P, I, E, D, H, U, L, B, T)
+    //  DICTIONNAIRE LSF (P, I, E, D, H, U, L, B, A)
     //  Tolérance de distance : Ajuster les valeurs 0.08 / 0.1 selon la caméra
     // =======================================================================
 

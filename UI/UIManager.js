@@ -20,13 +20,16 @@ export class UIManager {
         this.tabs = {
             accueil: document.getElementById("panel-accueil"),
             lsf: document.getElementById("panel-lsf"),
-            opencv: document.getElementById("panel-opencv"),
+            aruco: document.getElementById("panel-aruco"),
             victoire: document.getElementById("panel-victoire")
         };
 
-        this.lockedTabButtons = ["btn-tab-opencv"]; //here we will have all the references to the buttons to unlock all the enigmas
+        this.lockedTabButtons = ["btn-tab-aruco"]; //here we will have all the references to the buttons to unlock all the enigmas
         this.currentUnlockIndex = 0;
         this.activeTabId = 'accueil';
+
+        // NOUVEAU : Liste ordonnée des cibles ('data-target') pour savoir qui mettre en Vert
+        this.ongletsChronologiques = ["lsf", "aruco"];
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
@@ -54,31 +57,33 @@ export class UIManager {
     showTab(tabId) {
         this.activeTabId = tabId;
 
-        // 1. On cache tous les panneaux
+        // 1. On cache tous les panneaux en leur retirant la classe 'active'
         for (const key in this.tabs) {
             if (this.tabs[key]) {
-                this.tabs[key].style.display = "none";
+                this.tabs[key].classList.remove("active");
+                // Sécurité : on nettoie les styles en ligne obsolètes
+                this.tabs[key].style.display = "";
             }
         }
 
-        // 2. On affiche le panneau demandé
-        if (this.tabs[tabId]) {
-            this.tabs[tabId].style.display = "block";
+        // 2. On affiche le panneau demandé en lui ajoutant la classe 'active'
+        const activePanel = this.tabs[tabId];
+        if (activePanel) {
+            activePanel.classList.add("active");
         }
 
-        // 3. Gestion de l'affichage de la CAMÉRA GLOBALE
-        const tabsWithWebcam = ['lsf', 'opencv'];
+        // 3. Gestion de l'affichage de la caméra globale
+        const ongletsAvecCamera = ['lsf', 'aruco'];
         if (this.webcamContainer) {
-            this.webcamContainer.style.display = tabsWithWebcam.includes(tabId) ? "block" : "none";
+            this.webcamContainer.style.display = ongletsAvecCamera.includes(tabId) ? "block" : "none";
         }
 
-        // 4. CORRECTION : Gestion de la boîte de texte LSF
+        // 4. Gestion de la boîte de texte LSF
         if (this.gestureOutput) {
-            // Elle ne s'affiche QUE si on est sur l'onglet 'lsf'
+            // Elle ne doit être visible que sur l'onglet 'lsf'
             this.gestureOutput.style.display = (tabId === 'lsf') ? "block" : "none";
         }
     }
-
     /**
      * Modifies the visuel state of the webcam button depending or wheter or not it is activated
      */
@@ -143,6 +148,15 @@ export class UIManager {
      */
     unlockNextTabButton() {
         if (this.currentUnlockIndex >= this.lockedTabButtons.length) return;
+
+        const idOngletTermine = this.ongletsChronologiques[this.currentUnlockIndex];
+        if (idOngletTermine) {
+            // On cherche le bouton qui possède ce data-target précis
+            const boutonTermine = document.querySelector(`.tab-button[data-target="${idOngletTermine}"]`);
+            if (boutonTermine) {
+                boutonTermine.classList.add("completed");
+            }
+        }
 
         const idBouton = this.lockedTabButtons[this.currentUnlockIndex];
         const bouton = document.getElementById(idBouton);
