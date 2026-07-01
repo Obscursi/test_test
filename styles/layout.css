@@ -9,19 +9,36 @@
 .tab-button {
     padding: 10px 20px;
     cursor: pointer;
-    background: none;
+    background-color: #e0e0e0;
+    /* Fond gris clair pour faire bouton */
     border: none;
+    border-radius: 8px 8px 0 0;
+    /* Coins arrondis en haut */
     font-size: 1rem;
     font-weight: bold;
     color: #666;
-    border-bottom: 3px solid transparent;
+    border-bottom: 3px solid #ccc;
     transition: all 0.3s ease;
+    margin-top: 5px;
+    /* Laisse de la place pour l'animation de soulèvement */
 }
 
+/* 2. L'onglet Complété (Vert) */
+/*.tab-button.completed {
+    background-color: #2e7d32;
+    color: white;
+    border-bottom-color: #1b5e20;
+    animation: pulseCompleted 3s infinite alternate;
+}*/
+
 .tab-button.active {
-    color: #007f8b;
-    border-bottom-color: #007f8b;
+    background-color: #003366;
+    color: white;
+    border-bottom-color: #001f3f;
+    animation: pulseActive 1.5s infinite alternate;
 }
+
+
 
 .view-panel {
     display: none;
