@@ -24,7 +24,7 @@ export function whichLetterIsDetected(landmarks) {
     // =======================================================================
 
     // 1. Lettre "B" : Les 4 doigts tendus, pouce replié sur la paume
-    if (!isIndexFolded && !isMiddleFolded && !isRingFolded && !isPinkyFolded && getDistance(indexTip, middleTip) < 0.1 && getDistance(ringTip, middleTip) < 0.1) {
+    if (!isIndexFolded && !isMiddleFolded && !isRingFolded && !isPinkyFolded && getDistance(indexTip, middleTip) < 0.08 && getDistance(ringTip, middleTip) < 0.08 && getDistance(thumbTip, landmarks[13]) < 0.08) {
         return "B";
     }
 
