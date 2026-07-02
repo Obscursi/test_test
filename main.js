@@ -1,9 +1,8 @@
-// main.js (À la racine)
 import { GameEngine } from './Core/GameEngine.js';
+import uiManagerInstance from './UI/UIManager.js';
 
 // On attend que la page HTML soit dessinée
 window.addEventListener("DOMContentLoaded", async () => {
-    console.log("oui");
     // 1. On instancie le moteur
     const game = new GameEngine();
 
@@ -24,7 +23,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         // On met à jour l'interface visuellement.
         // Si c'était coupé (currentlyRunning = false), on s'attend à ce que ça s'active (true)
         const newState = !currentlyRunning;
-        game.uiManager.updateWebcamButton(newState);
+        uiManagerInstance.updateWebcamButton(newState);
 
         // Si on vient d'activer la caméra, on lance la boucle du jeu
         if (newState) {

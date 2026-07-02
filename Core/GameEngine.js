@@ -1,5 +1,5 @@
 import { InputManager } from '../Inputs/InputManager.js';
-import { UIManager } from '../UI/UIManager.js';
+import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 
@@ -7,7 +7,8 @@ export class GameEngine {
     constructor() {
         // 1. Instanciation des Managers
         this.inputManager = new InputManager();
-        this.uiManager = new UIManager();
+
+
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
@@ -27,13 +28,13 @@ export class GameEngine {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
 
 
-        this.uiManager.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
+        uiManagerInstance.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
         const inputsReady = await this.inputManager.init();
 
         if (!inputsReady) {
             console.error("🚨 GameEngine: Échec de l'IA.");
-            this.uiManager.showError("Erreur fatale de l'IA. Vérifiez la console.");
+            uiManagerInstance.showError("Erreur fatale de l'IA. Vérifiez la console.");
             return;
         }
 
@@ -43,8 +44,8 @@ export class GameEngine {
         this.loadEnigmas();
 
         console.log("✅ GameEngine: Modèles IA chargés. Le bouton est actif !");
-        this.uiManager.hideLoading();
-        this.uiManager.updateWebcamButton(false, true); // We make the webcam button ready
+        uiManagerInstance.hideLoading();
+        uiManagerInstance.updateWebcamButton(false, true); // We make the webcam button ready
     }
 
     //here we load all the enigmas in the list IN ORDER
@@ -89,13 +90,13 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
-            this.uiManager.unlockNextTabButton();
+            uiManagerInstance.unlockNextTabButton();
             this.nextEnigma();
         }
 
 
         // --- ÉTAPE 3 : RENDER (Interface) ---
-        this.uiManager.updateGestureDebugText(playerState.gestures);
+        uiManagerInstance.updateGestureDebugText(playerState.gestures);
     }
 
     // Passage au niveau suivant
@@ -105,12 +106,12 @@ export class GameEngine {
             console.log(`GameEngine: 🔓 Niveau complété. Passage à l'énigme ${this.currentEnigmaIndex + 1}`);
             this.listOfEnigmas[this.currentEnigmaIndex].start();
 
-            this.uiManager.showNotification("Niveau Suivant !");
+            uiManagerInstance.showNotification("Niveau Suivant !");
 
         } else {
             console.log("GameEngine: 🏆 JEU TERMINÉ ! VICTOIRE !");
             this.isRunning = false; // On coupe la boucle, le jeu est fini
-            this.uiManager.showVictoryScreen();
+            uiManagerInstance.showVictoryScreen();
         }
     }
 }

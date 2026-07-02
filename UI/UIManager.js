@@ -1,8 +1,9 @@
-// UI/UIManager.js
-
 import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
-export class UIManager {
+import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
+
+class UIManager {
+
     constructor() {
         // --- we get the element of the interface ---
         this.btnWebcam = document.getElementById("webcamButton");
@@ -35,12 +36,14 @@ export class UIManager {
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
+
     }
 
     /**
      * Listen to click on the global naviguation
      */
     initEventListeners() {
+
         // 1. Écouteurs pour la barre de navigation classique
         const tabButtons = document.querySelectorAll('.tab-button');
         tabButtons.forEach(btn => {
@@ -53,8 +56,10 @@ export class UIManager {
             });
         });
 
+
         // 2. Initialisation du bouton de la webcam (découpée en sous-fonctions)
-        this.initWebcamButtonEvent();
+        const webcamButton = new WebcamButton();
+        webcamButton.initWebcamButtonEvent();
     }
 
     /**
@@ -204,103 +209,8 @@ export class UIManager {
         this.currentUnlockIndex++;
     }
 
-    // ==========================================
-    // SÉQUENCE CINÉMATOGRAPHIQUE D'INTRODUCTION
-    // ==========================================
-
-    /**
-     * Point d'entrée principal du clic sur le bouton de démarrage.
-     */
-    initWebcamButtonEvent() {
-        if (!this.btnWebcam) return;
-
-        this.btnWebcam.addEventListener('click', async () => {
-            await this.preparerAutorisationWebcam();
-
-            try {
-                // Le navigateur met le code en pause ici pour demander la caméra
-                await navigator.mediaDevices.getUserMedia({ video: true });
-
-                // Si accepté, on lance la suite des animations
-                const tempsAttente = this.declencherExplosionSas();
-                this.transitionnerVersJeu(tempsAttente);
-
-            } catch (erreur) {
-                this.gererRefusWebcam(erreur);
-            }
-        });
-    }
-
-    /**
-     * Modifie l'état du bouton et laisse le temps au navigateur de s'actualiser.
-     */
-    async preparerAutorisationWebcam() {
-        this.btnWebcam.disabled = true;
-        this.btnWebcam.innerText = "AUTORISATION REQUISE (VOIR POP-UP)...";
-        this.btnWebcam.style.animation = "none";
-        this.btnWebcam.style.backgroundColor = "#f57c00";
-
-        // La fameuse micro-pause pour que le CSS s'applique avant la pop-up
-        await new Promise(resolve => setTimeout(resolve, 50));
-    }
-
-    /**
-     * Fait exploser les éléments de l'accueil un par un.
-     * @returns {number} Le temps total (en ms) que va durer l'explosion.
-     */
-    declencherExplosionSas() {
-        this.btnWebcam.innerText = "ACCÈS VALIDÉ. SURCHARGE DU SAS...";
-        this.btnWebcam.style.backgroundColor = "#ff5252";
-
-        const welcomePanel = this.tabs['welcome'];
-        const elementsAccueil = Array.from(welcomePanel.children);
-
-        elementsAccueil.forEach((element, index) => {
-            element.style.animationDelay = `${index * 0.15}s`;
-            element.classList.add("explode-out");
-        });
-
-        // Calcul du temps total de l'animation
-        return (elementsAccueil.length * 150) + 600;
-    }
-
-    /**
-     * Bascule sur l'onglet LSF et lance l'éblouissement global de l'écran.
-     * @param {number} delai - Le temps à attendre avant de lancer la transition.
-     */
-    transitionnerVersJeu(delai) {
-        setTimeout(() => {
-            // Nettoyage de la navigation
-            const ongletAccueil = document.querySelector('.tab-button[data-target="welcome"]');
-            if (ongletAccueil) ongletAccueil.style.display = "none";
-
-            // Bascule sur le puzzle
-            this.showTab('lsf');
-
-            // Activation visuelle de l'onglet LSF
-            const ongletLsf = document.querySelector('.tab-button[data-target="lsf"]');
-            if (ongletLsf) {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                ongletLsf.classList.add('active');
-            }
-
-            // Allumage aveuglant du système
-            document.body.classList.add("global-boot");
-
-            // Nettoyage final pour ne pas polluer le DOM
-            setTimeout(() => {
-                document.body.classList.remove("global-boot");
-            }, 3500);
-
-        }, delai);
-    }
-
-    /**
-     * Verrouille l'interface si l'utilisateur refuse la caméra.
-     */
-    gererRefusWebcam(erreur) {
-        console.warn("Accès caméra refusé :", erreur);
-        this.btnWebcam.innerText = "ACCÈS REFUSÉ. SYSTÈME VERROUILLÉ.";
-        this.btnWebcam.style.backgroundColor = "#ff5252";
-    }
 }
+
+//Singleton creation : 
+const uiManagerInstance = new UIManager();
+export default uiManagerInstance;
