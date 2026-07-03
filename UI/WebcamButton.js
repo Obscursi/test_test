@@ -50,7 +50,7 @@ export class WebcamButton {
         this.btnWebcam.innerText = "ACCÈS VALIDÉ. SURCHARGE DU SAS...";
         this.btnWebcam.style.backgroundColor = "#ff5252";
 
-        const welcomePanel = uiManagerInstance.tabs['welcome'];
+        const welcomePanel = uiManagerInstance.tabs['welcome'].panel;
         const elementsAccueil = Array.from(welcomePanel.children);
 
         elementsAccueil.forEach((element, index) => {
@@ -59,6 +59,10 @@ export class WebcamButton {
         });
 
         // Calcul du temps total de l'animation
+        if (this.btnWebcam) {
+            this.btnWebcam.style.display = "none";
+        }
+        document.getElementById("panel-welcome").style.display = "none";
         return (elementsAccueil.length * 150) + 600;
     }
 
@@ -71,6 +75,8 @@ export class WebcamButton {
             // Nettoyage de la navigation
             const ongletAccueil = document.querySelector('.tab-button[data-target="welcome"]');
             if (ongletAccueil) ongletAccueil.style.display = "none";
+
+            uiManagerInstance.tabs['lsf'].debloquer();
 
             // Bascule sur le puzzle
             uiManagerInstance.showTab('lsf');

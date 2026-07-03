@@ -1,6 +1,7 @@
 import { InputManager } from '../Inputs/InputManager.js';
 import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
+import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 
 export class GameEngine {
@@ -16,6 +17,8 @@ export class GameEngine {
         this.listOfEnigmas = []; // ordered list of all enigmas we will do 
         this.currentEnigmaIndex = 0; // index of the level we are doing (maybe we will need to change this if we have several enigmas at the same time)
         this.isRunning = false;
+
+        this.isTransitioning = false;
 
         //to lower the fps rendering (not used because it works well for now without it)
         // this.fpsTarget = 15;
@@ -51,6 +54,7 @@ export class GameEngine {
     //here we load all the enigmas in the list IN ORDER
     loadEnigmas() {
         this.listOfEnigmas.push(new LsfEnigma());
+        this.listOfEnigmas.push(new ArucoEnigma());
         console.log(`GameEngine: ${this.listOfEnigmas.length} énigmes chargées.`);
     }
 
@@ -64,8 +68,6 @@ export class GameEngine {
         if (this.listOfEnigmas.length > 0) {
             this.listOfEnigmas[this.currentEnigmaIndex].start();
         }
-        // On initialise le chronomètre juste avant de lancer la boucle
-        this.lastFrameTime = performance.now();
         requestAnimationFrame(() => this.loop());
     }
 
@@ -90,8 +92,11 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
-            uiManagerInstance.unlockNextTabButton();
+            //uiManagerInstance.unlockNextTabButton();
             this.nextEnigma();
+            setTimeout(() => {
+                console.log("Waited 1 seconds!");
+            }, 1000);
         }
 
 

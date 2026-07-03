@@ -2,6 +2,8 @@ import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
 import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
 
+import { Tab } from './Tab.js';
+
 class UIManager {
 
     constructor() {
@@ -11,6 +13,8 @@ class UIManager {
         this.gestureOutput = document.getElementById("gesture_output");
         this.notificationBanner = document.getElementById("notification-banner");
         this.webcamContainer = document.getElementById("webcam-container");
+        this.tabContainer = document.querySelector('.tab-container');
+
 
         // --- configuration of the fancy cinematic ---
         this.cinematicOverlay = document.getElementById("unlock-cinematic");
@@ -19,20 +23,15 @@ class UIManager {
 
         // --- getting all the tabs ---
         this.tabs = {
-            welcome: document.getElementById("panel-welcome"),
-            lsf: document.getElementById("panel-lsf"),
-            aruco: document.getElementById("panel-aruco"),
-            victoire: document.getElementById("panel-victoire")
+            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="welcome"]'), document.getElementById("panel-welcome")),
+            lsf: new Tab('lsf', 'Langue des Signes', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf")),
+            aruco: new Tab('aruco', 'Scanner Aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
+            victoire: new Tab('victoire', 'Système Déverrouillé', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
         };
+        console.log("🕵️ Vérification des panneaux HTML :", this.onglets);
 
-        this.lockedTabButtons = ["btn-tab-aruco"]; //here we will have all the references to the buttons to unlock all the enigmas
-        this.currentUnlockIndex = 0;
+        // PLUS D'ORDRE STRICT NI D'INDEX !
         this.activeTabId = 'welcome';
-
-        // NOUVEAU : Liste ordonnée des cibles ('data-target') pour savoir qui mettre en Vert
-        this.ongletsChronologiques = ["lsf", "aruco"];
-
-        this.tabContainer = document.querySelector('.tab-container');
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
@@ -68,37 +67,33 @@ class UIManager {
     showTab(tabId) {
         this.activeTabId = tabId;
 
-        // 1. On cache tous les panneaux
-        for (const key in this.tabs) {
-            if (this.tabs[key]) {
-                this.tabs[key].style.display = "none";
-            }
-        }
+        this.tabs[tabId].activer;
 
-        // 2. On affiche le panneau demandé
+        // 1. On désactive TOUS les onglets
+        Object.values(this.tabs).forEach(tab => tab.desactiver());
+
+        // 2. On active uniquement celui demandé
         if (this.tabs[tabId]) {
-            this.tabs[tabId].style.display = "block";
-
+            this.tabs[tabId].activer();
         }
 
-        // 3. Gestion de l'affichage de la CAMÉRA GLOBALE
-        const tabsWithWebcam = ['lsf', 'opencv'];
+        // 3. Gestion de la Caméra Globale
+        const tabsWithWebcam = ['lsf', 'aruco'];
         if (this.webcamContainer) {
             this.webcamContainer.style.display = tabsWithWebcam.includes(tabId) ? "block" : "none";
         }
 
-        // 4. CORRECTION : Gestion de la boîte de texte LSF
+        // 4. Gestion de la boîte de texte LSF
         if (this.gestureOutput) {
-            // Elle ne s'affiche QUE si on est sur l'onglet 'lsf'
             this.gestureOutput.style.display = (tabId === 'lsf') ? "block" : "none";
         }
 
-        //If we are on the welcome page we do not show the tabs of enigmas
+        // 5. Masquage de la barre de navigation sur l'accueil
         if (this.tabContainer) {
-            // Invisible sur l'accueil, visible partout ailleurs
             this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
         }
     }
+
     /**
      * Modifies the visuel state of the webcam button depending or wheter or not it is activated
      */
@@ -153,31 +148,68 @@ class UIManager {
         this.showTab('victoire');
         this.gestureOutput.style.backgroundColor = "#FFD700";
         this.gestureOutput.style.color = "#000";
-        this.gestureOutput.innerText = "SYSTÈME DÉVERROUILLÉ !";
+        this.gestureOutput.innerText = "Tab Victoire à rajouter !";
     }
 
     /**
      * Makes a fancy animation adn then show the button to access the tab of the enigma unlocked
      */
-    unlockNextTabButton() {
-        if (this.currentUnlockIndex >= this.lockedTabButtons.length) return;
+    // ==========================================
+    // GESTION DE LA PROGRESSION (CHEMINS PARALLÈLES)
+    // ==========================================
 
-        const idOngletTermine = this.ongletsChronologiques[this.currentUnlockIndex];
-        if (idOngletTermine) {
-            // On cherche le bouton qui possède ce data-target précis
-            const boutonTermine = document.querySelector(`.tab-button[data-target="${idOngletTermine}"]`);
-            if (boutonTermine) {
-                boutonTermine.classList.add("completed");
-            }
+    /**
+     * Appelé par ton GameEngine quand une énigme spécifique est réussie.
+     * @param {string} idEnigme - L'ID de l'énigme (ex: 'lsf' ou 'aruco')
+     */
+    completeEnigma(idEnigme) {
+        const onglet = this.tabs[idEnigme];
+
+        // Si l'onglet n'existe pas ou est déjà résolu, on ignore
+        if (!onglet || onglet.statut === 'resolu') return;
+
+        // 1. On passe l'onglet en Vert
+        onglet.makeTabCompleted();
+
+        // Petit effet sonore pour confirmer la réussite d'une étape
+        playTabUnlockingSound();
+
+        // 2. On vérifie si cela débloque de nouvelles choses
+        this.globalProgression();
+    }
+
+    /**
+     * Le "Cerveau" : vérifie l'état de tous les onglets pour voir si on avance.
+     */
+    globalProgression() {
+        const lsfFini = this.tabs['lsf'].statut === 'resolu';
+        const arucoFini = this.tabs['aruco'].statut === 'resolu';
+        const victoireVerrouillee = this.tabs['victoire'].statut === 'verrouille';
+
+        // RÈGLE PARALLÈLE : Si les deux chemins sont terminés, on débloque la Victoire
+        if (lsfFini && arucoFini && victoireVerrouillee) {
+            this.launchUnlockingAnimation('victoire');
         }
 
-        const idBouton = this.lockedTabButtons[this.currentUnlockIndex];
-        const bouton = document.getElementById(idBouton);
+        if (lsfFini) { this.launchUnlockingAnimation('aruco'); }
 
-        if (bouton && this.cinematicOverlay) {
-            this.cinematicText.innerText = bouton.innerText;
+        // Tu pourras ajouter d'autres règles ici plus tard si tu ajoutes des énigmes !
+        // Exemple : if (lsfFini && !arucoFini) { this.launchUnlockingAnimation('aruco'); }
+    }
 
-            // Déclenchement de la piste audio isolée
+    /**
+     * Gère l'animation visuelle quand un NOUVEL onglet apparaît.
+     * @param {string} idNouvelOnglet - L'ID de l'onglet à débloquer
+     */
+    launchUnlockingAnimation(idNouvelOnglet) {
+        const nouvelOnglet = this.tabs[idNouvelOnglet];
+        if (!nouvelOnglet) return;
+
+        // On le passe en Orange (Disponible)
+        nouvelOnglet.debloquer();
+        console.log("débloque d'onglet");
+        if (this.cinematicOverlay) {
+            this.cinematicText.innerText = nouvelOnglet.name;
             playTabUnlockingSound();
 
             this.cinematicOverlay.style.display = "flex";
@@ -193,22 +225,15 @@ class UIManager {
                 setTimeout(() => {
                     this.cinematicOverlay.style.display = "none";
                     this.cinematicContent.classList.remove("cinematic-animate");
+
+                    if (nouvelOnglet.bouton) {
+                        nouvelOnglet.bouton.classList.add("unlock-animation");
+                        setTimeout(() => nouvelOnglet.bouton.classList.remove("unlock-animation"), 1500);
+                    }
                 }, 300);
-
-                bouton.style.display = "inline-block"; //we show the new enigma tab
-                void bouton.offsetWidth;
-                bouton.classList.add("unlock-animation");
-
-                setTimeout(() => {
-                    bouton.classList.remove("unlock-animation");
-                }, 1500);
-
             }, 5000);
         }
-
-        this.currentUnlockIndex++;
     }
-
 }
 
 //Singleton creation : 

@@ -1,5 +1,7 @@
 import { Enigma } from './Enigma.js';
 
+import uiManagerInstance from '../UI/UIManager.js'
+
 export class LsfEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
@@ -31,6 +33,7 @@ export class LsfEnigma extends Enigma {
 
     onSuccess() {
         console.log("🔓 Le cadenas LSF est ouvert !");
+        uiManagerInstance.completeEnigma('lsf');
         //document.getElementById().style.display = "block";
 
     }
