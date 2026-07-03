@@ -14,8 +14,8 @@ export class Tab {
         this.panel = panneauDOM;
 
         // Le statut actuel de l'onglet dans le jeu
-        // États possibles : 'verrouille', 'disponible', 'actif', 'resolu'
-        this.statut = 'verrouille';
+        // États possibles : 'locked', 'available', 'active', 'resolved'
+        this.status = 'locked';
 
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet
         // Pratique pour dire "Si on clique sur OpenCV, allume la caméra"
@@ -25,10 +25,10 @@ export class Tab {
     /**
      * Étape 1 : Le joueur débloque l'énigme (L'onglet apparaît en orange)
      */
-    debloquer() {
-        if (this.statut !== 'verrouille') return;
+    unlockTab() {
+        if (this.status !== 'locked') return;
 
-        this.statut = 'disponible';
+        this.status = 'available';
         this.button.style.display = "block"; // On le rend visible dans la barre
         this.button.classList.remove("completed", "active");
 
@@ -39,13 +39,13 @@ export class Tab {
     /**
      * Étape 2 : Le joueur clique sur l'onglet pour le lire (L'onglet devient bleu)
      */
-    activer() {
-        if (this.statut === 'verrouille') return; // Sécurité
+    activateTab() {
+        if (this.status === 'locked') return; // Sécurité
 
-        // Si l'onglet était "disponible", il passe "actif". S'il était "resolu", il le reste.
-        const statutPrecedent = this.statut;
-        if (this.statut !== 'resolu') {
-            this.statut = 'actif';
+        // Si l'onglet était "available", il passe "active". S'il était "resolved", il le reste.
+        const precedentStatus = this.status;
+        if (this.status !== 'resolved') {
+            this.status = 'active';
         }
 
         // Gestion visuelle du bouton
@@ -55,7 +55,7 @@ export class Tab {
         this.panel.classList.add("active");
 
         // Si une action spéciale a été configurée pour cet onglet, on la lance
-        if (this.onActivateAction && statutPrecedent !== 'actif') {
+        if (this.onActivateAction && precedentStatus !== 'active') {
             this.onActivateAction();
         }
     }
@@ -63,12 +63,12 @@ export class Tab {
     /**
      * Désélectionne l'onglet quand le joueur clique ailleurs
      */
-    desactiver() {
-        if (this.statut === 'verrouille') return;
+    deactivateTab() {
+        if (this.status === 'locked') return;
 
-        // S'il n'est pas terminé, il redevient juste "disponible" (orange)
-        if (this.statut !== 'resolu') {
-            this.statut = 'disponible';
+        // S'il n'est pas terminé, il redevient juste "available" (orange)
+        if (this.status !== 'resolved') {
+            this.status = 'available';
         }
         this.button.classList.remove("active");
         this.panel.classList.remove("active");
@@ -78,14 +78,14 @@ export class Tab {
      * Étape 3 : Le joueur a réussi l'énigme (L'onglet devient vert)
      */
     makeTabCompleted() {
-        this.statut = 'resolu';
+        this.status = 'resolved';
         this.button.classList.add("completed");
     }
 
     /**
-     * Permet d'attacher une fonction spécifique à l'ouverture de cet onglet
+     * permits to attach wichever function we like here when the tab opens
      */
-    definirActionOuverture(fonctionCallback) {
+    defineOpeningAction(fonctionCallback) {
         this.onActivateAction = fonctionCallback;
     }
 }

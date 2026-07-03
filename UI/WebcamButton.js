@@ -76,7 +76,7 @@ export class WebcamButton {
             const ongletAccueil = document.querySelector('.tab-button[data-target="welcome"]');
             if (ongletAccueil) ongletAccueil.style.display = "none";
 
-            uiManagerInstance.tabs['lsf'].debloquer();
+            uiManagerInstance.tabs['lsf'].unlockTab();
 
             // Bascule sur le puzzle
             uiManagerInstance.showTab('lsf');

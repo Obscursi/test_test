@@ -67,14 +67,14 @@ class UIManager {
     showTab(tabId) {
         this.activeTabId = tabId;
 
-        this.tabs[tabId].activer;
+        this.tabs[tabId].activateTab;
 
         // 1. On désactive TOUS les onglets
-        Object.values(this.tabs).forEach(tab => tab.desactiver());
+        Object.values(this.tabs).forEach(tab => tab.deactivateTab());
 
         // 2. On active uniquement celui demandé
         if (this.tabs[tabId]) {
-            this.tabs[tabId].activer();
+            this.tabs[tabId].activateTab();
         }
 
         // 3. Gestion de la Caméra Globale
@@ -166,7 +166,7 @@ class UIManager {
         const onglet = this.tabs[idEnigme];
 
         // Si l'onglet n'existe pas ou est déjà résolu, on ignore
-        if (!onglet || onglet.statut === 'resolu') return;
+        if (!onglet || onglet.status === 'resolved') return;
 
         // 1. On passe l'onglet en Vert
         onglet.makeTabCompleted();
@@ -182,9 +182,9 @@ class UIManager {
      * Le "Cerveau" : vérifie l'état de tous les onglets pour voir si on avance.
      */
     globalProgression() {
-        const lsfFini = this.tabs['lsf'].statut === 'resolu';
-        const arucoFini = this.tabs['aruco'].statut === 'resolu';
-        const victoireVerrouillee = this.tabs['victoire'].statut === 'verrouille';
+        const lsfFini = this.tabs['lsf'].status === 'resolved';
+        const arucoFini = this.tabs['aruco'].status === 'resolved';
+        const victoireVerrouillee = this.tabs['victoire'].status === 'locked';
 
         // RÈGLE PARALLÈLE : Si les deux chemins sont terminés, on débloque la Victoire
         if (lsfFini && arucoFini && victoireVerrouillee) {
@@ -199,17 +199,17 @@ class UIManager {
 
     /**
      * Gère l'animation visuelle quand un NOUVEL onglet apparaît.
-     * @param {string} idNouvelOnglet - L'ID de l'onglet à débloquer
+     * @param {string} idOfNewTab - L'ID de l'onglet à débloquer
      */
-    launchUnlockingAnimation(idNouvelOnglet) {
-        const nouvelOnglet = this.tabs[idNouvelOnglet];
-        if (!nouvelOnglet) return;
+    launchUnlockingAnimation(idOfNewTab) {
+        const newTab = this.tabs[idOfNewTab];
+        if (!newTab) return;
 
-        // On le passe en Orange (Disponible)
-        nouvelOnglet.debloquer();
+        // On le passe en Orange (available)
+        newTab.unlockTab();
         console.log("débloque d'onglet");
         if (this.cinematicOverlay) {
-            this.cinematicText.innerText = nouvelOnglet.name;
+            this.cinematicText.innerText = newTab.name;
             playTabUnlockingSound();
 
             this.cinematicOverlay.style.display = "flex";
@@ -226,9 +226,9 @@ class UIManager {
                     this.cinematicOverlay.style.display = "none";
                     this.cinematicContent.classList.remove("cinematic-animate");
 
-                    if (nouvelOnglet.bouton) {
-                        nouvelOnglet.bouton.classList.add("unlock-animation");
-                        setTimeout(() => nouvelOnglet.bouton.classList.remove("unlock-animation"), 1500);
+                    if (newTab.bouton) {
+                        newTab.bouton.classList.add("unlock-animation");
+                        setTimeout(() => newTab.bouton.classList.remove("unlock-animation"), 1500);
                     }
                 }, 300);
             }, 5000);
