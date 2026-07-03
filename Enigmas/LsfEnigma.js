@@ -1,6 +1,6 @@
 import { Enigma } from './Enigma.js';
 
-import uiManagerInstance from '../UI/UIManager.js'
+import gameEngineInstance from '../Core/GameEngine.js'
 
 export class LsfEnigma extends Enigma {
     constructor() {
@@ -34,7 +34,7 @@ export class LsfEnigma extends Enigma {
 
     onSuccess() {
         console.log("🔓 Le cadenas LSF est ouvert !");
-        uiManagerInstance.completeEnigma('lsf');
+        gameEngineInstance.completeEnigma('lsf');
         //document.getElementById().style.display = "block";
 
     }

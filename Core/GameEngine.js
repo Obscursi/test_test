@@ -2,6 +2,7 @@ import { InputManager } from '../Inputs/InputManager.js';
 import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
+import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 
 class GameEngine {
@@ -113,6 +114,45 @@ class GameEngine {
             this.isRunning = false; // On coupe la boucle, le jeu est fini
             uiManagerInstance.showVictoryScreen();
         }
+    }
+
+    /**
+    * Appelé par ton GameEngine quand une énigme spécifique est réussie.
+    * @param {string} idEnigme - L'ID de l'énigme (ex: 'lsf' ou 'aruco')
+    */
+    completeEnigma(idEnigme) {
+        const tabCompleted = uiManagerInstance.tabs[idEnigme];
+
+        // Si l'onglet n'existe pas ou est déjà résolu, on ignore
+        if (!tabCompleted || tabCompleted.status === 'resolved') return;
+
+        // 1. On passe l'onglet en Vert
+        tabCompleted.makeTabCompleted();
+
+        // Petit effet sonore pour confirmer la réussite d'une étape
+        playTabUnlockingSound();
+
+        // 2. On vérifie si cela débloque de nouvelles choses
+        this.globalProgression();
+    }
+
+    /**
+        * Le "Cerveau" : vérifie l'état de tous les onglets pour voir si on avance.
+        */
+    globalProgression() {
+        const lsfFinished = uiManagerInstance.tabs['lsf'].status === 'resolved';
+        const arucoFinished = uiManagerInstance.tabs['aruco'].status === 'resolved';
+        const victoryLocked = uiManagerInstance.tabs['victoire'].status === 'locked';
+
+        // RÈGLE PARALLÈLE : Si les deux chemins sont terminés, on débloque la Victoire
+        if (lsfFinished && arucoFinished && victoryLocked) {
+            uiManagerInstance.launchUnlockingAnimation('victoire');
+        }
+
+        if (lsfFinished && !arucoFinished) { uiManagerInstance.launchUnlockingAnimation('aruco'); console.log("aruco unlock"); }
+
+        // Tu pourras ajouter d'autres règles ici plus tard si tu ajoutes des énigmes !
+        // Exemple : if (lsfFini && !arucoFini) { this.launchUnlockingAnimation('aruco'); }
     }
 
 }

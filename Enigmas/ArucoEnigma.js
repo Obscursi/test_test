@@ -1,5 +1,7 @@
 import { Enigma } from './Enigma.js';
 
+import gameEngineInstance from '../Core/GameEngine.js'
+
 export class ArucoEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
@@ -12,6 +14,6 @@ export class ArucoEnigma extends Enigma {
 
     onSuccess() {
         console.log("🔓 Le cadenas Aruco est ouvert !");
-        uiManagerInstance.completeEnigma('aruco');
+        gameEngineInstance.completeEnigma('aruco');
     }
 }
