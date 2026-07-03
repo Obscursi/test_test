@@ -24,11 +24,10 @@ class UIManager {
         // --- getting all the tabs ---
         this.tabs = {
             welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="welcome"]'), document.getElementById("panel-welcome")),
-            lsf: new Tab('lsf', 'Langue des Signes', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf")),
-            aruco: new Tab('aruco', 'Scanner Aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
-            victoire: new Tab('victoire', 'Système Déverrouillé', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
+            lsf: new Tab('lsf', 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf")),
+            aruco: new Tab('aruco', 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
+            victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
         };
-        console.log("🕵️ Vérification des panneaux HTML :", this.onglets);
 
         this.activeTabId = 'welcome';
 
