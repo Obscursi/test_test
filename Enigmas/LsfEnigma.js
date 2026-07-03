@@ -27,6 +27,7 @@ export class LsfEnigma extends Enigma {
         const toutesPresentes = this.lettresRequises.every(lettre => gestesActuels.includes(lettre));
 
         if (toutesPresentes) {
+            //this.estResolu = true;
             this.unlock();
         }
     }

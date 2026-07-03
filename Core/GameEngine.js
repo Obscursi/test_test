@@ -4,7 +4,7 @@ import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 
-export class GameEngine {
+class GameEngine {
     constructor() {
         // 1. Instanciation des Managers
         this.inputManager = new InputManager();
@@ -72,8 +72,7 @@ export class GameEngine {
     }
 
     // The main loop, heartbeat of the program
-    // THIS IS NOT ACTUALLY USED : (this time stamp is used to reduce the frequency of rendering, because this loop is called by requestAnimationFrame, which works at the frequency of usually 60Hz
-    //sometimes more depending on the screen).
+    // in the future may need to limit the refreshrate of this loop. Actually it is 60Hz, but it depends on the screen you are using
     loop() {
         if (!this.isRunning) return;
 
@@ -92,11 +91,7 @@ export class GameEngine {
             currentEnigma.checkCondition(playerState);
         }
         else if (currentEnigma && currentEnigma.estResolu) {
-            //uiManagerInstance.unlockNextTabButton();
             this.nextEnigma();
-            setTimeout(() => {
-                console.log("Waited 1 seconds!");
-            }, 1000);
         }
 
 
@@ -119,4 +114,8 @@ export class GameEngine {
             uiManagerInstance.showVictoryScreen();
         }
     }
+
 }
+
+const gameEngineInstance = new GameEngine();
+export default gameEngineInstance;

@@ -189,7 +189,7 @@ class UIManager {
             this.launchUnlockingAnimation('victoire');
         }
 
-        if (lsfFinished && !arucoFinished) { this.launchUnlockingAnimation('aruco'); }
+        if (lsfFinished && !arucoFinished) { this.launchUnlockingAnimation('aruco'); console.log("aruco unlock"); }
 
         // Tu pourras ajouter d'autres règles ici plus tard si tu ajoutes des énigmes !
         // Exemple : if (lsfFini && !arucoFini) { this.launchUnlockingAnimation('aruco'); }
