@@ -30,7 +30,6 @@ class UIManager {
         };
         console.log("🕵️ Vérification des panneaux HTML :", this.onglets);
 
-        // PLUS D'ORDRE STRICT NI D'INDEX !
         this.activeTabId = 'welcome';
 
         this.initEventListeners();
@@ -182,16 +181,16 @@ class UIManager {
      * Le "Cerveau" : vérifie l'état de tous les onglets pour voir si on avance.
      */
     globalProgression() {
-        const lsfFini = this.tabs['lsf'].status === 'resolved';
-        const arucoFini = this.tabs['aruco'].status === 'resolved';
-        const victoireVerrouillee = this.tabs['victoire'].status === 'locked';
+        const lsfFinished = this.tabs['lsf'].status === 'resolved';
+        const arucoFinished = this.tabs['aruco'].status === 'resolved';
+        const victoryLocked = this.tabs['victoire'].status === 'locked';
 
         // RÈGLE PARALLÈLE : Si les deux chemins sont terminés, on débloque la Victoire
-        if (lsfFini && arucoFini && victoireVerrouillee) {
+        if (lsfFinished && arucoFinished && victoryLocked) {
             this.launchUnlockingAnimation('victoire');
         }
 
-        if (lsfFini) { this.launchUnlockingAnimation('aruco'); }
+        if (lsfFinished && !arucoFinished) { this.launchUnlockingAnimation('aruco'); }
 
         // Tu pourras ajouter d'autres règles ici plus tard si tu ajoutes des énigmes !
         // Exemple : if (lsfFini && !arucoFini) { this.launchUnlockingAnimation('aruco'); }

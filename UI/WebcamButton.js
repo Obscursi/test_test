@@ -13,18 +13,18 @@ export class WebcamButton {
         if (!this.btnWebcam) return;
 
         this.btnWebcam.addEventListener('click', async () => {
-            await this.preparerAutorisationWebcam();
+            await this.prepareWebcamAutorisation();
 
             try {
                 // Le navigateur met le code en pause ici pour demander la caméra
                 await navigator.mediaDevices.getUserMedia({ video: true });
 
                 // Si accepté, on lance la suite des animations
-                const tempsAttente = this.declencherExplosionSas();
-                this.transitionnerVersJeu(tempsAttente);
+                const waitingTime = this.launchAnimationOutOfWelcomePanel();
+                this.transitionToBeginningTab(waitingTime);
 
             } catch (erreur) {
-                this.gererRefusWebcam(erreur);
+                this.buttonChangeIfCameraAccessRefused(erreur);
             }
         });
     }
@@ -32,7 +32,7 @@ export class WebcamButton {
     /**
      * Modifie l'état du bouton et laisse le temps au navigateur de s'actualiser.
      */
-    async preparerAutorisationWebcam() {
+    async prepareWebcamAutorisation() {
         this.btnWebcam.disabled = true;
         this.btnWebcam.innerText = "AUTORISATION REQUISE (VOIR POP-UP)...";
         this.btnWebcam.style.animation = "none";
@@ -46,35 +46,32 @@ export class WebcamButton {
      * Fait exploser les éléments de l'accueil un par un.
      * @returns {number} Le temps total (en ms) que va durer l'explosion.
      */
-    declencherExplosionSas() {
+    launchAnimationOutOfWelcomePanel() {
         this.btnWebcam.innerText = "ACCÈS VALIDÉ. SURCHARGE DU SAS...";
         this.btnWebcam.style.backgroundColor = "#ff5252";
 
         const welcomePanel = uiManagerInstance.tabs['welcome'].panel;
-        const elementsAccueil = Array.from(welcomePanel.children);
+        const welcomePanelElements = Array.from(welcomePanel.children);
 
-        elementsAccueil.forEach((element, index) => {
+        welcomePanelElements.forEach((element, index) => {
             element.style.animationDelay = `${index * 0.15}s`;
             element.classList.add("explode-out");
         });
 
-        // Calcul du temps total de l'animation
-        if (this.btnWebcam) {
-            this.btnWebcam.style.display = "none";
-        }
+        //now the elements are invisible ins css but we need them to really disapear => display to 'none'
         document.getElementById("panel-welcome").style.display = "none";
-        return (elementsAccueil.length * 150) + 600;
+        return (welcomePanelElements.length * 150) + 600;
     }
 
     /**
      * Bascule sur l'onglet LSF et lance l'éblouissement global de l'écran.
-     * @param {number} delai - Le temps à attendre avant de lancer la transition.
+     * @param {number} delay - Le temps à attendre avant de lancer la transition.
      */
-    transitionnerVersJeu(delai) {
+    transitionToBeginningTab(delay) {
         setTimeout(() => {
             // Nettoyage de la navigation
-            const ongletAccueil = document.querySelector('.tab-button[data-target="welcome"]');
-            if (ongletAccueil) ongletAccueil.style.display = "none";
+            const welcomeTab = document.querySelector('.tab-button[data-target="welcome"]');
+            if (welcomeTab) welcomeTab.style.display = "none";
 
             uiManagerInstance.tabs['lsf'].unlockTab();
 
@@ -82,10 +79,10 @@ export class WebcamButton {
             uiManagerInstance.showTab('lsf');
 
             // Activation visuelle de l'onglet LSF
-            const ongletLsf = document.querySelector('.tab-button[data-target="lsf"]');
-            if (ongletLsf) {
+            const lsfTab = document.querySelector('.tab-button[data-target="lsf"]');
+            if (lsfTab) {
                 document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                ongletLsf.classList.add('active');
+                lsfTab.classList.add('active');
             }
 
             // Allumage aveuglant du système
@@ -96,13 +93,13 @@ export class WebcamButton {
                 document.body.classList.remove("global-boot");
             }, 3500);
 
-        }, delai);
+        }, delay);
     }
 
     /**
      * Verrouille l'interface si l'utilisateur refuse la caméra.
      */
-    gererRefusWebcam(erreur) {
+    buttonChangeIfCameraAccessRefused(erreur) {
         console.warn("Accès caméra refusé :", erreur);
         this.btnWebcam.innerText = "ACCÈS REFUSÉ. SYSTÈME VERROUILLÉ.";
         this.btnWebcam.style.backgroundColor = "#ff5252";
