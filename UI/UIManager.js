@@ -172,7 +172,6 @@ class UIManager {
 
         // On le passe en Orange (available)
         newTab.unlockTab();
-        console.log("débloque d'onglet");
         if (this.cinematicOverlay) {
             this.cinematicText.innerText = newTab.name;
             playTabUnlockingSound();

@@ -6,15 +6,19 @@ export class Tab {
      * @param {HTMLElement} panneauDOM - L'élément HTML du contenu de l'énigme
      */
     constructor(idCible, nom, boutonDOM, panneauDOM) {
-        this.id = idCible;
+        this.id = idCible; //this id is the same for the Enigma and the Tab displaying the enigma
         this.name = nom;
 
         // Les liens vers le HTML réel
         this.button = boutonDOM;
         this.panel = panneauDOM;
 
-        // Le statut actuel de l'onglet dans le jeu
-        // États possibles : 'locked', 'available', 'active', 'resolved'
+        // Actual status of this tab in the game.
+        //locked = the player cannot see the tab
+        //available = the player can see it and it is in orange
+        //resolved = the player can see it and it is in green
+        //active = the actual tab the player is looking, in blue (can be resolved or available before and after being active)
+        // States possible : 'locked', 'available', 'active', 'resolved'
         this.status = 'locked';
 
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet

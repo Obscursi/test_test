@@ -1,11 +1,9 @@
 import { Enigma } from './Enigma.js';
 
-import gameEngineInstance from '../Core/GameEngine.js'
-
 export class LsfEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
-        super("enigme_lsf", "Le mot de passe signé");
+        super('lsf', "Le mot de passe signé"); //this id ('lsf') is the same in UIManager, it is attached to the tab AND the Enigma 
 
         // Les 4 lettres qui doivent être vues en même temps
         //this.lettresRequises = ["P", "I", "E", "D"];
@@ -14,7 +12,7 @@ export class LsfEnigma extends Enigma {
 
     // Le GameEngine appelle cette fonction 15 fois par seconde
     checkCondition(playerState) {
-        if (this.estResolu) return;
+        if (this.isResolved) return;
 
         const gestesActuels = playerState.gestures; // Ex: ["P", "Thumb_Up", "I"]
 
@@ -27,15 +25,7 @@ export class LsfEnigma extends Enigma {
         const toutesPresentes = this.lettresRequises.every(lettre => gestesActuels.includes(lettre));
 
         if (toutesPresentes) {
-            //this.estResolu = true;
-            this.unlock();
+            this.onSuccess();
         }
-    }
-
-    onSuccess() {
-        console.log("🔓 Le cadenas LSF est ouvert !");
-        gameEngineInstance.completeEnigma('lsf');
-        //document.getElementById().style.display = "block";
-
     }
 }

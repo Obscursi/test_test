@@ -1,19 +1,13 @@
 import { Enigma } from './Enigma.js';
 
-import gameEngineInstance from '../Core/GameEngine.js'
-
 export class ArucoEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
-        super("enigme_vrai-faux", "Aruco");
+        super('aruco', "Aruco vrai/faux");
 
     }
     checkCondition(playerState) {
-        if (this.estResolu) return;
+        if (this.isResolved) return;
     }
 
-    onSuccess() {
-        console.log("🔓 Le cadenas Aruco est ouvert !");
-        gameEngineInstance.completeEnigma('aruco');
-    }
 }

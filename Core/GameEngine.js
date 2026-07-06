@@ -88,11 +88,11 @@ class GameEngine {
         // --- ÉTAPE 2 : UPDATE (Logique) ---
         const currentEnigma = this.listOfEnigmas[this.currentEnigmaIndex];
 
-        if (currentEnigma && !currentEnigma.estResolu) {
+        if (currentEnigma && !currentEnigma.isResolved) {
             currentEnigma.checkCondition(playerState);
         }
-        else if (currentEnigma && currentEnigma.estResolu) {
-            this.nextEnigma();
+        else if (currentEnigma && currentEnigma.isResolved) {
+            //this.nextEnigma();
         }
 
 
@@ -100,39 +100,25 @@ class GameEngine {
         uiManagerInstance.updateGestureDebugText(playerState.gestures);
     }
 
-    // Passage au niveau suivant
-    nextEnigma() {
-        this.currentEnigmaIndex++;
-        if (this.currentEnigmaIndex < this.listOfEnigmas.length) {
-            console.log(`GameEngine: 🔓 Niveau complété. Passage à l'énigme ${this.currentEnigmaIndex + 1}`);
-            this.listOfEnigmas[this.currentEnigmaIndex].start();
-
-            uiManagerInstance.showNotification("Niveau Suivant !");
-
-        } else {
-            console.log("GameEngine: 🏆 JEU TERMINÉ ! VICTOIRE !");
-            this.isRunning = false; // On coupe la boucle, le jeu est fini
-            uiManagerInstance.showVictoryScreen();
-        }
-    }
 
     /**
-    * Change the status of an enigma to completed
-    * @param {string} idEnigme - L'ID de l'énigme (ex: 'lsf' ou 'aruco')
+    * Change the status of an enigma to 'resolved'
+    * @param {string} idEnigme
     */
     completeEnigma(idEnigme) {
         const tabCompleted = uiManagerInstance.tabs[idEnigme];
 
-        // Si l'onglet n'existe pas ou est déjà résolu, on  ignore
+        // Security
         if (!tabCompleted || tabCompleted.status === 'resolved') return;
 
-        // 1. On passe l'onglet en Vert
+        //if (!)
+
+        // We change the status to resolved for the tab (and completed for the button of the tab, which changes its color to green)
         tabCompleted.makeTabCompleted();
 
-        // Petit effet sonore pour confirmer la réussite d'une étape
         playTabUnlockingSound();
 
-        // 2. On vérifie si cela débloque de nouvelles choses
+        // we check if we need to unlock tab after this enigma completion
         this.globalProgression();
     }
 
@@ -144,15 +130,12 @@ class GameEngine {
         const arucoFinished = uiManagerInstance.tabs['aruco'].status === 'resolved';
         const victoryLocked = uiManagerInstance.tabs['victoire'].status === 'locked';
 
-        // RÈGLE PARALLÈLE : Si les deux chemins sont terminés, on débloque la Victoire
         if (lsfFinished && arucoFinished && victoryLocked) {
             uiManagerInstance.launchUnlockingAnimation('victoire');
         }
 
-        if (lsfFinished && !arucoFinished) { uiManagerInstance.launchUnlockingAnimation('aruco'); console.log("aruco unlock"); }
+        if (lsfFinished && !arucoFinished) { uiManagerInstance.launchUnlockingAnimation('aruco') }
 
-        // Tu pourras ajouter d'autres règles ici plus tard si tu ajoutes des énigmes !
-        // Exemple : if (lsfFini && !arucoFini) { this.launchUnlockingAnimation('aruco'); }
     }
 
 }
