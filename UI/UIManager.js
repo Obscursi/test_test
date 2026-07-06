@@ -154,18 +154,6 @@ class UIManager {
     /**
      * Makes a fancy animation adn then show the button to access the tab of the enigma unlocked
      */
-    // ==========================================
-    // GESTION DE LA PROGRESSION (CHEMINS PARALLÈLES)
-    // ==========================================
-
-
-
-
-
-    /**
-     * Gère l'animation visuelle quand un NOUVEL onglet apparaît.
-     * @param {string} idOfNewTab - L'ID de l'onglet à débloquer
-     */
     launchUnlockingAnimation(idOfNewTab) {
         const newTab = this.tabs[idOfNewTab];
         if (!newTab) return;
