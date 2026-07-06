@@ -14,11 +14,12 @@ class GameEngine {
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
+        this.catalogueEnigmes = {};
 
-        this.listOfEnigmas = []; // ordered list of all enigmas we will do 
-        this.currentEnigmaIndex = 0; // index of the level we are doing (maybe we will need to change this if we have several enigmas at the same time)
+        // 2. LE POOL ACTIF (Uniquement les énigmes que le joueur est en train de résoudre)
+        this.activeEnigmas = [];
+
         this.isRunning = false;
-
         this.isTransitioning = false;
 
         //to lower the fps rendering (not used because it works well for now without it)
@@ -54,9 +55,14 @@ class GameEngine {
 
     //here we load all the enigmas in the list IN ORDER
     loadEnigmas() {
-        this.listOfEnigmas.push(new LsfEnigma());
-        this.listOfEnigmas.push(new ArucoEnigma());
-        console.log(`GameEngine: ${this.listOfEnigmas.length} énigmes chargées.`);
+        const lsf = new LsfEnigma();
+        const aruco = new ArucoEnigma();
+
+        this.catalogueEnigmes[lsf.id] = lsf;
+        this.catalogueEnigmes[aruco.id] = aruco;
+
+        console.log(`GameEngine: ${Object.keys(this.catalogueEnigmes).length} énigmes chargées dans le catalogue.`);
+
     }
 
     // Le bouton "Play"
@@ -65,11 +71,23 @@ class GameEngine {
         this.isRunning = true;
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
-        // Si on a des énigmes, on lance la première
-        if (this.listOfEnigmas.length > 0) {
-            this.listOfEnigmas[this.currentEnigmaIndex].start();
-        }
+        //here we put the starter enigmas
+        this.activateEnigma('lsf');
+        //this.activateEnigma('aruco);
+
         requestAnimationFrame(() => this.loop());
+    }
+
+    /**
+     * Ajoute une énigme au cycle de mise à jour (Loop).
+     */
+    activateEnigma(idEnigma) {
+        const enigma = this.catalogueEnigmes[idEnigma];
+        if (enigma && !this.activeEnigmas.includes(enigma)) {
+            enigma.start(); // S'il y a des choses à initialiser dans la classe
+            this.activeEnigmas.push(enigma);
+            console.log(`▶️ Énigme [${idEnigma}] ajoutée au pool actif.`);
+        }
     }
 
     // The main loop, heartbeat of the program
@@ -85,14 +103,18 @@ class GameEngine {
         this.inputManager.update();
         const playerState = this.inputManager.getState();
 
-        // --- ÉTAPE 2 : UPDATE (Logique) ---
-        const currentEnigma = this.listOfEnigmas[this.currentEnigmaIndex];
-
-        if (currentEnigma && !currentEnigma.isResolved) {
-            currentEnigma.checkCondition(playerState);
-        }
-        else if (currentEnigma && currentEnigma.isResolved) {
-            //this.nextEnigma();
+        // --- ÉTAPE 2 : UPDATE (La magie de l'architecture) ---
+        if (!this.isTransitioning) {
+            // On vérifie UNIQUEMENT les énigmes actives.
+            // S'il y en a 2 en parallèle, les 2 seront vérifiées en même temps !
+            this.activeEnigmas.forEach(currentEnigma => {
+                if (!currentEnigma.isResolved) {
+                    currentEnigma.checkCondition(playerState);
+                } else {
+                    // Si elle est résolue pendant ce tour de boucle, on valide
+                    this.completeEnigma(currentEnigma.id);
+                }
+            });
         }
 
 
@@ -103,39 +125,50 @@ class GameEngine {
 
     /**
     * Change the status of an enigma to 'resolved'
-    * @param {string} idEnigme
+    * @param {string} idEnigma
     */
-    completeEnigma(idEnigme) {
-        const tabCompleted = uiManagerInstance.tabs[idEnigme];
+    completeEnigma(idEnigma, enigmasToUnlock = []) {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
+
+        const tabCompleted = uiManagerInstance.tabs[idEnigma];
 
         // Security
-        if (!tabCompleted || tabCompleted.status === 'resolved') return;
-
-        //if (!)
+        if (!tabCompleted || tabCompleted.status === 'resolved') {
+            console.log("DEBUG GameEngine, completeEnigma : tabCompleted : ${tabCompleted} et tabCompleted.status : ${tabCompleted.status}");
+            this.isTransitioning = false;
+            return;
+        }
 
         // We change the status to resolved for the tab (and completed for the button of the tab, which changes its color to green)
         tabCompleted.makeTabCompleted();
 
         playTabUnlockingSound();
 
-        // we check if we need to unlock tab after this enigma completion
-        this.globalProgression();
+        this.activeEnigmas = this.activeEnigmas.filter(enigme => enigme.id !== idEnigma);
+
+        enigmasToUnlock.forEach(nextId => {
+            uiManagerInstance.launchUnlockingAnimation(nextId);
+            this.activateEnigma(nextId);
+        });
+
+
+        this.checkFinalVictory();
+
+        this.isTransitioning = false;
     }
 
     /**
-        * Check where we are in the game and eventually unlock tabs if we advanced
-        */
-    globalProgression() {
-        const lsfFinished = uiManagerInstance.tabs['lsf'].status === 'resolved';
-        const arucoFinished = uiManagerInstance.tabs['aruco'].status === 'resolved';
-        const victoryLocked = uiManagerInstance.tabs['victoire'].status === 'locked';
+     * Le moteur ne vérifie plus que LA condition de victoire du jeu.
+     */
+    checkFinalVictory() {
+        const arucoFini = uiManagerInstance.tabs['aruco'].statut === 'resolu';
+        // const chemin2Fini = uiManagerInstance.onglets['enigmeChemin2'].statut === 'resolu';
 
-        if (lsfFinished && arucoFinished && victoryLocked) {
+        if (arucoFini /* && chemin2Fini */) {
             uiManagerInstance.launchUnlockingAnimation('victoire');
+            this.isRunning = false;
         }
-
-        if (lsfFinished && !arucoFinished) { uiManagerInstance.launchUnlockingAnimation('aruco') }
-
     }
 
 }
