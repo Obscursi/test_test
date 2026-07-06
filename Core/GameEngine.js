@@ -117,13 +117,13 @@ class GameEngine {
     }
 
     /**
-    * Appelé par ton GameEngine quand une énigme spécifique est réussie.
+    * Change the status of an enigma to completed
     * @param {string} idEnigme - L'ID de l'énigme (ex: 'lsf' ou 'aruco')
     */
     completeEnigma(idEnigme) {
         const tabCompleted = uiManagerInstance.tabs[idEnigme];
 
-        // Si l'onglet n'existe pas ou est déjà résolu, on ignore
+        // Si l'onglet n'existe pas ou est déjà résolu, on  ignore
         if (!tabCompleted || tabCompleted.status === 'resolved') return;
 
         // 1. On passe l'onglet en Vert
@@ -137,7 +137,7 @@ class GameEngine {
     }
 
     /**
-        * Le "Cerveau" : vérifie l'état de tous les onglets pour voir si on avance.
+        * Check where we are in the game and eventually unlock tabs if we advanced
         */
     globalProgression() {
         const lsfFinished = uiManagerInstance.tabs['lsf'].status === 'resolved';

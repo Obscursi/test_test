@@ -4,6 +4,8 @@ import { WebcamButton } from './WebcamButton.js'; //we import the entire class b
 
 import { Tab } from './Tab.js';
 
+import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
+
 class UIManager {
 
     constructor() {
