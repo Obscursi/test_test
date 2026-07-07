@@ -28,6 +28,7 @@ class UIManager {
             welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="welcome"]'), document.getElementById("panel-welcome")),
             lsf: new Tab('lsf', 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf")),
             aruco: new Tab('aruco', 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
+            colors: new Tab('colors', 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
             victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
         };
 
@@ -78,7 +79,7 @@ class UIManager {
         }
 
         // 3. Gestion de la Caméra Globale
-        const tabsWithWebcam = ['lsf', 'aruco'];
+        const tabsWithWebcam = ['lsf', 'aruco', 'colors'];
         if (this.webcamContainer) {
             this.webcamContainer.style.display = tabsWithWebcam.includes(tabId) ? "block" : "none";
         }

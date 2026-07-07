@@ -74,15 +74,26 @@ export class WebcamButton {
             if (welcomeTab) welcomeTab.style.display = "none";
 
             uiManagerInstance.tabs['lsf'].unlockTab();
+            uiManagerInstance.tabs['colors'].unlockTab();
+
 
             // Bascule sur le puzzle
             uiManagerInstance.showTab('lsf');
+            uiManagerInstance.showTab('colors');
+
+
 
             // Activation visuelle de l'onglet LSF
             const lsfTab = document.querySelector('.tab-button[data-target="lsf"]');
             if (lsfTab) {
                 document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
                 lsfTab.classList.add('active');
+            }
+
+            const colorsTab = document.querySelector('.tab-button[data-target="colors"]');
+            if (colorsTab) {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                colorsTab.classList.add('active');
             }
 
             // Allumage aveuglant du système

@@ -2,6 +2,7 @@ import { InputManager } from '../Inputs/InputManager.js';
 import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
+import { ColorsEnigma } from '../Enigmas/ColorsEnigma.js';
 import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 
@@ -28,11 +29,58 @@ class GameEngine {
         // this.lastFrameTime = 0;
     }
 
+    /**
+     * Injecte OpenCV dans la page avec un bouclier anti-conflit pour la mémoire
+     */
+    async loadOpenCV() {
+        return new Promise((resolve, reject) => {
+            console.log("⏳ Début du téléchargement sécurisé d'OpenCV...");
+
+            if (window.cv && window.cv.Mat) {
+                resolve();
+                return;
+            }
+
+            // ==============================================================
+            // LE BOUCLIER : On cache temporairement la mémoire de MediaPipe
+            // pour éviter qu'OpenCV ne l'écrase ou s'emmêle les pinceaux.
+            // ==============================================================
+            const memoireMediaPipe = window.Module;
+            window.Module = undefined;
+
+            // On crée l'import dynamiquement
+            const script = document.createElement('script');
+            script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
+            script.type = 'text/javascript';
+
+            script.onload = () => {
+                const checkInterval = setInterval(() => {
+                    // OpenCV est prêt quand l'objet cv et ses fonctions (Mat) existent
+                    if (window.cv && window.cv.Mat) {
+                        clearInterval(checkInterval);
+
+                        // On restaure la mémoire de MediaPipe maintenant qu'OpenCV est installé
+                        if (memoireMediaPipe !== undefined) {
+                            window.Module = memoireMediaPipe;
+                        }
+
+                        console.log("👁️ OpenCV est totalement initialisé !");
+                        resolve();
+                    }
+                }, 100);
+            };
+
+            script.onerror = () => {
+                reject(new Error("Impossible de charger le script OpenCV.js"));
+            };
+
+            document.body.appendChild(script);
+        });
+    }
+
     // asynchronous initialisation (async waits for the files to load instead of interpreting the lines of code without stopping)
     async init() {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
-
-
         uiManagerInstance.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
         const inputsReady = await this.inputManager.init();
@@ -40,6 +88,13 @@ class GameEngine {
         if (!inputsReady) {
             console.error("🚨 GameEngine: Échec de l'IA.");
             uiManagerInstance.showError("Erreur fatale de l'IA. Vérifiez la console.");
+            return;
+        }
+
+        try {
+            await this.loadOpenCV();
+        } catch (error) {
+            console.error("🚨 Échec d'OpenCV.", error);
             return;
         }
 
@@ -57,9 +112,11 @@ class GameEngine {
     loadEnigmas() {
         const lsf = new LsfEnigma();
         const aruco = new ArucoEnigma();
+        const colors = new ColorsEnigma();
 
         this.catalogueEnigmes[lsf.id] = lsf;
         this.catalogueEnigmes[aruco.id] = aruco;
+        this.catalogueEnigmes[colors.id] = colors;
 
         console.log(`GameEngine: ${Object.keys(this.catalogueEnigmes).length} énigmes chargées dans le catalogue.`);
 
@@ -73,7 +130,7 @@ class GameEngine {
 
         //here we put the starter enigmas
         this.activateEnigma('lsf');
-        //this.activateEnigma('aruco);
+        this.activateEnigma('colors');
 
         requestAnimationFrame(() => this.loop());
     }
