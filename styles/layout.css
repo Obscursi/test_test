@@ -1,52 +1,85 @@
-/* tab layering stuff */
 .tab-container {
+
     display: flex;
+
     border-bottom: 2px solid #ccc;
+
     margin-bottom: 20px;
+
     gap: 10px;
+
 }
+
 
 /* 1. L'onglet par défaut (Non complété = ORANGE) */
+
 .tab-button {
+
     padding: 10px 20px;
+
     cursor: pointer;
+
     background-color: #f57c00;
+
     /* Fond orange vif */
+
     color: white;
+
     /* Texte blanc pour la lisibilité */
+
     border: none;
+
     border-radius: 8px 8px 0 0;
+
     /* Coins arrondis en haut */
+
     font-size: 1rem;
+
     font-weight: bold;
+
     border-bottom: 3px solid #e65100;
+
     /* Bordure orange foncé pour l'effet 3D */
+
     transition: all 0.3s ease;
+
     margin-top: 5px;
+
     /* Laisse de la place pour l'animation de soulèvement */
+
 }
 
+
 /* 2. L'onglet Complété (Vert) */
+
 .tab-button.completed {
+
     background-color: #2e7d32;
+
     color: white;
+
     border-bottom-color: #1b5e20;
+
     animation: pulseCompleted 3s infinite alternate;
+
 }
 
 .tab-button.active {
-    background-color: #003366;
-    color: white;
-    border-bottom-color: #001f3f;
-    animation: pulseActive 1.5s infinite alternate;
+    border-color: #000000;
+    transform: scale(1.1);
 }
 
 
 
 .view-panel {
+
     display: none;
+
 }
 
+
 .view-panel.active {
+
     display: block;
+
 }
