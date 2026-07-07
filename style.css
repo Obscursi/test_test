@@ -154,11 +154,6 @@ h1 {
     transition: all 0.3s ease;
 }
 
-.tab-button.active {
-    color: #007f8b;
-    border-bottom-color: #007f8b;
-}
-
 /* Conteneurs d'affichage */
 .view-panel {
     display: none;

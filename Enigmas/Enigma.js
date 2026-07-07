@@ -21,7 +21,7 @@ export class Enigma {
 
 
     checkCondition(donneesCapteurs) {
-        console.log();
+        console.log("DEBUG : l'overwrite de checkCondition n'a pas été fait");
         return false;
     }
 

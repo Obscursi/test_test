@@ -18,8 +18,10 @@ export class Tab {
         //available = the player can see it and it is in orange
         //resolved = the player can see it and it is in green
         //active = the actual tab the player is looking, in blue (can be resolved or available before and after being active)
-        // States possible : 'locked', 'available', 'active', 'resolved'
+        // States possible : 'locked', 'available', 'resolved'
         this.status = 'locked';
+
+        this.activeOrNot = new Boolean(false);
 
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet
         // Pratique pour dire "Si on clique sur OpenCV, allume la caméra"
@@ -44,13 +46,17 @@ export class Tab {
      * Étape 2 : Le joueur clique sur l'onglet pour le lire (L'onglet devient bleu)
      */
     activateTab() {
-        if (this.status === 'locked') return; // Sécurité
-
-        // Si l'onglet était "available", il passe "active". S'il était "resolved", il le reste.
-        const precedentStatus = this.status;
-        if (this.status !== 'resolved') {
-            this.status = 'active';
+        if (this.status === 'locked') {
+            console.log("DEBUG : activateTab dans Tab a été appelée alors que l'onglet est locked (ne devrait pas être atteignable)");
+            return;
         }
+
+        if (this.activeOrNot === true) {
+            console.log("DEBUG : activateTab dans Tab a été appelée alors que l'onglet était déjà actif");
+            return;
+        }
+
+        this.activeOrNot = true;
 
         // Gestion visuelle du bouton
         this.button.classList.add("active");
@@ -59,21 +65,27 @@ export class Tab {
         this.panel.classList.add("active");
 
         // Si une action spéciale a été configurée pour cet onglet, on la lance
-        if (this.onActivateAction && precedentStatus !== 'active') {
+        if (this.onActivateAction) {
             this.onActivateAction();
         }
     }
 
     /**
-     * Désélectionne l'onglet quand le joueur clique ailleurs
+     * change the status back to available or resol
      */
     deactivateTab() {
-        if (this.status === 'locked') return;
-
-        // S'il n'est pas terminé, il redevient juste "available" (orange)
-        if (this.status !== 'resolved') {
-            this.status = 'available';
+        if (this.status === 'locked') {
+            console.log("DEBUG : deactivate dans Tab a été appelée alors que l'onglet est locked (ne devrait pas être atteignable)");
+            return;
         }
+
+        if (this.activeOrNot === false) {
+            console.log("DEBUG : deactivateTab dans Tab a été appelée alors que l'onglet était déjà inactif");
+            return;
+        }
+
+        this.activeOrNot = false;
+
         this.button.classList.remove("active");
         this.panel.classList.remove("active");
     }
