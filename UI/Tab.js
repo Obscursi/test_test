@@ -17,7 +17,6 @@ export class Tab {
         //locked = the player cannot see the tab
         //available = the player can see it and it is in orange
         //resolved = the player can see it and it is in green
-        //active = the actual tab the player is looking, in blue (can be resolved or available before and after being active)
         // States possible : 'locked', 'available', 'resolved'
         this.status = 'locked';
 
