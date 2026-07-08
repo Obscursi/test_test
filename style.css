@@ -34,11 +34,6 @@ h1 {
     border-bottom-color: #007f8b;
 }
 
-/* Conteneurs de panneaux */
-.view-panel {
-    display: none;
-}
-
 /* Zone Vidéo */
 .videoView {
     position: relative;
