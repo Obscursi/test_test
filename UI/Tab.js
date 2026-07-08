@@ -20,7 +20,7 @@ export class Tab {
         // States possible : 'locked', 'available', 'resolved'
         this.status = 'locked';
 
-        this.activeOrNot = new Boolean(false);
+        this.activeOrNot = false;
 
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet
         // Pratique pour dire "Si on clique sur OpenCV, allume la caméra"
@@ -35,7 +35,7 @@ export class Tab {
 
         this.status = 'available';
         this.button.style.display = "block"; // On le rend visible dans la barre
-        this.button.classList.remove("completed", "active");
+        this.button.classList.remove("completed", "active"); //security, when we unlock the button should be orange (available)
 
         // Ajout d'une petite animation d'arrivée
         this.button.classList.add("system-boot");
@@ -74,12 +74,12 @@ export class Tab {
      */
     deactivateTab() {
         if (this.status === 'locked') {
-            console.log("DEBUG : deactivate dans Tab a été appelée alors que l'onglet est locked (ne devrait pas être atteignable)");
+            // as of now, this is normal behavior as  we deactivate all tabs regardless of their status
             return;
         }
 
         if (this.activeOrNot === false) {
-            console.log("DEBUG : deactivateTab dans Tab a été appelée alors que l'onglet était déjà inactif");
+            // as of now, this is normal behavior as  we deactivate all tabs regardless of their status
             return;
         }
 
@@ -102,5 +102,9 @@ export class Tab {
      */
     defineOpeningAction(fonctionCallback) {
         this.onActivateAction = fonctionCallback;
+    }
+
+    getButton() {
+        return this.button;
     }
 }
