@@ -23,7 +23,7 @@ export class Tab {
 
         this.activeOrNot = false;
 
-        this.pannelVictory = panneauVictory;
+        this.panelVictory = panneauVictory;
 
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet
         // Pratique pour dire "Si on clique sur OpenCV, allume la caméra"
@@ -66,7 +66,7 @@ export class Tab {
 
         //we show a different panel, depending on if the enigma is resolved or not
         if (this.status === 'resolved') {
-            this.pannelVictory.classList.add("active");
+            this.panelVictory.classList.add("active");
         } else {
             this.panel.classList.add("active");
         }
@@ -92,11 +92,13 @@ export class Tab {
 
         this.activeOrNot = false;
 
+
         if (this.status === 'resolved') {
-            this.pannelVictory.classList.remove("active");
+            this.panelVictory.classList.remove("active");
         } else {
             this.panel.classList.remove("active");
         }
+
 
         this.button.classList.remove("active");
     }
