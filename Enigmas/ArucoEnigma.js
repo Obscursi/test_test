@@ -6,8 +6,5 @@ export class ArucoEnigma extends Enigma {
         super('aruco', "Aruco vrai/faux");
 
     }
-    checkCondition(playerState) {
-        if (this.isResolved) return;
-    }
 
 }

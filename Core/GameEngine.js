@@ -165,9 +165,9 @@ class GameEngine {
             // On vérifie UNIQUEMENT les énigmes actives.
             // S'il y en a 2 en parallèle, les 2 seront vérifiées en même temps !
             this.activeEnigmas.forEach(currentEnigma => {
-                if (!currentEnigma.isResolved) {
+                if (!currentEnigma.isResolved && uiManagerInstance.tabs[currentEnigma.id].activeOrNot) { //we check the condition ONLY IF the tab if active 
                     currentEnigma.checkCondition(playerState);
-                } else {
+                } else if (currentEnigma.isResolved) {
                     // Si elle est résolue pendant ce tour de boucle, on valide
                     this.completeEnigma(currentEnigma.id);
                 }
