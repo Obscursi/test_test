@@ -123,10 +123,10 @@ class UIManager {
 
         if (gestures.length > 0) {
             this.gestureOutput.style.backgroundColor = "#E91E63";
-            this.gestureOutput.innerText = `Gestes : ${gestures.join(" + ")}`;
+            this.gestureOutput.innerText = `Signe(s) : ${gestures.join(" + ")}`;
         } else {
             this.gestureOutput.style.backgroundColor = "#007f8b";
-            this.gestureOutput.innerText = "Mains détectées, aucun geste clair.";
+            this.gestureOutput.innerText = "Aucun signe clair.";
         }
     }
 
