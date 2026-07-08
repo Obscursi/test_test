@@ -6,6 +6,8 @@ import { Tab } from './Tab.js';
 
 import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
+import gameEngineInstance from '../Core/GameEngine.js'
+
 class UIManager {
 
     constructor() {
@@ -25,8 +27,8 @@ class UIManager {
 
         // --- getting all the tabs ---
         this.tabs = {
-            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="welcome"]'), document.getElementById("panel-welcome")),
-            lsf: new Tab('lsf', 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf")),
+            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
+            lsf: new Tab('lsf', 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
             aruco: new Tab('aruco', 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
             colors: new Tab('colors', 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
             victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
@@ -80,13 +82,22 @@ class UIManager {
 
         // 3. Gestion de la Caméra Globale
         const tabsWithWebcam = ['lsf', 'aruco', 'colors'];
-        if (this.webcamContainer) {
-            this.webcamContainer.style.display = tabsWithWebcam.includes(tabId) ? "block" : "none";
+        if (!(tabId === 'welcome')) { //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
+            if (this.webcamContainer) {
+                if (tabsWithWebcam && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) {
+                    this.webcamContainer.style.display = "block";
+                } else {
+                    this.webcamContainer.style.display = "none";
+                }
+            } else {
+                console.log("DEBUG : webcamcontainer is not defined anymore");
+            }
         }
 
+
         // 4. Gestion de la boîte de texte LSF
-        if (this.gestureOutput) {
-            this.gestureOutput.style.display = (tabId === 'lsf') ? "block" : "none";
+        if (this.gestureOutput) { //if we are on the tab lsf and lsf enigma is not yet resolved
+            this.gestureOutput.style.display = (tabId === 'lsf' && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) ? "block" : "none";
         }
 
         // 5. Masquage de la barre de navigation sur l'accueil
@@ -187,6 +198,8 @@ class UIManager {
             }, 5000);
         }
     }
+
+
 }
 
 //Singleton creation : 

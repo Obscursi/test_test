@@ -1,5 +1,8 @@
 import { Enigma } from './Enigma.js';
 
+import uiManagerInstance from '../UI/UIManager.js';
+
+
 export class LsfEnigma extends Enigma {
     constructor() {
         // On appelle le constructeur de la classe parente (Enigma)
@@ -26,6 +29,26 @@ export class LsfEnigma extends Enigma {
 
         if (toutesPresentes) {
             this.onSuccess();
+        }
+    }
+
+    onSuccess() {
+        super.onSuccess(); // Appelle la fonction parente (qui débloque l'onglet suivant)
+
+        uiManagerInstance.showTab(this.id);
+
+
+        //1. On cache purement et simplement la boîte de la caméra dans cet onglet
+        //  (Il faut s'assurer que tu as un conteneur HTML spécifique dans l'onglet LSF)
+        const webcamContainerLsf = document.getElementById('webcam-container');
+        if (webcamContainerLsf) {
+            webcamContainerLsf.style.display = 'none';
+        }
+
+        // 2. On peut afficher un gros message de succès
+        const victoryTab = document.getElementById('panel-lsf-victory');
+        if (victoryTab) {
+            victoryTab.style.display = 'block';
         }
     }
 }

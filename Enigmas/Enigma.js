@@ -1,5 +1,7 @@
 import gameEngineInstance from '../Core/GameEngine.js'
 
+import uiManagerInstance from '../UI/UIManager.js';
+
 export class Enigma {
     /**
      * @param {string} id - L'ID de l'énigme
@@ -30,6 +32,8 @@ export class Enigma {
         console.log(`L'énigme avec le nom : "${this.name}" et l'id : "${this.id}" a été résolue. `);
         this.isResolved = true;
         gameEngineInstance.completeEnigma(this.id, this.enigmesSuivantes);
+        //uiManagerInstance.showTab(this.id); //this reloads the page, showing now the panel of victory instead of the normal panel
+
 
         // send to admin : 
         // networkManager.sendMessage({ type: 'VICTOIRE', enigme: this.id });

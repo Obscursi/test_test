@@ -4,8 +4,9 @@ export class Tab {
      * @param {string} nom - Le nom affiché (ex: "Scanner de Formes")
      * @param {HTMLElement} boutonDOM - L'élément HTML du bouton dans la navigation
      * @param {HTMLElement} panneauDOM - L'élément HTML du contenu de l'énigme
+     * @param panneauVictory
      */
-    constructor(idCible, nom, boutonDOM, panneauDOM) {
+    constructor(idCible, nom, boutonDOM, panneauDOM, panneauVictory = document.getElementById("panel-to-implement")) {
         this.id = idCible; //this id is the same for the Enigma and the Tab displaying the enigma
         this.name = nom;
 
@@ -22,6 +23,8 @@ export class Tab {
 
         this.activeOrNot = false;
 
+        this.pannelVictory = panneauVictory;
+
         // Un callback optionnel (fonction) à déclencher quand on clique sur cet onglet
         // Pratique pour dire "Si on clique sur OpenCV, allume la caméra"
         this.onActivateAction = null;
@@ -34,7 +37,8 @@ export class Tab {
         if (this.status !== 'locked') return;
 
         this.status = 'available';
-        this.button.style.display = "block"; // On le rend visible dans la barre
+        //this.button.style.display = "block";
+        this.button.classList.add("available");
         this.button.classList.remove("completed", "active"); //security, when we unlock the button should be orange (available)
 
         // Ajout d'une petite animation d'arrivée
@@ -60,9 +64,12 @@ export class Tab {
         // Gestion visuelle du bouton
         this.button.classList.add("active");
 
-        // Gestion visuelle du panneau
-        this.panel.classList.add("active");
-
+        //we show a different panel, depending on if the enigma is resolved or not
+        if (this.status === 'resolved') {
+            this.pannelVictory.classList.add("active");
+        } else {
+            this.panel.classList.add("active");
+        }
         // Si une action spéciale a été configurée pour cet onglet, on la lance
         if (this.onActivateAction) {
             this.onActivateAction();
@@ -85,8 +92,13 @@ export class Tab {
 
         this.activeOrNot = false;
 
+        if (this.status === 'resolved') {
+            this.pannelVictory.classList.remove("active");
+        } else {
+            this.panel.classList.remove("active");
+        }
+
         this.button.classList.remove("active");
-        this.panel.classList.remove("active");
     }
 
     /**
@@ -94,6 +106,7 @@ export class Tab {
      */
     makeTabCompleted() {
         this.status = 'resolved';
+        this.button.classList.remove("available");
         this.button.classList.add("completed");
     }
 

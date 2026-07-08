@@ -15,11 +15,13 @@
 
 <body>
 
+    <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
+
+
     <div class="tab-container">
-        <button class="tab-button active" data-target="welcome">Accueil</button>
         <button id="btn-tab-lsf" class="tab-button" data-target="lsf">Langue des
             Signes</button>
-        <button id="btn-tab-aruco" class="tab-button" data-target="aruco" style="display: none;">Cartes aruco</button>
+        <button id="btn-tab-aruco" class="tab-button" data-target="aruco">Cartes aruco</button>
         <button id="btn-tab-colors" class="tab-button" data-target="colors">Scanner de
             formes</button>
     </div>
@@ -44,6 +46,16 @@
             <canvas id="mp_canvas" width="640" height="480"></canvas>
         </div>
         <div id="gesture_output" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
+    </div>
+
+    <div id="panel-lsf-victory" style="display: none;">
+        <h2> Félicitations, vous avez signé le mot "Pied"... Sans doute un endroit qui va vous rapporter des éléments
+            pour cette enquête !</h2>
+    </div>
+
+
+    <div id="panel-to-implement" style="display: none;">
+        <h1>Il semblerait que ce panneau n'ait pas été encore créé..</h1>
     </div>
 
     <hr style="margin: 30px 0;">
