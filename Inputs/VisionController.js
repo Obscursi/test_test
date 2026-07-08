@@ -82,10 +82,10 @@ export class VisionController {
             if (results.landmarks) {
 
                 // old code used to draw the ligne and points on hands detected by mediapipe
-                /*for (const landmarks of results.landmarks) {
+                for (const landmarks of results.landmarks) {
                     drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
                     drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
-                }*/
+                }
 
                 // Analyse des gestes
                 for (let i = 0; i < results.landmarks.length; i++) {
