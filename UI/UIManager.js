@@ -35,6 +35,7 @@ class UIManager {
         };
 
         this.activeTabId = 'welcome';
+        this.tabs['welcome'].status = 'available'; // we may have problem if we don't do that
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
