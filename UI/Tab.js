@@ -103,8 +103,4 @@ export class Tab {
     defineOpeningAction(fonctionCallback) {
         this.onActivateAction = fonctionCallback;
     }
-
-    getButton() {
-        return this.button;
-    }
 }
