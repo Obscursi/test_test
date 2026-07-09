@@ -14,7 +14,7 @@ class UIManager {
         // --- we get the element of the interface ---
         this.btnWebcam = document.getElementById("webcamButton");
         this.loadingMessage = document.getElementById("loadingMessage");
-        this.gestureOutput = document.getElementById("gesture_output");
+        this.lsfTextBox = document.getElementById("lsf-sign-box");
         this.notificationBanner = document.getElementById("notification-banner");
         this.webcamContainer = document.getElementById("webcam-container");
         this.tabContainer = document.querySelector('.tab-container');
@@ -96,14 +96,19 @@ class UIManager {
         }
 
 
-        // 4. Gestion de la boîte de texte LSF
-        if (this.gestureOutput) { //if we are on the tab lsf and lsf enigma is not yet resolved
-            this.gestureOutput.style.display = (tabId === 'lsf' && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) ? "block" : "none";
-        }
+        this.displayOrNotLsfTextBox(tabId);
 
         // 5. Masquage de la barre de navigation sur l'accueil
         if (this.tabContainer) {
             this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
+        }
+    }
+
+    displayOrNotLsfTextBox(tabId) {
+        if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
+            this.lsfTextBox.style.display = (tabId === 'lsf' && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) ? "block" : "none";
+        } else {
+            console.log("We are missing the lsf box");
         }
     }
 
@@ -134,11 +139,11 @@ class UIManager {
         const gestesValides = gestures.filter(g => g && g !== "");
 
         if (gestures.length > 0) {
-            this.gestureOutput.style.backgroundColor = "#E91E63";
-            this.gestureOutput.innerText = `Signe(s) : ${gestures.join(" + ")}`;
+            this.lsfTextBox.style.backgroundColor = "#E91E63";
+            this.lsfTextBox.innerText = `Signe(s) : ${gestures.join(" + ")}`;
         } else {
-            this.gestureOutput.style.backgroundColor = "#007f8b";
-            this.gestureOutput.innerText = "Aucun signe clair.";
+            this.lsfTextBox.style.backgroundColor = "#007f8b";
+            this.lsfTextBox.innerText = "Aucun signe clair.";
         }
     }
 
@@ -159,9 +164,6 @@ class UIManager {
 
     showVictoryScreen() {
         this.showTab('victoire');
-        this.gestureOutput.style.backgroundColor = "#FFD700";
-        this.gestureOutput.style.color = "#000";
-        this.gestureOutput.innerText = "Tab Victoire à rajouter !";
     }
 
     /**
