@@ -1,5 +1,6 @@
 import gameEngineInstance from './Core/GameEngine.js';
 import uiManagerInstance from './UI/UIManager.js';
+import inputManagerInstance from '../Inputs/InputManager.js';
 
 // On attend que la page HTML soit dessinée
 window.addEventListener("DOMContentLoaded", async () => {
@@ -14,10 +15,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     btnWebcam.addEventListener("click", () => {
 
         // On récupère l'état AVANT le clic pour savoir ce qu'on fait
-        const currentlyRunning = gameEngineInstance.inputManager.vision.webcamRunning;
+        const currentlyRunning = inputManagerInstance.vision.webcamRunning;
 
         // On bascule l'état de la caméra
-        gameEngineInstance.inputManager.toggleWebcam();
+        inputManagerInstance.toggleWebcam();
 
         // On met à jour l'interface visuellement.
         // Si c'était coupé (currentlyRunning = false), on s'attend à ce que ça s'active (true)

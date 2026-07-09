@@ -1,4 +1,4 @@
-import { InputManager } from '../Inputs/InputManager.js';
+import inputManagerInstance from '../Inputs/InputManager.js';
 import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
@@ -8,10 +8,6 @@ import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
 class GameEngine {
     constructor() {
-        // 1. Instanciation des Managers
-        this.inputManager = new InputManager();
-
-
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
@@ -24,7 +20,7 @@ class GameEngine {
         this.isTransitioning = false;
 
         //to lower the fps rendering (not used because it works well for now without it)
-        // this.fpsTarget = 15;
+        // this.fpsTarget = 10;
         // this.frameInterval = 1000 / this.fpsTarget;
         // this.lastFrameTime = 0;
     }
@@ -83,7 +79,7 @@ class GameEngine {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
         uiManagerInstance.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
-        const inputsReady = await this.inputManager.init();
+        const inputsReady = await inputManagerInstance.init();
 
         if (!inputsReady) {
             console.error("🚨 GameEngine: Échec de l'IA.");
@@ -151,32 +147,27 @@ class GameEngine {
     // in the future may need to limit the refreshrate of this loop. Actually it is 60Hz, but it depends on the screen you are using
     loop() {
         if (!this.isRunning) return;
-
-
-        // 1. On rappelle la boucle immédiatement pour le prochain cycle de l'écran
         requestAnimationFrame(() => this.loop());
 
-        // --- ÉTAPE 1 : INPUT (Caméra, Dessin et IA) ---
-        this.inputManager.update();
-        const playerState = this.inputManager.getState();
-
-        // --- ÉTAPE 2 : UPDATE (La magie de l'architecture) ---
         if (!this.isTransitioning) {
-            // On vérifie UNIQUEMENT les énigmes actives.
-            // S'il y en a 2 en parallèle, les 2 seront vérifiées en même temps !
             this.activeEnigmas.forEach(currentEnigma => {
-                if (!currentEnigma.isResolved && uiManagerInstance.tabs[currentEnigma.id].activeOrNot) { //we check the condition ONLY IF the tab if active 
-                    currentEnigma.checkCondition(playerState);
-                } else if (currentEnigma.isResolved) {
-                    // Si elle est résolue pendant ce tour de boucle, on valide
-                    this.completeEnigma(currentEnigma.id);
+                const tab = uiManagerInstance.tabs[currentEnigma.id];
+
+                if (tab && tab.activeOrNot === true) { // we update only if the tab is active (id est open)
+                    if (!currentEnigma.isResolved) {
+
+                        currentEnigma.update();
+
+                    } else if (currentEnigma.isResolved) { // else if for security you never know in javascript
+
+                        this.completeEnigma(currentEnigma.id);
+
+                    }
+                } else if (!tab) {
+                    console.log("GameEngine DEBUG : tab n'a pas été trouvé");
                 }
             });
         }
-
-
-        // --- ÉTAPE 3 : RENDER (Interface) ---
-        uiManagerInstance.updateGestureDebugText(playerState.gestures);
     }
 
 

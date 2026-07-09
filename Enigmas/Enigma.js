@@ -21,6 +21,10 @@ export class Enigma {
         console.log(`Début de l'énigme : ${this.name}`);
     }
 
+    update() {
+        console.log("DEBUG : l'over de update n'a pas été fait");
+    }
+
 
     checkCondition(donneesCapteurs) {
         console.log("DEBUG : l'overwrite de checkCondition n'a pas été fait");

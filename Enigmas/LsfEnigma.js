@@ -1,5 +1,8 @@
 import { Enigma } from './Enigma.js';
 
+import inputManagerInstance from '../Inputs/InputManager.js';
+
+import uiManagerInstance from '../UI/UIManager.js';
 
 export class LsfEnigma extends Enigma {
     constructor() {
@@ -9,6 +12,14 @@ export class LsfEnigma extends Enigma {
         // Les 4 lettres qui doivent être vues en même temps
         //this.lettresRequises = ["P", "I", "E", "D"];
         this.lettresRequises = ["P", "I"];
+    }
+
+    update() {
+        inputManagerInstance.update(); //update the sign detected
+        const playerState = inputManagerInstance.getState(); //get the list of signs detected
+        this.checkCondition(playerState); //check if we have all the letter required
+
+        uiManagerInstance.updateGestureDebugText(playerState.gestures); //we update the box with the letters detected
     }
 
     // Le GameEngine appelle cette fonction 15 fois par seconde

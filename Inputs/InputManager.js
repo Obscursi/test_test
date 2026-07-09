@@ -1,7 +1,7 @@
 import { VisionController } from './VisionController.js';
 // import { KeyboardController } from './KeyboardController.js'; // Prévu pour plus tard
 
-export class InputManager {
+class InputManager {
     constructor() {
         // On récupère les éléments HTML ici pour les donner à la Vision
         const videoElement = document.getElementById("webcam");
@@ -39,3 +39,6 @@ export class InputManager {
         };
     }
 }
+
+const inputManagerInstance = new InputManager();
+export default inputManagerInstance;
