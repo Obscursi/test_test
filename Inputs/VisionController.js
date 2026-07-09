@@ -79,30 +79,32 @@ export class VisionController {
             const results = this.gestureRecognizer.recognizeForVideo(this.video, nowInMs);
             const drawingUtils = new DrawingUtils(this.ctx);
 
-            if (results.landmarks) {
+            this.drawMediapipeHandsOverlay(nowInMs, results, drawingUtils);
+            this.detectingGestures(results, drawingUtils);
 
-                // old code used to draw the ligne and points on hands detected by mediapipe
-                for (const landmarks of results.landmarks) {
-                    drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
-                    drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
+        }
+    }
+
+    detectingGestures(results, drawingUtils) {
+
+        if (results.landmarks) {
+            for (let i = 0; i < results.landmarks.length; i++) {
+                const landmarks = results.landmarks[i];
+                const letterDetected = whichLetterIsDetected(landmarks);
+                if (!(letterDetected === "")) { //if we find at least one letter
+                    this.currentGestures.push(letterDetected);
                 }
+            }
+        }
+    }
 
-                // Analyse des gestes
-                for (let i = 0; i < results.landmarks.length; i++) {
-                    const landmarks = results.landmarks[i];
-                    const letterDetected = whichLetterIsDetected(landmarks);
+    drawMediapipeHandsOverlay(nowInMs, results, drawingUtils) {
 
-                    if (letterDetected === "") { //we did not find any letter
-                        /*if (results.gestures[i] && results.gestures[i][0]) {
-                            let googleGesture = results.gestures[i][0].categoryName;
-                            if (googleGesture !== "None") {
-                                this.currentGestures.push(googleGesture);
-                            }
-                        }*/
-                    } else {
-                        this.currentGestures.push(letterDetected);
-                    }
-                }
+        if (results.landmarks) {
+            // old code used to draw the ligne and points on hands detected by mediapipe
+            for (const landmarks of results.landmarks) {
+                drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
+                drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
             }
         }
     }
