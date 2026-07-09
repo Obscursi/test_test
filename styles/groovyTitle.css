@@ -1,0 +1,62 @@
+/* =========================================
+   STYLE H1 : TITRE LUMINEUX BLEU ET NOIR
+   ========================================= */
+
+h1.groovy {
+    /* Taille massive et police grasse */
+    font-size: 5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 4px;
+
+    /* Couleur du texte : Un bleu-noir extrêmement profond (presque noir) */
+    color: #020611;
+
+    /* Un fin contour cyan très clair pour détacher les lettres du fond */
+    -webkit-text-stroke: 2px #00f3ff;
+
+    /* La superposition des ombres pour créer le halo de lumière */
+    /* L'ordre est important : du plus net et clair, au plus flou et sombre */
+    text-shadow:
+        0 0 10px rgba(0, 243, 255, 0.6),
+        /* Coeur cyan */
+        0 0 20px rgba(0, 243, 255, 0.8),
+        /* Halo cyan */
+        0 0 40px rgba(0, 102, 255, 0.9),
+        /* Halo bleu électrique */
+        0 0 80px rgba(0, 20, 150, 1),
+        /* Halo bleu sombre */
+        0 0 120px rgba(0, 0, 50, 1);
+    /* Aura presque noire */
+
+    /* L'animation qui fait "respirer" la lumière */
+    animation: lightPulsation 2.5s infinite alternate;
+}
+
+/* =========================================
+   ANIMATION DE PULSATION
+   ========================================= */
+
+@keyframes lightPulsation {
+    0% {
+        /* État "Basse énergie" */
+        text-shadow:
+            0 0 5px rgba(0, 243, 255, 0.4),
+            0 0 15px rgba(0, 243, 255, 0.5),
+            0 0 30px rgba(0, 102, 255, 0.6),
+            0 0 60px rgba(0, 20, 150, 0.7);
+        filter: brightness(0.9);
+    }
+
+    100% {
+        /* État "Surcharge énergétique" */
+        text-shadow:
+            0 0 15px rgba(0, 243, 255, 0.9),
+            0 0 30px rgba(0, 243, 255, 1),
+            0 0 50px rgba(0, 102, 255, 1),
+            0 0 100px rgba(0, 20, 150, 1),
+            0 0 150px rgba(0, 5, 20, 1);
+        filter: brightness(1.2);
+    }
+}
