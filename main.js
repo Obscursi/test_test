@@ -1,6 +1,6 @@
 import gameEngineInstance from './Core/GameEngine.js';
 import uiManagerInstance from './UI/UIManager.js';
-import inputManagerInstance from '../Inputs/InputManager.js';
+import inputManagerInstance from './Inputs/InputManager.js';
 
 // On attend que la page HTML soit dessinée
 window.addEventListener("DOMContentLoaded", async () => {
