@@ -25,9 +25,15 @@ class InputManager {
         this.vision.toggleWebcam();
     }
 
-    // Demande à tous les capteurs de lire l'instant T
-    update() {
-        this.vision.update();
+
+    update(tabId) {
+        if (tabId === 'lsf') {
+            this.vision.updateLsf();
+        } else if (tabId === 'colors') {
+            this.vision.updateColors();
+        } else {
+            console.log("DEBUG : Update dasn InputManager n'a pas trouvé le tab correspondant");
+        }
         // this.keyboard.update();
     }
 

@@ -15,7 +15,7 @@ export class LsfEnigma extends Enigma {
     }
 
     update() {
-        inputManagerInstance.update(); //update the sign detected
+        inputManagerInstance.update(this.id); //update the sign detected
         const playerState = inputManagerInstance.getState(); //get the list of signs detected
         this.checkCondition(playerState); //check if we have all the letter required
 

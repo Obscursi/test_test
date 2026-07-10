@@ -65,7 +65,7 @@ export class VisionController {
     }
 
     // Cette fonction sera appelée en boucle par le GameEngine
-    update() {
+    updateLsf() {
         // On vide la liste des gestes à chaque nouvelle image
         this.currentGestures = [];
 
@@ -81,6 +81,18 @@ export class VisionController {
 
             this.drawMediapipeHandsOverlay(nowInMs, results, drawingUtils);
             this.detectingGestures(results, drawingUtils);
+
+        }
+    }
+
+    // Cette fonction sera appelée en boucle par le GameEngine
+    updateColors() {
+        if (this.webcamRunning && this.video.currentTime !== this.lastVideoTime && this.video.videoWidth > 0 && this.gestureRecognizer) {
+            this.lastVideoTime = this.video.currentTime;
+            let nowInMs = Math.round(this.video.currentTime * 1000);
+
+            // Dessin de la vidéo en fond
+            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
 
         }
     }

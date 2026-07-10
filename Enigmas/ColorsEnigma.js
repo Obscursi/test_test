@@ -1,19 +1,68 @@
 import { Enigma } from './Enigma.js';
-import gameEngineInstance from '../Core/GameEngine.js';
+import inputManagerInstance from '../Inputs/InputManager.js';
 
 let cv;
-
 
 export class ColorsEnigma extends Enigma {
     constructor() {
         super('colors', "Scanner de Couleurs");
-        // Pré-allocation des matrices pour éviter les fuites de mémoire (très important en OpenCV.js)
 
-        cv = window.cv; //we load the library in the constructor, if we do it before the library will not be loaded (by loadOpenCV in GameEngine.js)
+        // On charge la bibliothèque depuis la variable globale
+        cv = window.cv;
+
+        // Pré-allocation des matrices de traitement
         this.gray = new cv.Mat();
         this.blurred = new cv.Mat();
         this.hsv = new cv.Mat();
         this.circles = new cv.Mat();
+
+        // Variables pour la lecture de la webcam (initialisées plus tard)
+        this.cap = null;
+        this.srcMat = null;
+    }
+
+    /**
+     * La boucle appelée en continu par le GameEngine quand l'onglet est actif
+     */
+    update() {
+        if (this.isResolved) return;
+        inputManagerInstance.update(this.id);
+        this.checkCondition();
+    }
+
+    /**
+     * Vérifie l'image actuelle de la webcam
+     */
+    checkCondition() {
+        // On récupère la balise vidéo native (soit via le DOM, soit via l'InputManager)
+        const video = document.getElementById("webcam");
+
+        // Sécurité : on attend que la webcam soit vraiment allumée et affiche une image
+        if (!video || video.videoWidth === 0 || video.videoHeight === 0) return;
+
+        // 1. Initialisation du capteur OpenCV à la première image valide
+        if (!this.cap) {
+            this.cap = new cv.VideoCapture(video);
+            // On crée la matrice source aux dimensions exactes de la vidéo
+            this.srcMat = new cv.Mat(video.videoHeight, video.videoWidth, cv.CV_8UC4);
+            console.log("📸 ColorsEnigma : Capteur vidéo OpenCV initialisé.");
+        }
+
+        try {
+            // 2. Lecture de l'image (copie les pixels de la vidéo vers this.srcMat)
+            this.cap.read(this.srcMat);
+
+            // 3. Analyse de l'image
+            this.detecterCerclesColores(this.srcMat);
+
+            // 4. (Optionnel) Si tu veux voir ce qu'OpenCV détecte à l'écran, 
+            // tu peux renvoyer l'image modifiée sur le canvas par-dessus la vidéo :
+            cv.imshow('mp_canvas', this.srcMat);
+
+        } catch (err) {
+            // OpenCV.js peut être très capricieux, un try/catch évite de crasher tout le jeu
+            console.error("Erreur de traitement OpenCV :", err);
+        }
     }
 
     /**
@@ -21,91 +70,71 @@ export class ColorsEnigma extends Enigma {
      * @param {cv.Mat} srcMat - L'image source provenant du canvas (format RGBA).
      */
     detecterCerclesColores(srcMat) {
-        // 1. Préparation de l'image pour la détection de formes
+        new Promise(resolve => setTimeout(resolve, 10000));
         cv.cvtColor(srcMat, this.gray, cv.COLOR_RGBA2GRAY);
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
 
-        // 2. Détection des cercles avec la Transformée de Hough
-        // Paramètres : image, sortie, méthode, ratio(dp), distance min entre cercles, param1(Canny), param2(Seuil parfait), rayonMin, rayonMax
+        // Paramètres de détection de cercles : à ajuster selon la distance de la caméra
         cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 40, 15, 150);
 
-        // Si aucun cercle n'est trouvé, on arrête
         if (this.circles.cols === 0) return;
 
-        // 3. Conversion de l'image originale en HSV pour l'analyse des couleurs
         cv.cvtColor(srcMat, this.hsv, cv.COLOR_RGBA2RGB);
         cv.cvtColor(this.hsv, this.hsv, cv.COLOR_RGB2HSV);
 
-        // 4. Boucle sur tous les cercles détectés
         for (let i = 0; i < this.circles.cols; ++i) {
             const x = Math.round(this.circles.data32F[i * 3]);
             const y = Math.round(this.circles.data32F[i * 3 + 1]);
             const rayon = Math.round(this.circles.data32F[i * 3 + 2]);
 
-            // Récupération du pixel central du cercle (en HSV)
             const pixel = this.hsv.ucharPtr(y, x);
-            const teinte = pixel[0];     // H (0-179 dans OpenCV)
-            const saturation = pixel[1]; // S (0-255)
-            const luminosite = pixel[2]; // V (0-255)
+            const teinte = pixel[0];
+            const saturation = pixel[1];
+            const luminosite = pixel[2];
 
-            // Détermination de la couleur
             const couleurDetectee = this.analyserCouleurHSV(teinte, saturation, luminosite);
 
             if (couleurDetectee !== "Inconnue") {
                 console.log(`🎯 Cercle détecté : ${couleurDetectee} (Rayon: ${rayon}px)`);
 
-                // Optionnel : Dessiner le contour du cercle sur l'image source en rouge pour le debug visuel
+                // Dessin visuel sur l'image (si tu utilises cv.imshow plus haut)
                 cv.circle(srcMat, new cv.Point(x, y), rayon, new cv.Scalar(255, 0, 0, 255), 3);
                 cv.circle(srcMat, new cv.Point(x, y), 3, new cv.Scalar(0, 255, 0, 255), -1);
             }
         }
     }
 
-    /**
-     * Convertit les valeurs mathématiques (H, S, V) en nom de couleur lisible.
-     */
     analyserCouleurHSV(h, s, v) {
-        // Élimination des pixels trop blancs, noirs ou gris (faible saturation)
         if (s < 40 || v < 40) return "Inconnue";
 
-        // 1. Famille des Oranges / Marrons (Teinte autour de 10-25)
         if (h >= 5 && h <= 25) {
-            // Le marron est un orange très sombre (Luminosité < 150)
             if (v < 150) return "Marron";
             else return "Orange";
         }
-
-        // 2. Famille des Verts (Teinte autour de 40-80)
         else if (h > 35 && h <= 80) {
             return "Vert";
         }
-
-        // 3. Famille Bleu-Vert / Cyan (Teinte autour de 80-100)
         else if (h > 80 && h <= 100) {
             return "Bleu-Vert";
         }
-
-        // 4. Famille des Bleus (Teinte autour de 100-130)
         else if (h > 100 && h <= 135) {
             return "Bleu";
         }
-
-        // 5. Famille Rose foncé / Magenta (Teinte autour de 145-175)
         else if (h > 140 && h <= 175) {
-            // Pour éviter les roses pastel très clairs, on peut exiger une forte saturation
             if (s > 100) return "Rose foncé";
         }
-
         return "Inconnue";
     }
 
-    /**
-     * À appeler impérativement quand le composant est détruit pour vider la RAM.
-     */
     nettoyerMemoire() {
         this.gray.delete();
         this.blurred.delete();
         this.hsv.delete();
         this.circles.delete();
+
+        // On n'oublie pas de nettoyer la matrice source si elle a été allouée
+        if (this.srcMat) {
+            this.srcMat.delete();
+        }
     }
 }
