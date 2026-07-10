@@ -1,5 +1,5 @@
-import { UpdateColors } from './Recognizers/ColorsRecognizer.js';
-import { UpdateLsf } from './Recognizers/LsfRecognizer.js';
+import { ColorsRecognizer } from './Recognizers/ColorsRecognizer.js';
+import { LsfRecognizer } from './Recognizers/LsfRecognizer.js';
 
 
 export class VisionController {
@@ -22,7 +22,7 @@ export class VisionController {
 
     async init() {
         try {
-            const initiateLsf = await this.LsfRecognizer.initLsf();
+            const initiateLsf = await this.lsfRecognizer.initLsf();
             const initiateColors = await this.colorsRecognizer.initColors();
             return (initiateLsf && initiateColors);
         } catch (error) {
@@ -61,7 +61,7 @@ export class VisionController {
                 this.lsfRecognizer.updateLsf(this.currentResults, this.webcamRunning);
                 break;
             case 'colors':
-                this.ColorsRecognizer.updateColors(this.currentResults, this.webcamRunning);
+                this.colorsRecognizer.updateColors(this.currentResults, this.webcamRunning);
                 break;
             default:
                 console.log("DEBUG : update dans VisionController n'a pas trouvé la fenêtre");
