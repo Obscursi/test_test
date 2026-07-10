@@ -1,9 +1,6 @@
-import {
-    GestureRecognizer,
-    FilesetResolver,
-    DrawingUtils
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/vision_bundle.mjs";
-import { whichLetterIsDetected } from '../Utils/LsfDictionary.js';
+import { UpdateColors } from './Recognizers/ColorsRecognizer.js';
+import { UpdateLsf } from './Recognizers/LsfRecognizer.js';
+
 
 export class VisionController {
     // On passe la vidéo et le canvas en paramètres pour ne pas chercher dans le document HTML
@@ -12,32 +9,24 @@ export class VisionController {
         this.canvas = canvasElement;
         this.ctx = this.canvas.getContext("2d");
 
-        this.gestureRecognizer = null;
-        this.lastVideoTime = -1;
+        //this.gestureRecognizer = null;
+        //this.lastVideoTime = -1;
         this.webcamRunning = false;
 
         // L'état propre de la vision à l'instant T
-        this.currentGestures = [];
+        this.currentResults = [];
+
+        this.lsfRecognizer = new LsfRecognizer(videoElement, canvasElement);
+        this.colorsRecognizer = new ColorsRecognizer(videoElement, canvasElement);
     }
 
     async init() {
         try {
-            const vision = await FilesetResolver.forVisionTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
-            );
-
-            this.gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-                baseOptions: {
-                    modelAssetPath: "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
-                    delegate: "CPU"
-                },
-                runningMode: "VIDEO",
-                numHands: 4
-            });
-            console.log("VisionController : MediaPipe est prêt !");
-            return true; // Indique que tout s'est bien passé
+            const initiateLsf = await this.LsfRecognizer.initLsf();
+            const initiateColors = await this.colorsRecognizer.initColors();
+            return (initiateLsf && initiateColors);
         } catch (error) {
-            console.error("Erreur d'initialisation MediaPipe :", error);
+            console.error("Erreur d'initialisation VisionController :", error);
             return false;
         }
     }
@@ -65,64 +54,22 @@ export class VisionController {
     }
 
     // Cette fonction sera appelée en boucle par le GameEngine
-    updateLsf() {
-        // On vide la liste des gestes à chaque nouvelle image
-        this.currentGestures = [];
+    update(tabId) {
 
-        if (this.webcamRunning && this.video.currentTime !== this.lastVideoTime && this.video.videoWidth > 0 && this.gestureRecognizer) {
-            this.lastVideoTime = this.video.currentTime;
-            let nowInMs = Math.round(this.video.currentTime * 1000);
-
-            // Dessin de la vidéo en fond
-            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-
-            const results = this.gestureRecognizer.recognizeForVideo(this.video, nowInMs);
-            const drawingUtils = new DrawingUtils(this.ctx);
-
-            this.drawMediapipeHandsOverlay(nowInMs, results, drawingUtils);
-            this.detectingGestures(results, drawingUtils);
-
-        }
-    }
-
-    // Cette fonction sera appelée en boucle par le GameEngine
-    updateColors() {
-        if (this.webcamRunning && this.video.currentTime !== this.lastVideoTime && this.video.videoWidth > 0 && this.gestureRecognizer) {
-            this.lastVideoTime = this.video.currentTime;
-            let nowInMs = Math.round(this.video.currentTime * 1000);
-
-            // Dessin de la vidéo en fond
-            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-
-        }
-    }
-
-    detectingGestures(results, drawingUtils) {
-
-        if (results.landmarks) {
-            for (let i = 0; i < results.landmarks.length; i++) {
-                const landmarks = results.landmarks[i];
-                const letterDetected = whichLetterIsDetected(landmarks);
-                if (!(letterDetected === "")) { //if we find at least one letter
-                    this.currentGestures.push(letterDetected);
-                }
-            }
-        }
-    }
-
-    drawMediapipeHandsOverlay(nowInMs, results, drawingUtils) {
-
-        if (results.landmarks) {
-            // old code used to draw the ligne and points on hands detected by mediapipe
-            for (const landmarks of results.landmarks) {
-                drawingUtils.drawConnectors(landmarks, GestureRecognizer.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 3 });
-                drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 1 });
-            }
+        switch (tabId) {
+            case 'lsf':
+                this.lsfRecognizer.updateLsf(this.currentResults, this.webcamRunning);
+                break;
+            case 'colors':
+                this.ColorsRecognizer.updateColors(this.currentResults, this.webcamRunning);
+                break;
+            default:
+                console.log("DEBUG : update dans VisionController n'a pas trouvé la fenêtre");
         }
     }
 
     // Le InputManager utilisera cette méthode pour récupérer les données
-    getGestures() {
-        return this.currentGestures;
+    getResults() {
+        return this.currentResults;
     }
 }

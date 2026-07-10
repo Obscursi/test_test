@@ -1,4 +1,5 @@
 import { VisionController } from './VisionController.js';
+
 // import { KeyboardController } from './KeyboardController.js'; // Prévu pour plus tard
 
 class InputManager {
@@ -16,8 +17,6 @@ class InputManager {
         console.log("InputManager : Lancement des capteurs...");
         const isVisionReady = await this.vision.init();
         // await this.keyboard.init();
-        console.log("InputManager : wow");
-
         return isVisionReady;
     }
 
@@ -27,20 +26,14 @@ class InputManager {
 
 
     update(tabId) {
-        if (tabId === 'lsf') {
-            this.vision.updateLsf();
-        } else if (tabId === 'colors') {
-            this.vision.updateColors();
-        } else {
-            console.log("DEBUG : Update dasn InputManager n'a pas trouvé le tab correspondant");
-        }
+        this.vision.update(tabId);
         // this.keyboard.update();
     }
 
     // LA méthode clé : retourne l'état global du joueur au GameEngine
     getState() {
         return {
-            gestures: this.vision.getGestures()
+            gestures: this.vision.getResults()
             // keys: this.keyboard.getPressedKeys()
         };
     }
