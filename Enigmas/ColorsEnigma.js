@@ -1,5 +1,7 @@
 import { Enigma } from './Enigma.js';
 import inputManagerInstance from '../Inputs/InputManager.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
 
 let cv;
 
@@ -137,6 +139,7 @@ export class ColorsEnigma extends Enigma {
                 // Victoire totale !
                 console.log("🏆 VICTOIRE ! Vous avez résolu l'énigme des couleurs !");
                 this.isResolved = true;
+                this.onSuccess();
             } else {
                 // Passage à l'étape suivante
                 console.log(`➡️ Passage à l'étape suivante : ${this.stageRequirements[this.currentStage].name}`);
