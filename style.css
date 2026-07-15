@@ -133,15 +133,6 @@ h1 {
     transition: all 0.3s ease;
 }
 
-/* Conteneurs d'affichage */
-.view-panel {
-    display: none;
-}
-
-.view-panel.active {
-    display: block;
-}
-
 .videoView {
     position: relative;
     width: 640px;
