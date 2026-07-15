@@ -5,6 +5,9 @@ import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
 import { ColorsEnigma } from '../Enigmas/ColorsEnigma.js';
 import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
+import { ENIGMA_STATUS } from '../Utils/Constant.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
 
 class GameEngine {
     constructor() {
@@ -125,8 +128,8 @@ class GameEngine {
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
         //here we put the starter enigmas
-        this.activateEnigma('colors');
-        this.activateEnigma('lsf');
+        this.activateEnigma(ENIGMA_IDS.COLORS);
+        this.activateEnigma(ENIGMA_IDS.LSF);
 
 
         requestAnimationFrame(() => this.loop());
@@ -173,7 +176,7 @@ class GameEngine {
 
 
     /**
-    * Change the status of an enigma to 'resolved'
+    * Change the status of an enigma to ENIGMA_STATUS.RESOLVED
     * @param {string} idEnigma
     */
     completeEnigma(idEnigma, enigmasToUnlock = []) {
@@ -183,7 +186,7 @@ class GameEngine {
         const tabCompleted = uiManagerInstance.tabs[idEnigma];
 
         // Security
-        if (!tabCompleted || tabCompleted.status === 'resolved') {
+        if (!tabCompleted || tabCompleted.status === ENIGMA_STATUS.RESOLVED) {
             console.log(`DEBUG GameEngine, completeEnigma : tabCompleted : ${tabCompleted} et tabCompleted.status : ${tabCompleted.status}`);
             this.isTransitioning = false;
             return;
@@ -212,7 +215,7 @@ class GameEngine {
      * We check here if the 2 enigmas at the end of each way are resolved, if so we show the final victory screen
      */
     checkFinalVictory() {
-        const arucoFini = uiManagerInstance.tabs['aruco'].statut === 'resolu';
+        const arucoFini = uiManagerInstance.tabs[ENIGMA_IDS.ARUCO].statut === 'resolu';
         // const chemin2Fini = uiManagerInstance.onglets['enigmeChemin2'].statut === 'resolu';
 
         if (arucoFini /* && chemin2Fini */) {

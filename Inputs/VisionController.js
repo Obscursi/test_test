@@ -1,5 +1,7 @@
 import { ColorsRecognizer } from './Recognizers/ColorsRecognizer.js';
 import { LsfRecognizer } from './Recognizers/LsfRecognizer.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
 
 
 export class VisionController {
@@ -57,10 +59,10 @@ export class VisionController {
     update(tabId) {
 
         switch (tabId) {
-            case 'lsf':
+            case ENIGMA_IDS.LSF:
                 this.lsfRecognizer.updateLsf(this.currentResults, this.webcamRunning);
                 break;
-            case 'colors':
+            case ENIGMA_IDS.COLORS:
                 this.colorsRecognizer.updateColors(this.currentResults, this.webcamRunning);
                 break;
             default:

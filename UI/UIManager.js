@@ -8,6 +8,11 @@ import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
 import gameEngineInstance from '../Core/GameEngine.js'
 
+import { ENIGMA_STATUS } from '../Utils/Constant.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
+
+
 class UIManager {
 
     constructor() {
@@ -28,14 +33,14 @@ class UIManager {
         // --- getting all the tabs ---
         this.tabs = {
             welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
-            lsf: new Tab('lsf', 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
-            aruco: new Tab('aruco', 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
-            colors: new Tab('colors', 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
+            lsf: new Tab(ENIGMA_IDS.LSF, 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
+            aruco: new Tab(ENIGMA_IDS.ARUCO, 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
+            colors: new Tab(ENIGMA_IDS.COLORS, 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
             victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
         };
 
         this.activeTabId = 'welcome';
-        this.tabs['welcome'].status = 'available'; // we may have problem if we don't do that
+        this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
@@ -82,7 +87,7 @@ class UIManager {
         }
 
         // 3. Gestion de la Caméra Globale
-        const tabsWithWebcam = ['lsf', 'aruco', 'colors'];
+        const tabsWithWebcam = [ENIGMA_IDS.LSF, ENIGMA_IDS.ARUCO, ENIGMA_IDS.COLORS];
         if (!(tabId === 'welcome')) { //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
             if (this.webcamContainer) {
                 if (tabsWithWebcam && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) {
@@ -106,7 +111,7 @@ class UIManager {
 
     displayOrNotLsfTextBox(tabId) {
         if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
-            this.lsfTextBox.style.display = (tabId === 'lsf' && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
+            this.lsfTextBox.style.display = (tabId === ENIGMA_IDS.LSF && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
         } else {
             console.log("We are missing the lsf box");
         }

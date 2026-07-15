@@ -1,6 +1,10 @@
+import { ENIGMA_STATUS } from '../Utils/Constant.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
+
 export class Tab {
     /**
-     * @param {string} idCible - Le data-target (ex: 'lsf', 'opencv')
+     * @param {string} idCible - Le data-target (ex: ENIGMA_IDS.LSF)
      * @param {string} nom - Le nom affiché (ex: "Scanner de Formes")
      * @param {HTMLElement} boutonDOM - L'élément HTML du bouton dans la navigation
      * @param {HTMLElement} panneauDOM - L'élément HTML du contenu de l'énigme
@@ -18,8 +22,8 @@ export class Tab {
         //locked = the player cannot see the tab
         //available = the player can see it and it is in orange
         //resolved = the player can see it and it is in green
-        // States possible : 'locked', 'available', 'resolved'
-        this.status = 'locked';
+        // States possible : ENIGMA_STATUS.LOCKED, ENIGMA_STATUS.AVAILABLE, ENIGMA_STATUS.RESOLVED
+        this.status = ENIGMA_STATUS.LOCKED;
 
         this.activeOrNot = false;
 
@@ -34,9 +38,9 @@ export class Tab {
      * Étape 1 : Le joueur débloque l'énigme (L'onglet apparaît en orange)
      */
     unlockTab() {
-        if (this.status !== 'locked') return;
+        if (this.status !== ENIGMA_STATUS.LOCKED) return;
 
-        this.status = 'available';
+        this.status = ENIGMA_STATUS.AVAILABLE;
         //this.button.style.display = "block";
         this.button.classList.add("available");
         this.button.classList.remove("completed", "active"); //security, when we unlock the button should be orange (available)
@@ -49,7 +53,7 @@ export class Tab {
      * Étape 2 : Le joueur clique sur l'onglet pour le lire (L'onglet devient bleu)
      */
     activateTab() {
-        if (this.status === 'locked') {
+        if (this.status === ENIGMA_STATUS.LOCKED) {
             console.log("DEBUG : activateTab dans Tab a été appelée alors que l'onglet est locked (ne devrait pas être atteignable)");
             return;
         }
@@ -65,7 +69,7 @@ export class Tab {
         this.button.classList.add("active");
 
         //we show a different panel, depending on if the enigma is resolved or not
-        if (this.status === 'resolved') {
+        if (this.status === ENIGMA_STATUS.RESOLVED) {
             this.panelVictory.classList.add("active");
         } else {
             this.panel.classList.add("active");
@@ -80,7 +84,7 @@ export class Tab {
      * change the status back to available or resol
      */
     deactivateTab() {
-        if (this.status === 'locked') {
+        if (this.status === ENIGMA_STATUS.LOCKED) {
             // as of now, this is normal behavior as  we deactivate all tabs regardless of their status
             return;
         }
@@ -108,7 +112,7 @@ export class Tab {
      * Étape 3 : Le joueur a réussi l'énigme (L'onglet devient vert)
      */
     makeTabCompleted() {
-        this.status = 'resolved';
+        this.status = ENIGMA_STATUS.RESOLVED;
         this.button.classList.remove("available");
         this.button.classList.add("completed");
     }

@@ -1,4 +1,6 @@
 import uiManagerInstance from '../UI/UIManager.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
+
 
 export class WebcamButton {
 
@@ -73,13 +75,13 @@ export class WebcamButton {
             const welcomeTab = document.querySelector('.tab-button[data-target="welcome"]');
             if (welcomeTab) welcomeTab.style.display = "none";
 
-            uiManagerInstance.tabs['lsf'].unlockTab();
+            uiManagerInstance.tabs[ENIGMA_IDS.LSF].unlockTab();
             uiManagerInstance.tabs['colors'].unlockTab();
 
 
             // Bascule sur le puzzle
-            uiManagerInstance.showTab('lsf');
-            uiManagerInstance.showTab('colors');
+            uiManagerInstance.showTab(ENIGMA_IDS.LSF);
+            uiManagerInstance.showTab(ENIGMA_IDS.COLORS);
 
 
 
