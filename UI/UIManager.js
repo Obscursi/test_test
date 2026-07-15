@@ -173,7 +173,6 @@ class UIManager {
         const newTab = this.tabs[idOfNewTab];
         if (!newTab) return;
 
-        // On le passe en Orange (available)
         newTab.unlockTab();
         if (this.cinematicOverlay) {
             this.cinematicText.innerText = newTab.name;
