@@ -92,12 +92,13 @@ export class Tab {
 
         this.activeOrNot = false;
 
-
-        if (this.status === 'resolved') {
-            this.panelVictory.classList.remove("active");
-        } else {
-            this.panel.classList.remove("active");
-        }
+        /*
+        we remove both class, which can  seems weird as there should be only one of them active. The problem is that
+        when we change the status to available to completed, the deactivateTab function tries to remove from the panelVictory classList
+        and not the panel, making the old panel visible not only for this tab but for all the other ones. I thought it was ok to make it this way 
+        */
+        this.panelVictory.classList.remove("active");
+        this.panel.classList.remove("active");
 
 
         this.button.classList.remove("active");
