@@ -126,7 +126,7 @@ export class ColorsEnigma extends Enigma {
         return "Inconnue";
     }
 
-    nettoyerMemoire() {
+    cleanOfMemory() {
         this.gray.delete();
         this.blurred.delete();
         this.hsv.delete();

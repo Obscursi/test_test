@@ -42,4 +42,11 @@ export class Enigma {
         // send to admin : 
         // networkManager.sendMessage({ type: 'VICTOIRE', enigme: this.id });
     }
+
+    /**
+     * Mainly used to empty OpenCV, envet listeners and set intervals. Not all enigmas overwrite it.
+     */
+    cleanOfMemory() {
+        console.log(`L'énigme avec l'id ${this.id} n'a pas de méthode clenOfMemory, cas normal`);
+    }
 }

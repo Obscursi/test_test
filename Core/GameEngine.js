@@ -11,7 +11,7 @@ class GameEngine {
         // this.networkManager = new NetworkManager();
 
         // 2. État global du jeu
-        this.catalogueEnigmes = {};
+        this.dictionnaryOfEnigmas = {};
 
         // 2. LE POOL ACTIF (Uniquement les énigmes que le joueur est en train de résoudre)
         this.activeEnigmas = [];
@@ -110,11 +110,11 @@ class GameEngine {
         const aruco = new ArucoEnigma();
         const colors = new ColorsEnigma();
 
-        this.catalogueEnigmes[lsf.id] = lsf;
-        this.catalogueEnigmes[aruco.id] = aruco;
-        this.catalogueEnigmes[colors.id] = colors;
+        this.dictionnaryOfEnigmas[lsf.id] = lsf;
+        this.dictionnaryOfEnigmas[aruco.id] = aruco;
+        this.dictionnaryOfEnigmas[colors.id] = colors;
 
-        console.log(`GameEngine: ${Object.keys(this.catalogueEnigmes).length} énigmes chargées dans le catalogue.`);
+        console.log(`GameEngine: ${Object.keys(this.dictionnaryOfEnigmas).length} énigmes chargées dans le dictionnaire.`);
 
     }
 
@@ -135,7 +135,7 @@ class GameEngine {
      * Ajoute une énigme au cycle de mise à jour (Loop).
      */
     activateEnigma(idEnigma) {
-        const enigma = this.catalogueEnigmes[idEnigma];
+        const enigma = this.dictionnaryOfEnigmas[idEnigma];
         if (enigma && !this.activeEnigmas.includes(enigma)) {
             enigma.start(); // S'il y a des choses à initialiser dans la classe
             this.activeEnigmas.push(enigma);
@@ -183,7 +183,7 @@ class GameEngine {
 
         // Security
         if (!tabCompleted || tabCompleted.status === 'resolved') {
-            console.log("DEBUG GameEngine, completeEnigma : tabCompleted : ${tabCompleted} et tabCompleted.status : ${tabCompleted.status}");
+            console.log(`DEBUG GameEngine, completeEnigma : tabCompleted : ${tabCompleted} et tabCompleted.status : ${tabCompleted.status}`);
             this.isTransitioning = false;
             return;
         }
@@ -200,6 +200,7 @@ class GameEngine {
             this.activateEnigma(nextId);
         });
 
+        this.cleanMemory(this.dictionnaryOfEnigmas[idEnigma]);
 
         this.checkFinalVictory();
 
@@ -207,7 +208,7 @@ class GameEngine {
     }
 
     /**
-     * Le moteur ne vérifie plus que LA condition de victoire du jeu.
+     * We check here if the 2 enigmas at the end of each way are resolved, if so we show the final victory screen
      */
     checkFinalVictory() {
         const arucoFini = uiManagerInstance.tabs['aruco'].statut === 'resolu';
@@ -218,6 +219,15 @@ class GameEngine {
             this.isRunning = false;
         }
     }
+
+    cleanMemory(enigmaToComplete) {
+        if (enigmaToComplete && typeof enigmaToComplete.cleanOfMemory === 'function') {
+            enigmaToComplete.cleanOfMemory();
+        } else {
+            console.log("DEBUG : le nettoyage de l'énigme n'a pas marché (soit l'énigme n'existe plus soit cleanOfMemory n'est pas une fonction");
+        }
+    }
+
 
 }
 

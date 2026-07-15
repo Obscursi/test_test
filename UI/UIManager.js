@@ -85,7 +85,7 @@ class UIManager {
         const tabsWithWebcam = ['lsf', 'aruco', 'colors'];
         if (!(tabId === 'welcome')) { //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
             if (this.webcamContainer) {
-                if (tabsWithWebcam && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) {
+                if (tabsWithWebcam && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) {
                     this.webcamContainer.style.display = "block";
                 } else {
                     this.webcamContainer.style.display = "none";
@@ -106,7 +106,7 @@ class UIManager {
 
     displayOrNotLsfTextBox(tabId) {
         if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
-            this.lsfTextBox.style.display = (tabId === 'lsf' && !gameEngineInstance.catalogueEnigmes[tabId].isResolved) ? "block" : "none";
+            this.lsfTextBox.style.display = (tabId === 'lsf' && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
         } else {
             console.log("We are missing the lsf box");
         }
