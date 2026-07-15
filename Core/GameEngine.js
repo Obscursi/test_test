@@ -125,8 +125,9 @@ class GameEngine {
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
         //here we put the starter enigmas
-        this.activateEnigma('lsf');
         this.activateEnigma('colors');
+        this.activateEnigma('lsf');
+
 
         requestAnimationFrame(() => this.loop());
     }
