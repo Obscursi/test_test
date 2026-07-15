@@ -75,7 +75,7 @@ export class ColorsEnigma extends Enigma {
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
 
         // Paramètres de détection de cercles : à ajuster selon la distance de la caméra
-        cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 40, 15, 150);
+        cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 40, 30, 60);
 
         if (this.circles.cols === 0) return;
 
