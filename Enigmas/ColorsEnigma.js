@@ -19,6 +19,31 @@ export class ColorsEnigma extends Enigma {
         // Variables pour la lecture de la webcam (initialisées plus tard)
         this.cap = null;
         this.srcMat = null;
+
+        // --- Gestion de l'énigme par étapes ---
+        this.currentStage = 0;
+        this.stageStartTime = null;
+        this.lastCountdownSeconds = -1;
+        this.detectedColorsThisFrame = new Set();
+
+        // Configuration des conditions pour chaque étape
+        this.stageRequirements = [
+            {
+                name: "Étape 1 : Détecter toutes les couleurs (Marron, Bleu, Bleu-Vert, Orange, Rose foncé)",
+                required: ["Marron", "Bleu", "Bleu-Vert", "Orange", "Rose foncé"],
+                forbidden: []
+            },
+            {
+                name: "Étape 2 : Cacher le Rose foncé",
+                required: ["Marron", "Bleu", "Bleu-Vert", "Orange"],
+                forbidden: ["Rose foncé"]
+            },
+            {
+                name: "Étape 3 : Cacher le Rose foncé ET l'Orange",
+                required: ["Marron", "Bleu", "Bleu-Vert"],
+                forbidden: ["Rose foncé", "Orange"]
+            }
+        ];
     }
 
     /**
@@ -34,50 +59,118 @@ export class ColorsEnigma extends Enigma {
      * Vérifie l'image actuelle de la webcam
      */
     checkCondition() {
-        // On récupère la balise vidéo native (soit via le DOM, soit via l'InputManager)
         const video = document.getElementById("webcam");
 
-        // Sécurité : on attend que la webcam soit vraiment allumée et affiche une image
+        // Sécurité : on attend que la webcam soit vraiment allumée
         if (!video || video.videoWidth === 0 || video.videoHeight === 0) return;
 
-        // 1. Initialisation du capteur OpenCV à la première image valide
+        // Initialisation du capteur OpenCV à la première image valide
         if (!this.cap) {
             this.cap = new cv.VideoCapture(video);
-            // On crée la matrice source aux dimensions exactes de la vidéo
             this.srcMat = new cv.Mat(video.videoHeight, video.videoWidth, cv.CV_8UC4);
+            this.stageStartTime = Date.now(); // Déclenchement du premier chrono
             console.log("📸 ColorsEnigma : Capteur vidéo OpenCV initialisé.");
+            console.log(`🚀 Début de l'énigme ! ${this.stageRequirements[0].name}`);
         }
 
         try {
-            // 2. Lecture de l'image (copie les pixels de la vidéo vers this.srcMat)
+            // Lecture de l'image
             this.cap.read(this.srcMat);
 
-            // 3. Analyse de l'image
-            this.detecterCerclesColores(this.srcMat);
+            // Analyse et récupération des couleurs détectées sur cette frame
+            this.detectedColorsThisFrame = this.detecterCerclesColores(this.srcMat);
 
-            // 4. (Optionnel) Si tu veux voir ce qu'OpenCV détecte à l'écran, 
-            // tu peux renvoyer l'image modifiée sur le canvas par-dessus la vidéo :
+            // Affichage sur le canvas
             cv.imshow('mp_canvas', this.srcMat);
 
+            // Gestion du timer de 5 secondes (5000 ms)
+            const elapsed = Date.now() - this.stageStartTime;
+            const remainingSeconds = Math.ceil((5000 - elapsed) / 1000);
+
+            // Affichage du compte à rebours dans la console
+            if (remainingSeconds !== this.lastCountdownSeconds && remainingSeconds >= 0) {
+                console.log(`⏱️ Évaluation de l'étape dans : ${remainingSeconds}s...`);
+                this.lastCountdownSeconds = remainingSeconds;
+            }
+
+            // Fin des 5 secondes -> Évaluation
+            if (elapsed >= 5000) {
+                this.evaluerEtape();
+            }
+
         } catch (err) {
-            // OpenCV.js peut être très capricieux, un try/catch évite de crasher tout le jeu
             console.error("Erreur de traitement OpenCV :", err);
         }
     }
 
     /**
-     * Analyse une image (frame de webcam) pour trouver des cercles et leur couleur.
-     * @param {cv.Mat} srcMat - L'image source provenant du canvas (format RGBA).
+     * Évalue si les conditions de l'étape actuelle sont respectées
+     */
+    evaluerEtape() {
+        const rules = this.stageRequirements[this.currentStage];
+        let stepPassed = true;
+
+        // 1. Vérification des couleurs requises
+        for (const reqColor of rules.required) {
+            if (!this.detectedColorsThisFrame.has(reqColor)) {
+                stepPassed = false;
+                break;
+            }
+        }
+
+        // 2. Vérification des couleurs interdites
+        if (stepPassed) {
+            for (const forbColor of rules.forbidden) {
+                if (this.detectedColorsThisFrame.has(forbColor)) {
+                    stepPassed = false;
+                    break;
+                }
+            }
+        }
+
+        if (stepPassed) {
+            // Réussite de l'étape
+            console.log(`✅ Étape validée avec succès !`);
+            this.currentStage++;
+
+            if (this.currentStage >= this.stageRequirements.length) {
+                // Victoire totale !
+                console.log("🏆 VICTOIRE ! Vous avez résolu l'énigme des couleurs !");
+                this.isResolved = true;
+            } else {
+                // Passage à l'étape suivante
+                console.log(`➡️ Passage à l'étape suivante : ${this.stageRequirements[this.currentStage].name}`);
+                this.stageStartTime = Date.now();
+                this.lastCountdownSeconds = -1;
+            }
+        } else {
+            // Échec -> Retour au début
+            console.log(`❌ ÉCHEC ! Les conditions requises n'ont pas été respectées.`);
+            console.log(`Couleurs détectées au moment du check :`, Array.from(this.detectedColorsThisFrame));
+            console.log(`🔄 Retour au début de l'énigme...`);
+
+            this.currentStage = 0;
+            this.stageStartTime = Date.now();
+            this.lastCountdownSeconds = -1;
+            console.log(`🚀 ${this.stageRequirements[0].name}`);
+        }
+    }
+
+    /**
+     * Analyse une image pour trouver des cercles et retourne un Set des couleurs détectées.
+     * @param {cv.Mat} srcMat - L'image source provenant du canvas.
+     * @returns {Set<string>} - Set contenant les noms des couleurs identifiées.
      */
     detecterCerclesColores(srcMat) {
-        new Promise(resolve => setTimeout(resolve, 10000));
+        const colorsDetected = new Set();
+
         cv.cvtColor(srcMat, this.gray, cv.COLOR_RGBA2GRAY);
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
 
-        // Paramètres de détection de cercles : à ajuster selon la distance de la caméra
+        // Paramètres de détection de cercles
         cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 40, 30, 60);
 
-        if (this.circles.cols === 0) return;
+        if (this.circles.cols === 0) return colorsDetected;
 
         cv.cvtColor(srcMat, this.hsv, cv.COLOR_RGBA2RGB);
         cv.cvtColor(this.hsv, this.hsv, cv.COLOR_RGB2HSV);
@@ -95,20 +188,22 @@ export class ColorsEnigma extends Enigma {
             const couleurDetectee = this.analyserCouleurHSV(teinte, saturation, luminosite);
 
             if (couleurDetectee !== "Inconnue") {
-                console.log(`🎯 Cercle détecté : ${couleurDetectee} (Rayon: ${rayon}px)`);
+                colorsDetected.add(couleurDetectee);
 
-                // Dessin visuel sur l'image (si tu utilises cv.imshow plus haut)
+                // Dessin visuel sur l'image
                 cv.circle(srcMat, new cv.Point(x, y), rayon, new cv.Scalar(255, 0, 0, 255), 3);
                 cv.circle(srcMat, new cv.Point(x, y), 3, new cv.Scalar(0, 255, 0, 255), -1);
             }
         }
+
+        return colorsDetected;
     }
 
     analyserCouleurHSV(h, s, v) {
         if (s < 40 || v < 40) return "Inconnue";
 
         if (h >= 5 && h <= 25) {
-            if (v < 150) return "Marron";
+            if (v < 250) return "Marron";
             else return "Orange";
         }
         else if (h > 35 && h <= 80) {
@@ -132,7 +227,6 @@ export class ColorsEnigma extends Enigma {
         this.hsv.delete();
         this.circles.delete();
 
-        // On n'oublie pas de nettoyer la matrice source si elle a été allouée
         if (this.srcMat) {
             this.srcMat.delete();
         }
