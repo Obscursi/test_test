@@ -54,7 +54,7 @@ export class VisionController {
                     // =========================================================
                     const track = stream.getVideoTracks()[0];
                     track.onended = () => {
-                        this.handleHardwareCrash("La caméra a été déconnectée physiquement !");
+                        this.handleHardwareCrash("La caméra a été déconnectée");
                     };
 
                     this.video.addEventListener("loadeddata", () => {

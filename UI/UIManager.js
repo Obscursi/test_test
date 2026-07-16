@@ -1,5 +1,3 @@
-
-
 import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
 
 import { Tab } from './Tab.js';
@@ -16,56 +14,15 @@ import { ENIGMA_IDS } from '../Utils/Constant.js';
 class UIManager {
 
     constructor() {
-        // --- we get the element of the interface ---
-        this.btnWebcam = document.getElementById("webcamButton");
-        this.loadingMessage = document.getElementById("loadingMessage");
-        this.lsfTextBox = document.getElementById("lsf-sign-box");
-        this.notificationBanner = document.getElementById("notification-banner");
-        this.webcamContainer = document.getElementById("webcam-container");
-        this.tabContainer = document.querySelector('.tab-container');
 
-
-        // --- configuration of the fancy cinematic ---
-        this.cinematicOverlay = document.getElementById("unlock-cinematic");
-        this.cinematicText = document.getElementById("cinematic-tab-name");
-        this.cinematicContent = this.cinematicOverlay?.querySelector(".cinematic-content");
-
-        // --- getting all the tabs ---
-        this.tabs = {
-            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
-            lsf: new Tab(ENIGMA_IDS.LSF, 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
-            aruco: new Tab(ENIGMA_IDS.ARUCO, 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
-            colors: new Tab(ENIGMA_IDS.COLORS, 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
-            victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
-        };
+        this.loadHTMLelements();
+        this.loadTabs();
 
         this.activeTabId = 'welcome';
         this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
-
-        // Dans le constructor de ton UIManager
-        const btnReload = document.getElementById('btn-reload-system');
-        if (btnReload) {
-            btnReload.addEventListener('click', () => {
-                console.log("🔄 Lancement du protocole de redémarrage intégral...");
-
-                // 1. (Optionnel) Effacer la sauvegarde si on considère que 
-                // le crash matériel annule la partie en cours.
-                // Si tu veux que le joueur reprenne là où il en était après 
-                // avoir rebranché sa caméra, supprime cette ligne !
-                // localStorage.removeItem('escapeGameSave');
-
-                // 2. Le "Hard Reload" (Bypass du cache)
-                // En JavaScript moderne, location.reload(true) est déprécié.
-                // La ruse ultime consiste à rajouter un paramètre de temps à l'URL.
-                // Le navigateur croira que c'est une toute nouvelle page et 
-                // retéléchargera TOUS les fichiers à neuf, sans utiliser son cache.
-                const urlSansParametres = window.location.pathname;
-                window.location.href = urlSansParametres + "?t=" + Date.now(); //it seems weird but it is the modern way (we change the url so that everything is loaded, because the cache is empty)
-            });
-        }
 
     }
 
@@ -97,8 +54,6 @@ class UIManager {
      */
     showTab(tabId) {
         this.activeTabId = tabId;
-
-        this.tabs[tabId].activateTab;
 
         // 1. On désactive TOUS les onglets
         Object.values(this.tabs).forEach(tab => tab.deactivateTab());
@@ -244,6 +199,45 @@ class UIManager {
                     }
                 }, 300);
             }, 5000);
+        }
+    }
+
+    loadTabs() {
+        this.tabs = {
+            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
+            lsf: new Tab(ENIGMA_IDS.LSF, 'Langue des signes française', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
+            aruco: new Tab(ENIGMA_IDS.ARUCO, 'Scanner aruco', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
+            colors: new Tab(ENIGMA_IDS.COLORS, 'Scanner de couleurs', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
+            victoire: new Tab('victoire', 'La  victoire est vôtre', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
+        };
+    }
+
+    loadHTMLelements() {
+        // --- we get the element of the interface ---
+        this.btnWebcam = document.getElementById("webcamButton");
+        this.loadingMessage = document.getElementById("loadingMessage");
+        this.lsfTextBox = document.getElementById("lsf-sign-box");
+        this.notificationBanner = document.getElementById("notification-banner");
+        this.webcamContainer = document.getElementById("webcam-container");
+        this.tabContainer = document.querySelector('.tab-container');
+
+
+        // --- configuration of the fancy cinematic ---
+        this.cinematicOverlay = document.getElementById("unlock-cinematic");
+        this.cinematicText = document.getElementById("cinematic-tab-name");
+        this.cinematicContent = this.cinematicOverlay?.querySelector(".cinematic-content");
+
+
+
+        const btnReload = document.getElementById('btn-reload-system');
+        if (btnReload) {
+            btnReload.addEventListener('click', () => {
+                console.log("🔄 Lancement du protocole de redémarrage intégral...");
+
+                //it seems weird but it is the modern way (we change the url with the date so that everything is loaded, because the cache is empty)
+                const urlWithoutParameters = window.location.pathname;
+                window.location.href = urlWithoutParameters + "?t=" + Date.now();
+            });
         }
     }
 
