@@ -8,6 +8,8 @@ import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 import { ENIGMA_STATUS } from '../Utils/Constant.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 
+import { showError } from '../UI/AlertManager.js';
+
 
 class GameEngine {
     constructor() {
@@ -86,7 +88,7 @@ class GameEngine {
 
         if (!inputsReady) {
             console.error("🚨 GameEngine: Échec de l'IA.");
-            uiManagerInstance.showError("Erreur fatale de l'IA. Vérifiez la console.");
+            showError("Erreur fatale de l'IA. Vérifiez la console.");
             return;
         }
 

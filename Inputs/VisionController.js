@@ -3,6 +3,8 @@ import { LsfRecognizer } from './Recognizers/LsfRecognizer.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 import uiManagerInstance from '../UI/UIManager.js';
 
+import { showError } from '../UI/AlertManager.js';
+
 
 
 export class VisionController {
@@ -123,8 +125,8 @@ export class VisionController {
         }
 
         // On prévient le joueur visuellement via l'interface
-        if (uiManagerInstance && typeof uiManagerInstance.showError === 'function') {
-            uiManagerInstance.showError(messageInfo);
+        if (uiManagerInstance && typeof showError === 'function') {
+            showError(messageInfo);
         }
     }
 }
