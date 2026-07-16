@@ -45,6 +45,28 @@ class UIManager {
         this.initEventListeners();
         this.showTab(this.activeTabId);
 
+        // Dans le constructor de ton UIManager
+        const btnReload = document.getElementById('btn-reload-system');
+        if (btnReload) {
+            btnReload.addEventListener('click', () => {
+                console.log("🔄 Lancement du protocole de redémarrage intégral...");
+
+                // 1. (Optionnel) Effacer la sauvegarde si on considère que 
+                // le crash matériel annule la partie en cours.
+                // Si tu veux que le joueur reprenne là où il en était après 
+                // avoir rebranché sa caméra, supprime cette ligne !
+                // localStorage.removeItem('escapeGameSave');
+
+                // 2. Le "Hard Reload" (Bypass du cache)
+                // En JavaScript moderne, location.reload(true) est déprécié.
+                // La ruse ultime consiste à rajouter un paramètre de temps à l'URL.
+                // Le navigateur croira que c'est une toute nouvelle page et 
+                // retéléchargera TOUS les fichiers à neuf, sans utiliser son cache.
+                const urlSansParametres = window.location.pathname;
+                window.location.href = urlSansParametres + "?t=" + Date.now(); //it seems weird but it is the modern way (we change the url so that everything is loaded, because the cache is empty)
+            });
+        }
+
     }
 
     /**
@@ -152,10 +174,29 @@ class UIManager {
         }
     }
 
-    showError(message) {
-        this.loadingMessage.innerText = message;
-        this.loadingMessage.style.color = "red";
-        this.loadingMessage.style.display = "inline";
+    showError(messageInfo) {
+        const modal = document.getElementById('hardware-error-modal');
+        const messageBox = document.getElementById('hardware-error-message');
+
+        if (modal && messageBox) {
+            // 1. On injecte le message spécifique (ex: "Caméra débranchée")
+            messageBox.textContent = messageInfo;
+
+            // 2. On retire la classe 'hidden' pour afficher l'écran
+            modal.classList.remove('hidden');
+        } else {
+            // Sécurité de dernier recours si le HTML est introuvable
+            console.error("ERREUR FATALE : ", messageInfo);
+            alert("Erreur critique : " + messageInfo + "\n");
+            window.location.href = window.location.href + '?timestamp=' + new Date().getTime()
+        }
+    }
+
+    hideError() {
+        const modal = document.getElementById('hardware-error-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+        }
     }
 
     showNotification(message) {

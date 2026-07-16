@@ -1,6 +1,7 @@
 import { ColorsRecognizer } from './Recognizers/ColorsRecognizer.js';
 import { LsfRecognizer } from './Recognizers/LsfRecognizer.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
+import uiManagerInstance from '../UI/UIManager.js';
 
 
 
@@ -28,13 +29,14 @@ export class VisionController {
             const initiateColors = await this.colorsRecognizer.initColors();
             return (initiateLsf && initiateColors);
         } catch (error) {
-            console.error("Erreur d'initialisation VisionController :", error);
+            this.handleHardwareCrash("Erreur critique lors du chargement des modèles IA.");
             return false;
         }
     }
 
     toggleWebcam() {
         if (this.webcamRunning) {
+            // Extinction volontaire
             this.webcamRunning = false;
             if (this.video.srcObject) {
                 this.video.srcObject.getTracks().forEach(track => track.stop());
@@ -42,21 +44,53 @@ export class VisionController {
             }
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         } else {
-            navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-                this.video.srcObject = stream;
-                this.video.addEventListener("loadeddata", () => {
-                    this.video.play();
-                    this.webcamRunning = true;
-                }, { once: true });
-            }).catch(err => {
-                console.error("Impossible d'accéder à la webcam.", err);
-                this.webcamRunning = false;
-            });
+            // Allumage avec gestion stricte des erreurs matérielles
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    this.video.srcObject = stream;
+
+                    // =========================================================
+                    // 1. LE BOUCLIER "HOT UNPLUG" (Débranchement sauvage)
+                    // =========================================================
+                    const track = stream.getVideoTracks()[0];
+                    track.onended = () => {
+                        this.handleHardwareCrash("La caméra a été déconnectée physiquement !");
+                    };
+
+                    this.video.addEventListener("loadeddata", () => {
+                        // On sécurise aussi le play() qui peut être bloqué par le navigateur
+                        this.video.play().catch(e => {
+                            this.handleHardwareCrash("Le navigateur bloque la lecture vidéo.");
+                        });
+                        this.webcamRunning = true;
+                    }, { once: true });
+                })
+                .catch(err => {
+                    // =========================================================
+                    // 2. L'ANALYSE DES PANNES D'ALLUMAGE
+                    // =========================================================
+                    this.webcamRunning = false;
+
+                    if (err.name === 'NotAllowedError') {
+                        this.handleHardwareCrash("Accès refusé. Vous devez autoriser la caméra dans votre navigateur. Veuillez recharger la page.");
+                    } else if (err.name === 'NotFoundError') {
+                        this.handleHardwareCrash("Aucune caméra détectée. Branchez un appareil. Veuillez recharger la page.");
+                    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                        this.handleHardwareCrash("Caméra indisponible (déjà utilisée par Zoom, une autre page web, etc.). Veuillez recharger la page.");
+                    } else {
+                        this.handleHardwareCrash(`Erreur matérielle inconnue : ${err.message} Veuillez recharger la page.`);
+                    }
+                });
         }
     }
 
     // Cette fonction sera appelée en boucle par le GameEngine
     update(tabId) {
+
+        if (!this.webcamRunning) {
+            console.log("DEBUG : update appelé alors que la webcam ne tourne pas");
+            return;
+        }
 
         switch (tabId) {
             case ENIGMA_IDS.LSF:
@@ -73,5 +107,24 @@ export class VisionController {
     // Le InputManager utilisera cette méthode pour récupérer les données
     getResults() {
         return this.currentResults;
+    }
+
+    /**
+     * NOUVEAU : Le centre de crise en cas de crash
+     */
+    handleHardwareCrash(messageInfo) {
+        console.error(`🚨 ALERTE SYSTÈME : ${messageInfo}`);
+        this.webcamRunning = false;
+
+        // On coupe le flux cassé proprement pour éviter les fuites de mémoire
+        if (this.video.srcObject) {
+            this.video.srcObject.getTracks().forEach(track => track.stop());
+            this.video.srcObject = null;
+        }
+
+        // On prévient le joueur visuellement via l'interface
+        if (uiManagerInstance && typeof uiManagerInstance.showError === 'function') {
+            uiManagerInstance.showError(messageInfo);
+        }
     }
 }

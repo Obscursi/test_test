@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="styles/cinematics.css">
     <link rel="stylesheet" href="styles/groovyTitle.css">
     <link rel="stylesheet" href="styles/unlockingAnimation.css">
+    <link rel="stylesheet" href="styles/errorWindow.css">
+
 
 
 
@@ -88,6 +90,25 @@
         <div class="cinematic-content">
             <div style="font-size: 1.5rem; color: #4CAF50; letter-spacing: 5px;">ÉNIGME DÉVERROUILLÉE</div>
             <div id="cinematic-tab-name" class="cinematic-title">Nom de l'onglet</div>
+        </div>
+    </div>
+
+    <div id="hardware-error-modal" class="modal-overlay hidden">
+        <div class="modal-content border-neon-red">
+            <h2 class="alert-title">⚠️ DÉFAILLANCE SYSTÈME</h2>
+
+            <p id="hardware-error-message" class="alert-message">
+                Erreur matérielle inconnue.
+            </p>
+
+            <p class="alert-instruction">
+                Veuillez vérifier vos branchements et les autorisations de votre navigateur (cadenas dans la barre
+                d'adresse), puis redémarrez le système.
+            </p>
+
+            <button id="btn-reload-system" class="btn-danger-large">
+                🔄 Redémarrer le système
+            </button>
         </div>
     </div>
 

@@ -1,0 +1,75 @@
+/* ==========================================================
+   MODALE D'ERREUR BLOQUANTE
+   ========================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(5, 5, 10, 0.9);
+    /* Fond très sombre pour cacher le jeu */
+    z-index: 9999;
+    /* Z-index maximum pour passer par-dessus TOUT le reste */
+
+    /* Centrage parfait du contenu */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Classe utilitaire pour cacher la modale */
+.modal-overlay.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    background-color: #111;
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
+}
+
+.border-neon-red {
+    border: 2px solid #ff003c;
+}
+
+.alert-title {
+    color: #ff003c;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.alert-message {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.alert-instruction {
+    color: #aaaaaa;
+    font-size: 1rem;
+    margin-bottom: 30px;
+}
+
+.btn-danger-large {
+    background-color: #ff003c;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-danger-large:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 60, 0.6);
+}
