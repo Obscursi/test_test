@@ -34,8 +34,8 @@ export function showNotification(message) {
     setTimeout(() => {
         this.notificationBanner.style.display = "none";
     }, 3000);
-}
+}*/
 
 export function showVictoryScreen() {
-    ./.showTab('victoire'); place the file where showTab is
-}*/
+    uiManagerInstance.tabManager.showTab('victoire');
+}
