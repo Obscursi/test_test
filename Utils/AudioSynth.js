@@ -1,5 +1,3 @@
-// Utils/audioSynth.js
-
 /**
  * Génère une mélodie de victoire synthétique inspirée des ouvertures de coffres de RPG.
  * Utilise l'API Web Audio native sans aucun fichier externe.
