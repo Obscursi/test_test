@@ -2,12 +2,12 @@ import { WebcamButton } from './WebcamButton.js'; //we import the entire class b
 
 import { Tab } from './Tab.js';
 
-import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
 import gameEngineInstance from '../Core/GameEngine.js'
 
 import { ENIGMA_STATUS } from '../Utils/Constant.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
+import { EnigmaUnlockingAnimation } from './EnigmaUnlockingAnimation.js';
 
 
 class UIManager {
@@ -22,6 +22,8 @@ class UIManager {
 
         this.initEventListeners();
         this.showTab(this.activeTabId);
+
+        this.enigmaUnlockAnimation = new EnigmaUnlockingAnimation();
 
     }
 
@@ -128,41 +130,6 @@ class UIManager {
         }
     }
 
-    /**
-     * Makes a fancy animation adn then show the button to access the tab of the enigma unlocked
-     */
-    launchUnlockingAnimation(idOfNewTab) {
-        const newTab = this.tabs[idOfNewTab];
-        if (!newTab) return;
-
-        newTab.unlockTab();
-        if (this.cinematicOverlay) {
-            this.cinematicText.innerText = newTab.name;
-            playTabUnlockingSound();
-
-            this.cinematicOverlay.style.display = "flex";
-
-            setTimeout(() => {
-                this.cinematicOverlay.style.opacity = "1";
-                this.cinematicContent.classList.add("cinematic-animate");
-            }, 10);
-
-            setTimeout(() => {
-                this.cinematicOverlay.style.opacity = "0";
-
-                setTimeout(() => {
-                    this.cinematicOverlay.style.display = "none";
-                    this.cinematicContent.classList.remove("cinematic-animate");
-
-                    if (newTab.bouton) {
-                        newTab.bouton.classList.add("unlock-animation");
-                        setTimeout(() => newTab.bouton.classList.remove("unlock-animation"), 1500);
-                    }
-                }, 300);
-            }, 5000);
-        }
-    }
-
     loadTabs() {
         this.tabs = {
             welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
@@ -181,12 +148,6 @@ class UIManager {
         this.notificationBanner = document.getElementById("notification-banner");
         this.webcamContainer = document.getElementById("webcam-container");
         this.tabContainer = document.querySelector('.tab-container');
-
-
-        // --- configuration of the fancy cinematic ---
-        this.cinematicOverlay = document.getElementById("unlock-cinematic");
-        this.cinematicText = document.getElementById("cinematic-tab-name");
-        this.cinematicContent = this.cinematicOverlay?.querySelector(".cinematic-content");
 
 
 

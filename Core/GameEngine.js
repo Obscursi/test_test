@@ -3,13 +3,12 @@ import uiManagerInstance from '../UI/UIManager.js';
 import { LsfEnigma } from '../Enigmas/LsfEnigma.js';
 import { ArucoEnigma } from '../Enigmas/ArucoEnigma.js';
 import { ColorsEnigma } from '../Enigmas/ColorsEnigma.js';
-import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 // import { NetworkManager } from '../Network/NetworkManager.js';
 import { ENIGMA_STATUS } from '../Utils/Constant.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 
 import { showError } from '../UI/AlertManager.js';
-
+import { showVictoryScreen } from '../UI/AlertManager.js';
 
 class GameEngine {
     constructor() {
@@ -197,12 +196,10 @@ class GameEngine {
         // We change the status to resolved for the tab (and completed for the button of the tab, which changes its color to green)
         tabCompleted.makeTabCompleted();
 
-        playTabUnlockingSound();
-
         this.activeEnigmas = this.activeEnigmas.filter(enigme => enigme.id !== idEnigma);
 
         enigmasToUnlock.forEach(nextId => {
-            uiManagerInstance.launchUnlockingAnimation(nextId);
+            uiManagerInstance.enigmaUnlockAnimation.launchUnlockingAnimation(nextId);
             this.activateEnigma(nextId);
         });
 
@@ -221,7 +218,8 @@ class GameEngine {
         // const chemin2Fini = uiManagerInstance.onglets['enigmeChemin2'].statut === 'resolu';
 
         if (arucoFini /* && chemin2Fini */) {
-            uiManagerInstance.launchUnlockingAnimation('victoire');
+            uiManagerInstance.enigmaUnlockAnimation.launchUnlockingAnimation('victoire');
+            showVictoryScreen();
             this.isRunning = false;
         }
     }
