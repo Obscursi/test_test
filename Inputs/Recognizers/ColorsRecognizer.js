@@ -1,5 +1,3 @@
-import { whichLetterIsDetected } from '../../Utils/LsfDictionary.js';
-
 export class ColorsRecognizer {
 
     constructor(videoElement, canvasElement) {
