@@ -1,3 +1,7 @@
+import uiManagerInstance from '../UI/UIManager.js';
+
+import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
+
 export class EnigmaUnlockingAnimation {
 
     constructor() {
@@ -10,7 +14,7 @@ export class EnigmaUnlockingAnimation {
     * Makes a fancy animation adn then show the button to access the tab of the enigma unlocked
     */
     launchUnlockingAnimation(idOfNewTab) {
-        const newTab = this.tabs[idOfNewTab];
+        const newTab = uiManagerInstance.tabManager.tabs[idOfNewTab];
         if (!newTab) return;
 
         newTab.unlockTab();

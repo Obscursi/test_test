@@ -52,7 +52,7 @@ export class WebcamButton {
         this.btnWebcam.innerText = "ACCÈS VALIDÉ. SURCHARGE DU SAS...";
         this.btnWebcam.style.backgroundColor = "#ff5252";
 
-        const welcomePanel = uiManagerInstance.tabs['welcome'].panel;
+        const welcomePanel = uiManagerInstance.tabManager.tabs['welcome'].panel;
         const welcomePanelElements = Array.from(welcomePanel.children);
 
         welcomePanelElements.forEach((element, index) => {
@@ -75,13 +75,13 @@ export class WebcamButton {
             const welcomeTab = document.querySelector('.tab-button[data-target="welcome"]');
             if (welcomeTab) welcomeTab.style.display = "none";
 
-            uiManagerInstance.tabs[ENIGMA_IDS.LSF].unlockTab();
-            uiManagerInstance.tabs['colors'].unlockTab();
+            uiManagerInstance.tabManager.tabs[ENIGMA_IDS.LSF].unlockTab();
+            uiManagerInstance.tabManager.tabs[ENIGMA_IDS.COLORS].unlockTab();
 
 
             // Bascule sur le puzzle
-            uiManagerInstance.showTab(ENIGMA_IDS.LSF);
-            uiManagerInstance.showTab(ENIGMA_IDS.COLORS);
+            uiManagerInstance.tabManager.showTab(ENIGMA_IDS.LSF);
+            uiManagerInstance.tabManager.showTab(ENIGMA_IDS.COLORS);
 
 
 

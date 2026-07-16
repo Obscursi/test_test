@@ -156,7 +156,7 @@ class GameEngine {
 
         if (!this.isTransitioning) {
             this.activeEnigmas.forEach(currentEnigma => {
-                const tab = uiManagerInstance.tabs[currentEnigma.id];
+                const tab = uiManagerInstance.tabManager.tabs[currentEnigma.id];
 
                 if (tab && tab.activeOrNot === true) { // we update only if the tab is active (id est open)
                     if (!currentEnigma.isResolved) {
@@ -184,7 +184,7 @@ class GameEngine {
         if (this.isTransitioning) return;
         this.isTransitioning = true;
 
-        const tabCompleted = uiManagerInstance.tabs[idEnigma];
+        const tabCompleted = uiManagerInstance.tabManager.tabs[idEnigma];
 
         // Security
         if (!tabCompleted || tabCompleted.status === ENIGMA_STATUS.RESOLVED) {
@@ -214,7 +214,7 @@ class GameEngine {
      * We check here if the 2 enigmas at the end of each way are resolved, if so we show the final victory screen
      */
     checkFinalVictory() {
-        const arucoFini = uiManagerInstance.tabs[ENIGMA_IDS.ARUCO].statut === 'resolu';
+        const arucoFini = uiManagerInstance.tabManager.tabs[ENIGMA_IDS.ARUCO].statut === 'resolu';
         // const chemin2Fini = uiManagerInstance.onglets['enigmeChemin2'].statut === 'resolu';
 
         if (arucoFini /* && chemin2Fini */) {
