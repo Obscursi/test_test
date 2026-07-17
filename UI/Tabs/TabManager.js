@@ -1,13 +1,13 @@
-import uiManagerInstance from './UIManager.js';
+import uiManagerInstance from '../UIManager.js';
 
-import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
+import { WebcamButton } from '../WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
 import { Tab } from './Tab.js';
 
 
-import { ENIGMA_STATUS } from '../Utils/Constant.js';
-import { ENIGMA_IDS } from '../Utils/Constant.js';
+import { ENIGMA_STATUS } from '../../Utils/Constant.js';
+import { ENIGMA_IDS } from '../../Utils/Constant.js';
 
-import gameEngineInstance from '../Core/GameEngine.js';
+import gameEngineInstance from '../../Core/GameEngine.js';
 
 
 export class TabManager {
@@ -65,6 +65,25 @@ export class TabManager {
             this.tabs[tabId].activateTab();
         }
 
+        this.displayOrNotWebcam(tabId);
+        this.displayOrNotNaviguationbar(tabId);
+
+        //this function will go away cause should not be there.
+        this.displayOrNotLsfTextBox(tabId);
+    }
+
+    displayOrNotLsfTextBox(tabId) {
+
+        this.lsfTextBox = document.getElementById("lsf-sign-box");
+
+        if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
+            this.lsfTextBox.style.display = (tabId === ENIGMA_IDS.LSF && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
+        } else {
+            console.log("We are missing the lsf box");
+        }
+    }
+
+    displayOrNotWebcam(tabId) {
         // 3. Gestion de la Caméra Globale
         const tabsWithWebcam = [ENIGMA_IDS.LSF, ENIGMA_IDS.ARUCO, ENIGMA_IDS.COLORS];
         if (!(tabId === 'welcome')) { //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
@@ -78,24 +97,13 @@ export class TabManager {
                 console.log("DEBUG : webcamcontainer is not defined anymore");
             }
         }
-
-
-        this.displayOrNotLsfTextBox(tabId);
-
-        // 5. Masquage de la barre de navigation sur l'accueil
-        if (this.tabContainer) {
-            this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
-        }
     }
 
-    displayOrNotLsfTextBox(tabId) {
-
-        this.lsfTextBox = document.getElementById("lsf-sign-box");
-
-        if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
-            this.lsfTextBox.style.display = (tabId === ENIGMA_IDS.LSF && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
+    displayOrNotNaviguationbar() {
+        if (this.tabContainer) {
+            this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
         } else {
-            console.log("We are missing the lsf box");
+            console.log("DEBUG : tabContainer undefined, cannot show or hide the naviguation bar ");
         }
     }
 
