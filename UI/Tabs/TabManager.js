@@ -21,6 +21,9 @@ export class TabManager {
         this.activeTabId = 'welcome';
         this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
         this.showTab(this.activeTabId);
+
+        this.lsfTextBox = document.getElementById("lsf-sign-box");
+
     }
 
     loadTabs() {
@@ -67,20 +70,6 @@ export class TabManager {
 
         this.displayOrNotWebcam(tabId);
         this.displayOrNotNaviguationbar(tabId);
-
-        //this function will go away cause should not be there.
-        this.displayOrNotLsfTextBox(tabId);
-    }
-
-    displayOrNotLsfTextBox(tabId) {
-
-        this.lsfTextBox = document.getElementById("lsf-sign-box");
-
-        if (this.lsfTextBox) { //if we are on the tab lsf and lsf enigma is not yet resolved
-            this.lsfTextBox.style.display = (tabId === ENIGMA_IDS.LSF && !gameEngineInstance.dictionnaryOfEnigmas[tabId].isResolved) ? "block" : "none";
-        } else {
-            console.log("We are missing the lsf box");
-        }
     }
 
     displayOrNotWebcam(tabId) {
