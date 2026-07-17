@@ -1,10 +1,5 @@
 import { whichLetterIsDetected } from '../../Utils/LsfDictionary.js';
-
-import {
-    GestureRecognizer,
-    FilesetResolver,
-    DrawingUtils
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/vision_bundle.mjs";
+import { initMediapipe, DrawingUtils, GestureRecognizer } from '../../Utils/Libraries/LoadMediapipe.js';
 
 export class LsfRecognizer {
 
@@ -15,28 +10,14 @@ export class LsfRecognizer {
 
         this.gestureRecognizer = null;
         this.lastVideoTime = -1;
+
+        //this.loadMediapipe = new LoadMediapipe();
     }
 
     async initLsf() {
-        try {
-            const vision = await FilesetResolver.forVisionTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
-            );
+        this.gestureRecognizer = await initMediapipe();
 
-            this.gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-                baseOptions: {
-                    modelAssetPath: "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
-                    delegate: "CPU"
-                },
-                runningMode: "VIDEO",
-                numHands: 4
-            });
-            console.log("UpdateLsf : MediaPipe est prêt !");
-            return true; // Indique que tout s'est bien passé
-        } catch (error) {
-            console.error("Erreur d'initialisation MediaPipe :", error);
-            return false;
-        }
+        return (this.gestureRecognizer !== null);
     }
 
     updateLsf(currentGestures, webcamRunning) {
