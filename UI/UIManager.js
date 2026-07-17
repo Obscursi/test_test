@@ -49,7 +49,6 @@ class UIManager {
         this.btnWebcam = document.getElementById("webcamButton");
         this.loadingMessage = document.getElementById("loadingMessage");
         this.notificationBanner = document.getElementById("notification-banner");
-        this.tabContainer = document.querySelector('.tab-container');
 
 
 
