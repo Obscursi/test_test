@@ -1,13 +1,12 @@
 import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
-
 import { Tab } from './Tab.js';
-
-import gameEngineInstance from '../Core/GameEngine.js'
+import { EnigmaUnlockingAnimation } from './EnigmaUnlockingAnimation.js';
+import { TabManager } from './TabManager.js';
 
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 
-import { EnigmaUnlockingAnimation } from './EnigmaUnlockingAnimation.js';
-import { TabManager } from './TabManager.js';
+import gameEngineInstance from '../Core/GameEngine.js'
+
 
 
 class UIManager {
