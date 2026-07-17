@@ -15,6 +15,9 @@ class UIManager {
 
         this.loadHTMLelements();
 
+        const webcamButton = new WebcamButton();
+        webcamButton.initWebcamButtonEvent();
+
         this.tabManager = new TabManager();
         this.enigmaUnlockAnimation = new EnigmaUnlockingAnimation();
 

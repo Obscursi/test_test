@@ -49,11 +49,6 @@ export class TabManager {
                 this.showTab(targetId);
             });
         });
-
-
-        // 2. Initialisation du bouton de la webcam (découpée en sous-fonctions)
-        const webcamButton = new WebcamButton();
-        webcamButton.initWebcamButtonEvent();
     }
 
     /**
