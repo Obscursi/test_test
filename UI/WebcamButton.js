@@ -80,8 +80,8 @@ export class WebcamButton {
 
 
             // Bascule sur le puzzle
-            uiManagerInstance.tabManager.showTab(ENIGMA_IDS.LSF);
             uiManagerInstance.tabManager.showTab(ENIGMA_IDS.COLORS);
+            uiManagerInstance.tabManager.showTab(ENIGMA_IDS.LSF);
 
 
 
