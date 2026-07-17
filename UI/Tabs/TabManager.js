@@ -23,6 +23,8 @@ export class TabManager {
         this.showTab(this.activeTabId);
 
         this.lsfTextBox = document.getElementById("lsf-sign-box");
+        this.tabContainer = document.querySelector('.tab-container');
+
 
     }
 
@@ -69,7 +71,7 @@ export class TabManager {
         }
 
         this.displayOrNotWebcam(tabId);
-        this.displayOrNotNaviguationbar(tabId);
+        this.displayOrNotNavigationBar(tabId);
     }
 
     displayOrNotWebcam(tabId) {
@@ -88,7 +90,7 @@ export class TabManager {
         }
     }
 
-    displayOrNotNaviguationbar() {
+    displayOrNotNavigationBar(tabId) {
         if (this.tabContainer) {
             this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
         } else {
