@@ -14,6 +14,8 @@ export class LsfEnigma extends Enigma {
         // Les 4 lettres qui doivent être vues en même temps
         //this.lettresRequises = ["P", "I", "E", "D"];
         this.lettresRequises = ["P", "I"];
+
+        this.lsfTextBox = document.getElementById("lsf-sign-box"); //I will probably move it with updateGestureDebugText to a specific file, in the UI
     }
 
     update() {
@@ -21,7 +23,7 @@ export class LsfEnigma extends Enigma {
         const playerState = inputManagerInstance.getState(); //get the list of signs detected
         this.checkCondition(playerState); //check if we have all the letter required
 
-        uiManagerInstance.tabManager.updateGestureDebugText(playerState.gestures); //we update the box with the letters detected
+        this.updateGestureDebugText(playerState.gestures); //we update the box with the letters detected
     }
 
     // Le GameEngine appelle cette fonction 15 fois par seconde
@@ -40,6 +42,22 @@ export class LsfEnigma extends Enigma {
 
         if (toutesPresentes) {
             this.onSuccess();
+        }
+    }
+
+    /**
+ * Shows what letter we detect
+ */
+    updateGestureDebugText(gestures) {
+        // SÉCURITÉ : On filtre les éléments vides ou non définis
+        const gestesValides = gestures.filter(g => g && g !== "");
+
+        if (gestures.length > 0) {
+            this.lsfTextBox.style.backgroundColor = "#E91E63";
+            this.lsfTextBox.innerText = `Signe(s) : ${gestures.join(" + ")}`;
+        } else {
+            this.lsfTextBox.style.backgroundColor = "#007f8b";
+            this.lsfTextBox.innerText = "Aucun signe clair.";
         }
     }
 }

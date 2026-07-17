@@ -22,7 +22,6 @@ export class TabManager {
         this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
         this.showTab(this.activeTabId);
 
-        this.lsfTextBox = document.getElementById("lsf-sign-box");
         this.tabContainer = document.querySelector('.tab-container');
 
 
@@ -95,23 +94,6 @@ export class TabManager {
             this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
         } else {
             console.log("DEBUG : tabContainer undefined, cannot show or hide the naviguation bar ");
-        }
-    }
-
-
-    /**
-     * Shows what letter we detect
-     */
-    updateGestureDebugText(gestures) {
-        // SÉCURITÉ : On filtre les éléments vides ou non définis
-        const gestesValides = gestures.filter(g => g && g !== "");
-
-        if (gestures.length > 0) {
-            this.lsfTextBox.style.backgroundColor = "#E91E63";
-            this.lsfTextBox.innerText = `Signe(s) : ${gestures.join(" + ")}`;
-        } else {
-            this.lsfTextBox.style.backgroundColor = "#007f8b";
-            this.lsfTextBox.innerText = "Aucun signe clair.";
         }
     }
 
