@@ -22,7 +22,7 @@ export class TabManager {
         this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
         this.showTab(this.activeTabId);
 
-        this.tabContainer = document.querySelector('.tab-container');
+        this.tabContainer = document.querySelector('.btn-tab-container');
 
 
     }

@@ -21,30 +21,23 @@
 
 <body>
 
-    <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
+    <header id="global-ui-container">
 
-
-    <div class="tab-container">
-        <button id="btn-tab-lsf" class="tab-button" data-target="lsf">Langue des
-            Signes</button>
-        <button id="btn-tab-aruco" class="tab-button" data-target="aruco">Cartes aruco</button>
-        <button id="btn-tab-colors" class="tab-button" data-target="colors">Scanner de
-            formes</button>
-    </div>
-
-    <div id="panel-welcome" class="view-panel active">
-        <h1 class="groovy" data-target="big-title">SYSTÈME VERROUILLÉ</h1>
-
-        <h2>Interface de Connexion Centrale</h2>
-        <p>Bienvenue agent. Veuillez initialiser la liaison optique pour commencer votre mission.</p>
-
-        <div style="margin-top: 40px; text-align: center;">
-            <button id="webcamButton" class="big-start-btn" disabled>INITIALISATION EN COURS...</button>
-            <br>
-            <span id="loadingMessage" style="display: inline-block; margin-top: 15px;">Chargement des modules
-                IA...</span>
+        <div class="btn-tab-container">
+            <button id="btn-tab-lsf" class="tab-button" data-target="lsf">Langue des
+                Signes</button>
+            <button id="btn-tab-aruco" class="tab-button" data-target="aruco">Cartes aruco</button>
+            <button id="btn-tab-colors" class="tab-button" data-target="colors">Scanner de
+                formes</button>
         </div>
-    </div>
+
+
+        <div id="notification-banner"
+            style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4CAF50; color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
+        </div>
+
+        <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
+    </header>
 
     <div id="webcam-container" style="display: none;">
         <video id="webcam" autoplay playsinline width="640" height="480"></video>
@@ -53,64 +46,85 @@
         </div>
     </div>
 
-    <div id="panel-lsf-victory" class="view-panel">
-        <h2> Félicitations, vous avez signé le mot "Pied"... Sans doute un endroit qui va vous rapporter des éléments
-            pour cette enquête !</h2>
-    </div>
 
 
-    <div id="panel-to-implement" class="view-panel">
-        <h1>Il semblerait que ce panneau n'ait pas été encore créé..</h1>
-    </div>
+    <main id="panels-container">
+        <div id="panel-welcome" class="view-panel active">
+            <h1 class="groovy" data-target="big-title">SYSTÈME VERROUILLÉ</h1>
 
-    <div id="panel-lsf" class="view-panel">
-        <h2>LSF)</h2>
-        <div id="lsf-sign-box" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
-    </div>
+            <h2>Interface de Connexion Centrale</h2>
+            <p>Bienvenue agent. Veuillez initialiser la liaison optique pour commencer votre mission.</p>
 
-
-    <div id="panel-victoire" class="view-panel" data-target="victoire" style="text-align: center; color: #007f8b;">
-        <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
-        <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre équipe a résolu toutes les énigmes.</p>
-    </div>
-
-    <div id="notification-banner"
-        style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4CAF50; color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
-    </div>
-
-    <div id="panel-aruco" class="view-panel">
-        <h2>Scanner de cartes Aruco (Désactivé)</h2>
-    </div>
-
-    <div id="panel-colors" class="view-panel">
-        <h2>Scanner de couleurs</h2>
-    </div>
-
-    <div id="unlock-cinematic" class="unlock-cinematic">
-        <div class="cinematic-content">
-            <div style="font-size: 1.5rem; color: #4CAF50; letter-spacing: 5px;">ÉNIGME DÉVERROUILLÉE</div>
-            <div id="cinematic-tab-name" class="cinematic-title">Nom de l'onglet</div>
+            <div style="margin-top: 40px; text-align: center;">
+                <button id="webcamButton" class="big-start-btn" disabled>INITIALISATION EN COURS...</button>
+                <br>
+                <span id="loadingMessage" style="display: inline-block; margin-top: 15px;">Chargement des modules
+                    IA...</span>
+            </div>
         </div>
-    </div>
 
-    <div id="hardware-error-modal" class="modal-overlay hidden">
-        <div class="modal-content border-neon-red">
-            <h2 class="alert-title">⚠️ DÉFAILLANCE SYSTÈME</h2>
-
-            <p id="hardware-error-message" class="alert-message">
-                Erreur matérielle inconnue.
-            </p>
-
-            <p class="alert-instruction">
-                Veuillez vérifier vos branchements et les autorisations de votre navigateur (cadenas dans la barre
-                d'adresse), puis redémarrez le système.
-            </p>
-
-            <button id="btn-reload-system" class="btn-danger-large">
-                🔄 Redémarrer le système
-            </button>
+        <div id="panel-lsf" class="view-panel">
+            <h2>LSF)</h2>
+            <div id="lsf-sign-box" class="output-box">Démarrez la webcam pour scanner vos mains.</div>
         </div>
+
+        <div id="panel-lsf-victory" class="view-panel">
+            <h2> Félicitations, vous avez signé le mot "Pied"... Sans doute un endroit qui va vous rapporter des
+                éléments
+                pour cette enquête !</h2>
+        </div>
+
+        <div id="panel-aruco" class="view-panel">
+            <h2>Scanner de cartes Aruco (Désactivé)</h2>
+        </div>
+
+        <div id="panel-colors" class="view-panel">
+            <h2>Scanner de couleurs</h2>
+        </div>
+
+
+        <div id="panel-victoire" class="view-panel" data-target="victoire" style="text-align: center; color: #007f8b;">
+            <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
+            <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre équipe a résolu toutes les énigmes.
+            </p>
+        </div>
+
+        <div id="panel-to-implement" class="view-panel">
+            <h1>Il semblerait que ce panneau n'ait pas été encore créé..</h1>
+        </div>
+    </main>
+
+    <div id="overlays-container">
+
+        <div id="unlock-cinematic" class="unlock-cinematic">
+            <div class="cinematic-content">
+                <div style="font-size: 1.5rem; color: #4CAF50; letter-spacing: 5px;">ÉNIGME DÉVERROUILLÉE</div>
+                <div id="cinematic-tab-name" class="cinematic-title">Nom de l'onglet</div>
+            </div>
+        </div>
+
+        <div id="hardware-error-modal" class="modal-overlay hidden">
+            <div class="modal-content border-neon-red">
+                <h2 class="alert-title">⚠️ DÉFAILLANCE SYSTÈME</h2>
+
+                <p id="hardware-error-message" class="alert-message">
+                    Erreur matérielle inconnue.
+                </p>
+
+                <p class="alert-instruction">
+                    Veuillez vérifier vos branchements et les autorisations de votre navigateur (cadenas dans la barre
+                    d'adresse), puis redémarrez le système.
+                </p>
+
+                <button id="btn-reload-system" class="btn-danger-large">
+                    🔄 Redémarrer le système
+                </button>
+            </div>
+        </div>
+
     </div>
+
+
 
     <script type="module" src="main.js"></script>
 </body>
