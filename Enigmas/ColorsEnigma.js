@@ -15,11 +15,8 @@ export class ColorsEnigma extends Enigma {
         // Pré-allocation des matrices de traitement
         this.gray = new cv.Mat();
         this.blurred = new cv.Mat();
-        this.edges = new cv.Mat(); // Nouvelle matrice pour les contours
         this.hsv = new cv.Mat();
-
-        this.contours = new cv.MatVector();
-        this.hierarchy = new cv.Mat();
+        this.circles = new cv.Mat();
 
         // Variables pour la lecture de la webcam (initialisées plus tard)
         this.cap = null;
@@ -163,69 +160,42 @@ export class ColorsEnigma extends Enigma {
     }
 
     /**
-      * Analyse une image pour trouver des formes (blobs) et retourne un Set des couleurs détectées.
-      * Utilise cv.findContours pour contrer la distorsion de la caméra.
-      */
+     * Analyse une image pour trouver des cercles et retourne un Set des couleurs détectées.
+     * @param {cv.Mat} srcMat - L'image source provenant du canvas.
+     * @returns {Set<string>} - Set contenant les noms des couleurs identifiées.
+     */
     detecterCerclesColores(srcMat) {
         const colorsDetected = new Set();
 
-        // 1. Préparation : Noir et Blanc + Flou léger
         cv.cvtColor(srcMat, this.gray, cv.COLOR_RGBA2GRAY);
-        cv.GaussianBlur(this.gray, this.blurred, new cv.Size(5, 5), 0, 0);
+        cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
 
-        // 2. Extraction des contours avec Canny
-        // Les valeurs 50 et 150 contrôlent la sensibilité. C'est robuste à la lumière changeante.
-        cv.Canny(this.blurred, this.edges, 50, 150, 3, false);
+        // Paramètres de détection de cercles
+        cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 38, 10, 50);
 
-        // 3. Trouver les contours fermés
-        cv.findContours(this.edges, this.contours, this.hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+        if (this.circles.cols === 0) return colorsDetected;
 
-        // Préparation de la matrice HSV pour lire la couleur des centres trouvés
         cv.cvtColor(srcMat, this.hsv, cv.COLOR_RGBA2RGB);
         cv.cvtColor(this.hsv, this.hsv, cv.COLOR_RGB2HSV);
 
-        // 4. Analyse géométrique de chaque contour
-        for (let i = 0; i < this.contours.size(); ++i) {
-            const cnt = this.contours.get(i);
-            const area = cv.contourArea(cnt);
+        for (let i = 0; i < this.circles.cols; ++i) {
+            const x = Math.round(this.circles.data32F[i * 3]);
+            const y = Math.round(this.circles.data32F[i * 3 + 1]);
+            const rayon = Math.round(this.circles.data32F[i * 3 + 2]);
 
-            // Filtre de taille : On ignore les pixels isolés (bruit) et les formes géantes (background)
-            // (Tu pourras ajuster ces valeurs selon la taille des cartes à l'écran)
-            if (area > 500 && area < 15000) {
+            const pixel = this.hsv.ucharPtr(y, x);
+            const teinte = pixel[0];
+            const saturation = pixel[1];
+            const luminosite = pixel[2];
 
-                // Calcul du centre de gravité (Moments)
-                const M = cv.moments(cnt, false);
-                if (M.m00 === 0) continue; // Sécurité mathématique (division par zéro)
+            const couleurDetectee = this.analyserCouleurHSV(teinte, saturation, luminosite);
 
-                const cx = Math.round(M.m10 / M.m00);
-                const cy = Math.round(M.m01 / M.m00);
+            if (couleurDetectee !== "Inconnue") {
+                colorsDetected.add(couleurDetectee);
 
-                // Analyse de "l'arrondi" (Circularité)
-                // Formule : (4 * Pi * Aire) / (Périmètre²) -> Vaut 1 pour un cercle parfait
-                const perimeter = cv.arcLength(cnt, true);
-                const circularity = (4 * Math.PI * area) / (perimeter * perimeter);
-
-                // Avec la distorsion grand angle, un cercle devient ovale, on accepte donc > 0.6
-                if (circularity > 0.6) {
-
-                    // On pique le pixel pile au centre du contour
-                    const pixel = this.hsv.ucharPtr(cy, cx);
-                    const teinte = pixel[0];
-                    const saturation = pixel[1];
-                    const luminosite = pixel[2];
-
-                    const couleurDetectee = this.analyserCouleurHSV(teinte, saturation, luminosite);
-
-                    if (couleurDetectee !== "Inconnue") {
-                        colorsDetected.add(couleurDetectee);
-
-                        // --- Retour Visuel sur le Canvas ---
-                        // On dessine le contour de la forme validée (en vert)
-                        cv.drawContours(srcMat, this.contours, i, new cv.Scalar(0, 255, 0, 255), 2, cv.LINE_8, this.hierarchy, 0);
-                        // On dessine le centre de gravité où la couleur a été lue (en bleu)
-                        cv.circle(srcMat, new cv.Point(cx, cy), 4, new cv.Scalar(255, 0, 0, 255), -1);
-                    }
-                }
+                // Dessin visuel sur l'image
+                cv.circle(srcMat, new cv.Point(x, y), rayon, new cv.Scalar(255, 0, 0, 255), 3);
+                cv.circle(srcMat, new cv.Point(x, y), 3, new cv.Scalar(0, 255, 0, 255), -1);
             }
         }
 
@@ -236,7 +206,7 @@ export class ColorsEnigma extends Enigma {
         if (s < 40 || v < 40) return "Inconnue";
 
         if (h >= 5 && h <= 25) {
-            if (v < 220) return "Marron";
+            if (v < 210) return "Marron";
             else return "Orange";
         }
         else if (h > 35 && h <= 80) {
@@ -255,17 +225,13 @@ export class ColorsEnigma extends Enigma {
     }
 
     cleanOfMemory() {
-
         this.gray.delete();
         this.blurred.delete();
-        this.edges.delete();
         this.hsv.delete();
-        this.contours.delete();
-        this.hierarchy.delete();
+        this.circles.delete();
 
         if (this.srcMat) {
             this.srcMat.delete();
-
         }
     }
 }
