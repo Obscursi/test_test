@@ -32,7 +32,7 @@ class GameEngine {
     // asynchronous initialisation (async waits for the files to load instead of interpreting the lines of code without stopping)
     async init() {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
-        uiManagerInstance.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
+        uiManagerInstance.webcamButton.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
         const inputsReady = await inputManagerInstance.init();
 
@@ -49,7 +49,7 @@ class GameEngine {
 
         console.log("✅ GameEngine: Modèles IA chargés. Le bouton est actif !");
         uiManagerInstance.hideLoading();
-        uiManagerInstance.updateWebcamButton(false, true); // We make the webcam button ready
+        uiManagerInstance.webcamButton.updateWebcamButton(false, true); // We make the webcam button ready
     }
 
     //here we load all the enigmas in the list IN ORDER
@@ -143,7 +143,7 @@ class GameEngine {
         this.activeEnigmas = this.activeEnigmas.filter(enigme => enigme.id !== idEnigma);
 
         enigmasToUnlock.forEach(nextId => {
-            uiManagerInstance.enigmaUnlockAnimation.launchUnlockingAnimation(nextId);
+            uiManagerInstance.animations.launchUnlockingEnigmaAnimation(nextId);
             this.activateEnigma(nextId);
         });
 
@@ -162,7 +162,7 @@ class GameEngine {
         // const chemin2Fini = uiManagerInstance.onglets['enigmeChemin2'].statut === 'resolu';
 
         if (arucoFini /* && chemin2Fini */) {
-            uiManagerInstance.enigmaUnlockAnimation.launchUnlockingAnimation('victoire');
+            uiManagerInstance.animations.launchUnlockingEnigmaAnimation('victoire');
             showVictoryScreen();
             this.isRunning = false;
         }

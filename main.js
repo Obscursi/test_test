@@ -23,7 +23,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         // On met à jour l'interface visuellement.
         // Si c'était coupé (currentlyRunning = false), on s'attend à ce que ça s'active (true)
         const newState = !currentlyRunning;
-        uiManagerInstance.updateWebcamButton(newState);
+        uiManagerInstance.webcamButton.updateWebcamButton(newState);
 
         // Si on vient d'activer la caméra, on lance la boucle du jeu
         if (newState) {

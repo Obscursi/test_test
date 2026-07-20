@@ -1,4 +1,4 @@
-export class PanelElementsLsf {
+export class PanelLsf {
 
     constructor() {
         this.lsfTextBox = document.getElementById("lsf-sign-box");

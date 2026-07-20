@@ -1,8 +1,8 @@
-import uiManagerInstance from '../UI/UIManager.js';
+import uiManagerInstance from './UIManager.js';
 
 import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
 
-export class EnigmaUnlockingAnimation {
+export class Animations {
 
     constructor() {
         this.cinematicOverlay = document.getElementById("unlock-cinematic");
@@ -13,7 +13,7 @@ export class EnigmaUnlockingAnimation {
     /**
     * Makes a fancy animation adn then show the button to access the tab of the enigma unlocked
     */
-    launchUnlockingAnimation(idOfNewTab) {
+    launchUnlockingEnigmaAnimation(idOfNewTab) {
         const newTab = uiManagerInstance.tabManager.tabs[idOfNewTab];
         if (!newTab) return;
 
@@ -44,4 +44,26 @@ export class EnigmaUnlockingAnimation {
             }, 5000);
         }
     }
+
+    /**
+         * Fait exploser les éléments de l'accueil un par un.
+         * @returns {number} Le temps total (en ms) que va durer l'explosion.
+         */
+    launchAnimationOutOfWelcomePanel() {
+        this.btnWebcam.innerText = "ACCÈS VALIDÉ...";
+        this.btnWebcam.style.backgroundColor = "#ff5252";
+
+        const welcomePanel = uiManagerInstance.tabManager.tabs['welcome'].panel;
+        const welcomePanelElements = Array.from(welcomePanel.children);
+
+        welcomePanelElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 0.15}s`;
+            element.classList.add("explode-out");
+        });
+
+        //now the elements are invisible in css but we need them to really disapear => display to 'none'
+        document.getElementById("panel-welcome").style.display = "none";
+        return (welcomePanelElements.length * 150) + 600;
+    }
+
 }

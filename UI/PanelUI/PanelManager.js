@@ -1,7 +1,8 @@
-import { PanelElementsLsf } from "./PanelElementsLsf.js";
+import { PanelElementsLsf } from "./PanelLsf.js";
 
 export class PanelManager {
     constructor() {
-        this.uiElementLsf = new this.UIElementLsf();
+        this.panelLsf = new this.PanelLsf();
+        this.panelWelcome = new this.panelWelcome();
     }
 }

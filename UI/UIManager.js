@@ -1,6 +1,6 @@
 import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
 import { Tab } from './Tabs/Tab.js';
-import { EnigmaUnlockingAnimation } from './EnigmaUnlockingAnimation.js';
+import { Animations } from './Animations.js';
 import { TabManager } from './Tabs/TabManager.js';
 import { PanelManager } from './PanelUI/PanelManager.js';
 
@@ -16,31 +16,22 @@ class UIManager {
 
         this.loadHTMLelements();
 
-        const webcamButton = new WebcamButton();
+        this.tabManager = new TabManager();
+        this.animations = new Animations();
+        this.panelManager = new PanelManager();
+        this.webcamButton = new WebcamButton();
+
+        this.initBeginningOfTheGame();
+    }
+
+    initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
+
         webcamButton.initWebcamButtonEvent();
 
-        this.tabManager = new TabManager();
-        this.enigmaUnlockAnimation = new EnigmaUnlockingAnimation();
-        this.panelManager = new PanelManager();
-
+        const waitingTime = animations.launchAnimationOutOfWelcomePanel();
+        this.panelManager.panelWelcome.transitionToBeginningTab(waitingTime);
     }
 
-
-
-    /**
-     * Modifies the visuel state of the webcam button depending or wheter or not it is activated
-     */
-    updateWebcamButton(isRunning, isReady = true) {
-        if (!isReady) {
-            this.btnWebcam.disabled = true;
-            this.btnWebcam.innerText = "ATTENTE DU CHARGEMENT...";
-            return;
-        }
-
-        // L'IA est prête, le bouton s'allume !
-        this.btnWebcam.disabled = false;
-        this.btnWebcam.innerText = "DÉMARRER LA MISSION";
-    }
 
     hideLoading() {
         this.loadingMessage.style.display = "none";
