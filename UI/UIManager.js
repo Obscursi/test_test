@@ -2,6 +2,7 @@ import { WebcamButton } from './WebcamButton.js'; //we import the entire class b
 import { Tab } from './Tabs/Tab.js';
 import { EnigmaUnlockingAnimation } from './EnigmaUnlockingAnimation.js';
 import { TabManager } from './Tabs/TabManager.js';
+import { PanelManager } from './PanelUI/PanelManager.js';
 
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 
@@ -20,6 +21,7 @@ class UIManager {
 
         this.tabManager = new TabManager();
         this.enigmaUnlockAnimation = new EnigmaUnlockingAnimation();
+        this.panelManager = new PanelManager();
 
     }
 
