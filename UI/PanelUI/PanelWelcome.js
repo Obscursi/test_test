@@ -1,5 +1,10 @@
-export class PanelWelcome {
+import uiManagerInstance from '../UIManager.js';
+import { ENIGMA_IDS } from '../../Utils/Constant.js';
 
+export class PanelWelcome {
+    constructor() {
+
+    }
     /**
  * Bascule sur l'onglet LSF et lance l'éblouissement global de l'écran.
  * @param {number} delay - Le temps à attendre avant de lancer la transition.

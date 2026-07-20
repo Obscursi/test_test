@@ -8,6 +8,8 @@ export class Animations {
         this.cinematicOverlay = document.getElementById("unlock-cinematic");
         this.cinematicText = document.getElementById("cinematic-tab-name");
         this.cinematicContent = this.cinematicOverlay?.querySelector(".cinematic-content");
+
+        this.btnWebcam = document.getElementById("webcamButton");
     }
 
     /**

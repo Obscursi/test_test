@@ -21,14 +21,18 @@ class UIManager {
         this.panelManager = new PanelManager();
         this.webcamButton = new WebcamButton();
 
-        this.initBeginningOfTheGame();
     }
 
-    initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
+    async initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
 
-        webcamButton.initWebcamButtonEvent();
+        try {
+            const isWebcamButtonReady = await this.webcamButton.initWebcamButtonEvent();
+        } catch (error) {
+            console.log("DEBUG : probleme webcam");
+            return false;
+        }
 
-        const waitingTime = animations.launchAnimationOutOfWelcomePanel();
+        const waitingTime = this.animations.launchAnimationOutOfWelcomePanel();
         this.panelManager.panelWelcome.transitionToBeginningTab(waitingTime);
     }
 
@@ -39,7 +43,6 @@ class UIManager {
 
     loadHTMLelements() {
         // --- we get the element of the interface ---
-        this.btnWebcam = document.getElementById("webcamButton");
         this.loadingMessage = document.getElementById("loadingMessage");
         this.notificationBanner = document.getElementById("notification-banner");
 
@@ -63,3 +66,5 @@ class UIManager {
 //Singleton creation : 
 const uiManagerInstance = new UIManager();
 export default uiManagerInstance;
+
+uiManagerInstance.initBeginningOfTheGame();

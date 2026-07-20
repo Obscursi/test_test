@@ -9,24 +9,35 @@ export class WebcamButton {
     }
     /**
      * Point d'entrée principal du clic sur le bouton de démarrage.
-    */
+     * Cette fonction bloque l'exécution jusqu'à ce que la caméra soit autorisée.
+     */
     initWebcamButtonEvent() {
+        if (!this.btnWebcam) return Promise.reject("Bouton introuvable");
 
-        if (!this.btnWebcam) return;
+        // NOUVEAU : On encapsule l'écouteur dans une Promise.
+        // Le code appelant (UIManager) sera mis en pause jusqu'à ce qu'on appelle resolve().
+        return new Promise((resolve, reject) => {
 
-        this.btnWebcam.addEventListener('click', async () => {
-            await this.prepareWebcamAutorisation();
+            this.btnWebcam.addEventListener('click', async () => {
+                await this.prepareWebcamAutorisation();
 
-            try {
-                // Le navigateur met le code en pause ici pour demander la caméra
-                await navigator.mediaDevices.getUserMedia({ video: true });
+                try {
+                    // Le navigateur met le code en pause ici pour demander la caméra
+                    await navigator.mediaDevices.getUserMedia({ video: true });
 
-            } catch (erreur) {
-                this.buttonChangeIfCameraAccessRefused(erreur);
-            }
+                    // VICTOIRE : La caméra est acceptée, on débloque le UIManager !
+                    resolve(true);
+
+                } catch (erreur) {
+                    this.buttonChangeIfCameraAccessRefused(erreur);
+
+                    // ÉCHEC : On rejette la promesse, le UIManager ira dans son bloc "catch"
+                    reject(erreur);
+                }
+            });
+
         });
     }
-
     /**
      * Modifie l'état du bouton et laisse le temps au navigateur de s'actualiser.
      */

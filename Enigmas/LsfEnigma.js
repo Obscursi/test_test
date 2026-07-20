@@ -20,7 +20,7 @@ export class LsfEnigma extends Enigma {
         const playerState = inputManagerInstance.getState(); //get the list of signs detected
         this.checkCondition(playerState); //check if we have all the letter required
 
-        uiManagerInstance.panelManager.uiElementLsf.updateGestureDebugText(playerState.gestures); //we update the box with the letters detected
+        uiManagerInstance.panelManager.panelLsf.updateGestureDebugText(playerState.gestures); //we update the box with the letters detected
     }
 
     // Le GameEngine appelle cette fonction 15 fois par seconde
