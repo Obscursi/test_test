@@ -14,6 +14,8 @@ export class Enigma {
         this.name = name;
         this.isResolved = false;
         this.enigmesSuivantes = enigmesSuivantes;
+
+        this.addEventListenerForceResolution();
     }
 
     // Ce que l'énigme doit faire quand on l'active (ex: allumer un onglet)
@@ -48,5 +50,47 @@ export class Enigma {
      */
     cleanOfMemory() {
         console.log(`L'énigme avec l'id ${this.id} n'a pas de méthode clenOfMemory, cas normal`);
+    }
+
+    addEventListenerForceResolution() {
+        // --- ÉCOUTE DU CODE DE TRICHE ---
+        document.addEventListener('cheatcode_force_resolve', () => {
+
+            // Sécurité 1 : Si l'énigme est déjà résolue, on l'ignore
+            if (this.isResolved) return;
+
+            // CORRECTION : On ajoute le préfixe "panel-" pour correspondre à ton HTML
+            const panelId = `panel-${this.id}`;
+            const myPanel = document.getElementById(panelId);
+
+            if (!myPanel) {
+                console.warn(`[Triche] Le panneau '${panelId}' est introuvable dans le DOM.`);
+                return;
+            }
+
+            // Sécurité 2 : Infaillible pour vérifier si l'élément est vraiment affiché à l'écran
+            const isVisible = window.getComputedStyle(myPanel).display !== "none";
+
+            if (isVisible) {
+                this.forceResolve();
+            } else {
+                console.log(`[Triche] Énigme '${this.name}' ignorée car son onglet est caché.`);
+            }
+        });
+    }
+
+    /**
+     * Méthode appelée par le cheat code pour forcer la victoire
+     */
+    forceResolve() {
+        console.log(`⚡ Résolution forcée par l'admin pour : ${this.name}`);
+
+        // Si ton énigme enfant a besoin d'être nettoyée (comme couper la webcam)
+        /*if (typeof this.cleanOfMemory === 'function') {
+            this.cleanOfMemory();
+        }*/
+
+        // On déclenche la vraie méthode de succès
+        this.onSuccess();
     }
 }
