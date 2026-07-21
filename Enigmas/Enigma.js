@@ -59,7 +59,7 @@ export class Enigma {
             // Sécurité 1 : Si l'énigme est déjà résolue, on l'ignore
             if (this.isResolved) return;
 
-            // CORRECTION : On ajoute le préfixe "panel-" pour correspondre à ton HTML
+            //we hade the prefix panel to the id to have the id of the panel
             const panelId = `panel-${this.id}`;
             const myPanel = document.getElementById(panelId);
 
