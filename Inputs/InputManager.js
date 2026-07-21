@@ -1,4 +1,5 @@
-import { VisionController } from './VisionController.js';
+import { VisionController } from './Controller/VisionController.js';
+import { KeyboardController } from './Controller/KeyboardController.js';
 
 // import { KeyboardController } from './KeyboardController.js'; // Prévu pour plus tard
 
@@ -9,6 +10,7 @@ class InputManager {
         const canvasElement = document.getElementById("mp_canvas");
 
         this.vision = new VisionController(videoElement, canvasElement);
+        this.keyboard = new KeyboardController();
         // this.keyboard = new KeyboardController();
     }
 

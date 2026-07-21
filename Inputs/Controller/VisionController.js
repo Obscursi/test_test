@@ -1,9 +1,9 @@
-import { ColorsRecognizer } from './Recognizers/ColorsRecognizer.js';
-import { LsfRecognizer } from './Recognizers/LsfRecognizer.js';
-import { ENIGMA_IDS } from '../Utils/Constant.js';
-import uiManagerInstance from '../UI/UIManager.js';
+import { ColorsRecognizer } from '../Recognizers/ColorsRecognizer.js';
+import { LsfRecognizer } from '../Recognizers/LsfRecognizer.js';
+import { ENIGMA_IDS } from '../../Utils/Constant.js';
+import uiManagerInstance from '../../UI/UIManager.js';
 
-import { showError } from '../UI/AlertManager.js';
+import { showError } from '../../UI/AlertManager.js';
 
 
 
