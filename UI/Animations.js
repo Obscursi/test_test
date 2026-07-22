@@ -17,9 +17,7 @@ export class Animations {
     */
     launchUnlockingEnigmaAnimation(idOfNewTab) {
         const newTab = uiManagerInstance.tabManager.tabs[idOfNewTab];
-        if (!newTab) return;
 
-        newTab.unlockTab();
         if (this.cinematicOverlay) {
             this.cinematicText.innerText = newTab.name;
             playTabUnlockingSound();

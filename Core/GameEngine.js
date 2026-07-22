@@ -81,17 +81,22 @@ class GameEngine {
     }
 
     /**
-     * Ajoute une énigme au cycle de mise à jour (Loop).
+     *  Add an enigma to the active pool of enigmas with an animation
      */
     activateEnigmaWithAnimation(idEnigma) {
-        uiManagerInstance.animations.launchUnlockingEnigmaAnimation(idEnigma);
-        this.activateEnigmaWithoutAnimation(idEnigma);
+        uiManagerInstance.unlockNewTabWithAnimations(idEnigma);
+        this.putEnigmaIntoTheActivePool(idEnigma);
     }
 
     /**
- * Ajoute une énigme au cycle de mise à jour (Loop).
- */
+    * Add an enigma to the active pool of enigmas. The Ui part shows the button of the enigma while the rest is the game logic which activates the logic of the game (not ui realted)
+    */
     activateEnigmaWithoutAnimation(idEnigma) {
+        uiManagerInstance.unlockNewTabWithoutAnimations(idEnigma);
+        this.putEnigmaIntoTheActivePool(idEnigma);
+    }
+
+    putEnigmaIntoTheActivePool(idEnigma) {
         const enigma = this.dictionnaryOfEnigmas[idEnigma];
         if (enigma && !this.activeEnigmas.includes(enigma)) {
             enigma.start(); // S'il y a des choses à initialiser dans la classe

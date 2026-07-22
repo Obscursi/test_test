@@ -62,6 +62,23 @@ class UIManager {
         }
     }
 
+    unlockNewTabWithoutAnimations(idOfNewTab) {
+        const newTab = this.tabManager.tabs[idOfNewTab];
+        if (!newTab) {
+            console.log("DEBUG : the new tab could not be unlocked");
+            return;
+        }
+
+        newTab.unlockTab(); //we unlock the tab visually (shows the button)
+    }
+
+    unlockNewTabWithAnimations(idOfNewTab) {
+
+        this.unlockNewTabWithoutAnimations(idOfNewTab);
+        this.animations.launchUnlockingEnigmaAnimation(idOfNewTab); //we make an animation
+
+    }
+
 
 }
 
