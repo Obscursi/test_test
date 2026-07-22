@@ -83,7 +83,7 @@ button:disabled {
 
 body {
     /* for the background picture style */
-    background-image: url('../Utils/background.jpeg');
+    background-image: url('../Utils/Pictures/background.jpeg');
 
     /* L'image s'étire ou se compresse pour couvrir tout l'écran sans se déformer */
     background-size: cover;

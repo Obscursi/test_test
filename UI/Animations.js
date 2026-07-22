@@ -1,6 +1,6 @@
 import uiManagerInstance from './UIManager.js';
 
-import { playTabUnlockingSound } from '../Utils/AudioSynth.js';
+import { playTabUnlockingSound } from '../Utils/Audio/AudioSynth.js';
 
 export class Animations {
 

@@ -106,14 +106,12 @@ export class VisionController {
         }
     }
 
-    // Le InputManager utilisera cette méthode pour récupérer les données
+    // InputManager used this to get the Results
     getResults() {
         return this.currentResults;
     }
 
-    /**
-     * NOUVEAU : Le centre de crise en cas de crash
-     */
+
     handleHardwareCrash(messageInfo) {
         console.error(`🚨 ALERTE SYSTÈME : ${messageInfo}`);
         this.webcamRunning = false;
