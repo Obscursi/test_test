@@ -84,13 +84,6 @@ export class Enigma {
      */
     forceResolve() {
         console.log(`⚡ Résolution forcée par l'admin pour : ${this.name}`);
-
-        // Si ton énigme enfant a besoin d'être nettoyée (comme couper la webcam)
-        /*if (typeof this.cleanOfMemory === 'function') {
-            this.cleanOfMemory();
-        }*/
-
-        // On déclenche la vraie méthode de succès
         this.onSuccess();
     }
 }
