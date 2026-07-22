@@ -61,12 +61,14 @@ export class TabManager {
     showTab(tabId) {
         this.activeTabId = tabId;
 
-        // 1. On désactive TOUS les onglets
+        // we deactivate all tabs (not really clean but the deactivate is pretty light and has a security to check if the tab is activeOrNot)
         Object.values(this.tabs).forEach(tab => tab.deactivateTab());
 
-        // 2. On active uniquement celui demandé
+        // We activate the one asked
         if (this.tabs[tabId]) {
             this.tabs[tabId].activateTab();
+        } else {
+            console.log("DEBUG : could not activate this Tab");
         }
 
         this.displayOrNotWebcam(tabId);
