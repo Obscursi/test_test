@@ -41,7 +41,6 @@ export class Tab {
         if (this.status !== ENIGMA_STATUS.LOCKED) return;
 
         this.status = ENIGMA_STATUS.AVAILABLE;
-        //this.button.style.display = "block";
         this.button.classList.add("available");
         this.button.classList.remove("completed", "active"); //security, when we unlock the button should be orange (available)
 
