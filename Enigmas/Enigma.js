@@ -74,7 +74,7 @@ export class Enigma {
             if (isVisible) {
                 this.forceResolve();
             } else {
-                console.log(`[Triche] Énigme '${this.name}' ignorée car son onglet est caché.`);
+                console.log(`[Triche] Énigme '${this.name}' ignorée car son onglet n'est pas actif.`);
             }
         });
     }
