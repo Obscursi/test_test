@@ -1,5 +1,6 @@
 import uiManagerInstance from '../UIManager.js';
 import { ENIGMA_IDS } from '../../Utils/Constant.js';
+import { wait } from '../../Utils/UtilFunctions.js';
 
 export class PanelWelcome {
     constructor() {
@@ -9,15 +10,11 @@ export class PanelWelcome {
  * Bascule sur l'onglet LSF et lance l'éblouissement global de l'écran.
  * @param {number} delay - Le temps à attendre avant de lancer la transition.
  */
-    transitionToBeginningTab(delay) {
+    async transitionToBeginningTab(delay) {
         setTimeout(() => {
             // Nettoyage de la navigation
             const welcomeTab = document.querySelector('.tab-button[data-target="welcome"]');
             if (welcomeTab) welcomeTab.style.display = "none";
-
-            uiManagerInstance.tabManager.tabs[ENIGMA_IDS.LSF].unlockTab();
-            uiManagerInstance.tabManager.tabs[ENIGMA_IDS.COLORS].unlockTab();
-
 
             // Bascule sur le puzzle
             uiManagerInstance.tabManager.showTab(ENIGMA_IDS.LSF);
@@ -47,5 +44,9 @@ export class PanelWelcome {
             }, 3500);
 
         }, delay);
+
+        await wait(1300); //we wait for the transition on the new screen
+        uiManagerInstance.tabManager.tabs[ENIGMA_IDS.LSF].unlockTab(); //we activate here the button to show the tabs
+        uiManagerInstance.tabManager.tabs[ENIGMA_IDS.COLORS].unlockTab();
     }
 }
