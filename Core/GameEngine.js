@@ -73,8 +73,8 @@ class GameEngine {
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
         //here we put the starter enigmas
-        this.activateEnigma(ENIGMA_IDS.COLORS);
-        this.activateEnigma(ENIGMA_IDS.LSF);
+        this.activateEnigmaWithoutAnimation(ENIGMA_IDS.COLORS);
+        this.activateEnigmaWithoutAnimation(ENIGMA_IDS.LSF);
 
 
         requestAnimationFrame(() => this.loop());
@@ -83,12 +83,23 @@ class GameEngine {
     /**
      * Ajoute une énigme au cycle de mise à jour (Loop).
      */
-    activateEnigma(idEnigma) {
+    activateEnigmaWithAnimation(idEnigma) {
+        uiManagerInstance.animations.launchUnlockingEnigmaAnimation(nextId);
+
+        this.activateEnigmaWithoutAnimation(idEnigma);
+    }
+
+    /**
+ * Ajoute une énigme au cycle de mise à jour (Loop).
+ */
+    activateEnigmaWithoutAnimation(idEnigma) {
         const enigma = this.dictionnaryOfEnigmas[idEnigma];
         if (enigma && !this.activeEnigmas.includes(enigma)) {
             enigma.start(); // S'il y a des choses à initialiser dans la classe
             this.activeEnigmas.push(enigma);
             console.log(`▶️ Énigme [${idEnigma}] ajoutée au pool actif.`);
+        } else {
+            console.log("DEBUG : could not activate this enigma");
         }
     }
 
@@ -143,8 +154,7 @@ class GameEngine {
         this.activeEnigmas = this.activeEnigmas.filter(enigme => enigme.id !== idEnigma);
 
         enigmasToUnlock.forEach(nextId => {
-            uiManagerInstance.animations.launchUnlockingEnigmaAnimation(nextId);
-            this.activateEnigma(nextId);
+            this.activateEnigmaWithAnimation(nextId);
         });
 
         this.cleanMemory(this.dictionnaryOfEnigmas[idEnigma]);
