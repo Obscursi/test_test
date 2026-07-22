@@ -7,6 +7,7 @@ import { PanelManager } from './PanelUI/PanelManager.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 
 import gameEngineInstance from '../Core/GameEngine.js'
+import { TerminalManager } from './TerminalManager.js';
 
 
 
@@ -20,6 +21,7 @@ class UIManager {
         this.animations = new Animations();
         this.panelManager = new PanelManager();
         this.webcamButton = new WebcamButton();
+        this.terminalManager = new TerminalManager();
 
     }
 

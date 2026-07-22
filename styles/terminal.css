@@ -1,0 +1,33 @@
+.fixed-terminal-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    /* Ajoute ton style futuriste ici */
+}
+
+.modal-hidden {
+    display: none;
+}
+
+#terminal-modal:not(.modal-hidden) {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 200;
+    /* Au-dessus de tout le reste */
+    justify-content: center;
+    align-items: center;
+}
+
+.terminal-content {
+    background-color: #111;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+}

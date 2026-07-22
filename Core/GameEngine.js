@@ -84,8 +84,7 @@ class GameEngine {
      * Ajoute une énigme au cycle de mise à jour (Loop).
      */
     activateEnigmaWithAnimation(idEnigma) {
-        uiManagerInstance.animations.launchUnlockingEnigmaAnimation(nextId);
-
+        uiManagerInstance.animations.launchUnlockingEnigmaAnimation(idEnigma);
         this.activateEnigmaWithoutAnimation(idEnigma);
     }
 

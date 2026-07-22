@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="styles/groovyTitle.css">
     <link rel="stylesheet" href="styles/unlockingAnimation.css">
     <link rel="stylesheet" href="styles/errorWindow.css">
+    <link rel="stylesheet" href="styles/terminal.css">
+
 
 
 
@@ -37,6 +39,21 @@
         </div>
 
         <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
+
+        <button id="btn-open-terminal" class="fixed-terminal-btn">
+            💻 Terminal
+        </button>
+
+        <!-- L'interface de piratage/codes (Cachée par défaut) -->
+        <div id="terminal-modal" class="modal-hidden">
+            <div class="terminal-content">
+                <h3>Accès Système</h3>
+                <input type="text" id="terminal-input" placeholder="Entrez le code d'override..." autocomplete="off">
+                <button id="btn-submit-code">Exécuter</button>
+                <button id="btn-close-terminal">Fermer</button>
+                <p id="terminal-feedback"></p> <!-- Pour afficher "Code valide" ou "Erreur" -->
+            </div>
+        </div>
     </header>
 
     <div id="webcam-container" style="display: none;">
