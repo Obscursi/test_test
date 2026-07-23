@@ -2,6 +2,7 @@ import gameEngineInstance from '../Core/GameEngine.js';
 import { ENIGMA_IDS } from '../../Utils/Constant.js';
 
 import { showClueAlert } from './AlertManager.js';
+import { playMysteriousSwell } from '../../Utils/Audio/AudioSynth.js';
 
 export class TerminalManager {
     constructor() {
@@ -87,7 +88,7 @@ export class TerminalManager {
         this.btnOpen.classList.add('mysterious-reveal');
 
         // 2. Lancement du son généré
-        this.playMysteriousSwell();
+        playMysteriousSwell();
 
         // 3. Effet de Scramble (Décryptage de caractères)
         const finalString = "💻 TERMINAL";
@@ -125,33 +126,4 @@ export class TerminalManager {
         }
     }
 
-    /**
-     * Génère un son de mise sous tension mystérieux (sans fichier audio externe)
-     */
-    playMysteriousSwell() {
-        // Initialisation du moteur audio natif du navigateur
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        // Type d'onde : 'sine' = très pur et doux, 'square' = très rétro/8-bit
-        oscillator.type = 'sine';
-
-        // Variation de la fréquence (Pitch qui descend)
-        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Commence aigu
-        oscillator.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 1.5); // Finit grave
-
-        // Enveloppe du volume (Fade in rapide, Fade out long)
-        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); // Volume max
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // Extinction
-
-        // Lecture
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 1.5);
-    }
 }

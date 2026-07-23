@@ -94,3 +94,30 @@ export function playTabUnlockingSound() {
         osc.stop(impactTime + 4.0);
     });
 }
+
+export function playMysteriousSwell() {
+    // Initialisation du moteur audio natif du navigateur
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Type d'onde : 'sine' = très pur et doux, 'square' = très rétro/8-bit
+    oscillator.type = 'sine';
+
+    // Variation de la fréquence (Pitch qui descend)
+    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Commence aigu
+    oscillator.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 1.5); // Finit grave
+
+    // Enveloppe du volume (Fade in rapide, Fade out long)
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); // Volume max
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // Extinction
+
+    // Lecture
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime + 1.5);
+}
