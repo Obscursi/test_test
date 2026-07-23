@@ -135,8 +135,8 @@ class GameEngine {
     }
 
 
-    /**
-    * Change the status of an enigma to ENIGMA_STATUS.RESOLVED
+    /** 
+    * Change the status of an enigma toENIGMA_STATUS.RESOLVED, shows the button of the eventual enigmas unlocked, clean the memory of the old Enigma, check if we are in the good enigma to unlock the terminal and check if we are finished and we can display the victory button
     * @param {string} idEnigma
     */
     completeEnigma(idEnigma, enigmasToUnlock = []) {
