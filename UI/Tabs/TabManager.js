@@ -72,7 +72,7 @@ export class TabManager {
         }
 
         this.displayOrNotWebcam(tabId);
-        this.displayOrNotNavigationBar(tabId);
+        this.displayOrNotNavigationBar(tabId); //we don't display the naviguation bar only on the welcome page for the moment
     }
 
     displayOrNotWebcam(tabId) {

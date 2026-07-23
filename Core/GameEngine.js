@@ -155,6 +155,10 @@ class GameEngine {
         // We change the status to resolved for the tab (and completed for the button of the tab, which changes its color to green)
         tabCompleted.makeTabCompleted();
 
+        if (idEnigma === ENIGMA_IDS.COLORS) { //this is temporary, it will just display the button when this enigma is completed
+            uiManagerInstance.terminalManager.showTerminalButton();
+        }
+
         this.activeEnigmas = this.activeEnigmas.filter(enigme => enigme.id !== idEnigma);
 
         enigmasToUnlock.forEach(nextId => {

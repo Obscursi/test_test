@@ -71,4 +71,87 @@ export class TerminalManager {
         }
 
     }
+
+    /**
+         * Fait apparaître le bouton avec son, glitch visuel et décryptage textuel
+         */
+    showTerminalButton() {
+        if (!this.btnOpen) return;
+
+        // 1. Affichage de base et application du glitch CSS
+        this.btnOpen.style.display = 'block';
+
+        // On retire puis remet la classe pour relancer l'animation si besoin
+        this.btnOpen.classList.remove('mysterious-reveal');
+        void this.btnOpen.offsetWidth; // Astuce pour forcer le navigateur à relire le CSS
+        this.btnOpen.classList.add('mysterious-reveal');
+
+        // 2. Lancement du son généré
+        this.playMysteriousSwell();
+
+        // 3. Effet de Scramble (Décryptage de caractères)
+        const finalString = "💻 TERMINAL";
+        const randomChars = "01$!*@#%&ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let iterations = 0;
+
+        // Toutes les 40ms, on change les lettres
+        const interval = setInterval(() => {
+            this.btnOpen.innerText = finalString.split('').map((letter, index) => {
+                // Si l'index est inférieur aux itérations, on affiche la vraie lettre
+                if (index < Math.floor(iterations)) return finalString[index];
+
+                // Sinon, on affiche un caractère aléatoire
+                return randomChars[Math.floor(Math.random() * randomChars.length)];
+            }).join('');
+
+            // Condition d'arrêt
+            if (iterations >= finalString.length) {
+                clearInterval(interval);
+            }
+
+            // Vitesse du décryptage (plus le chiffre est bas, plus c'est long)
+            iterations += 1 / 3;
+        }, 40);
+
+        console.log("👽 TerminalManager : Unité inconnue détectée sur le réseau.");
+    }
+
+    /**
+     * NOUVELLE FONCTION : Recache le bouton si besoin
+     */
+    hideTerminalButton() {
+        if (this.btnOpen) {
+            this.btnOpen.style.display = 'none';
+        }
+    }
+
+    /**
+     * Génère un son de mise sous tension mystérieux (sans fichier audio externe)
+     */
+    playMysteriousSwell() {
+        // Initialisation du moteur audio natif du navigateur
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        // Type d'onde : 'sine' = très pur et doux, 'square' = très rétro/8-bit
+        oscillator.type = 'sine';
+
+        // Variation de la fréquence (Pitch qui descend)
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Commence aigu
+        oscillator.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 1.5); // Finit grave
+
+        // Enveloppe du volume (Fade in rapide, Fade out long)
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); // Volume max
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5); // Extinction
+
+        // Lecture
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 1.5);
+    }
 }
