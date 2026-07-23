@@ -114,7 +114,7 @@ export class TerminalManager {
             iterations += 1 / 3;
         }, 40);
 
-        console.log("👽 TerminalManager : Unité inconnue détectée sur le réseau.");
+        console.log("Le terminal est maintenant affiché");
     }
 
     /**
