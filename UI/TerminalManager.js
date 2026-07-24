@@ -1,8 +1,8 @@
 import gameEngineInstance from '../Core/GameEngine.js';
-import { ENIGMA_IDS } from '../../Utils/Constant.js';
+import { ENIGMA_IDS } from '../Utils/Constant.js';
 
 import { showClueAlert } from './AlertManager.js';
-import { playMysteriousSwell } from '../../Utils/Audio/AudioSynth.js';
+import { playMysteriousSwell } from '../Utils/Audio/AudioSynth.js';
 
 export class TerminalManager {
     constructor() {
