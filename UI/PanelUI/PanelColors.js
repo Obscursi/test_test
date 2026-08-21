@@ -7,6 +7,7 @@ const COLOR_SWATCHES = {
     "Rouge": "#e00000",
     "Jaune": "#f2d200",
     "Vert": "#00a63f",
+    "Cyan": "#00c8dc",
     "Bleu": "#0057d8",
     "Noir": "#000000"
 };
@@ -140,9 +141,20 @@ export class PanelColors {
         this.showFeedback("Un mur bloque le passage.", "blocked");
     }
 
-    showNoAction(numberOfHiddenColors) {
-        const detail = numberOfHiddenColors === 0 ? "aucun cercle caché" : `${numberOfHiddenColors} cercles cachés`;
+    /**
+     * On nomme les couleurs cachées plutôt que d'en donner le nombre : si une action ne part pas,
+     * ce message dit immédiatement quel cercle la caméra ne voit pas, sans avoir à chercher.
+     */
+    showNoAction(hiddenColors) {
+        const detail = hiddenColors.length === 0
+            ? "aucun cercle caché"
+            : `cachés : ${hiddenColors.join(", ")}`;
+
         this.showFeedback(`Aucune action (${detail}).`, "none");
+    }
+
+    showNoEffect(color) {
+        this.showFeedback(`${color} : couleur non utilisée pour l'instant.`, "none");
     }
 
     showVictory() {

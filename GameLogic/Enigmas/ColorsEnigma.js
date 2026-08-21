@@ -19,7 +19,7 @@ const COLOR_TO_DIRECTION = {
 };
 
 const COLOR_TO_CHANGE_PLAYER = {
-    "Noir": ACTIONS.CHANGE_PLAYER
+    "Cyan": ACTIONS.CHANGE_PLAYER,
 }
 
 const COLORS_USED = [...Object.keys(COLOR_TO_DIRECTION), ...Object.keys(COLOR_TO_CHANGE_PLAYER)];
@@ -127,7 +127,7 @@ export class ColorsEnigma extends Enigma {
         const hiddenColors = COLORS_USED.filter(color => this.hiddenFrames[color] > this.framesInWindow / 2);
 
         if (hiddenColors.length !== 1) {
-            this.panel.showNoAction(hiddenColors.length);
+            this.panel.showNoAction(hiddenColors);
             return;
         }
 

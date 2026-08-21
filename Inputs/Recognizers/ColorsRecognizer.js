@@ -6,7 +6,7 @@ const MINIMUM_SATURATION = 90;
 const MINIMUM_LUMINOSITY = 70;
 
 //Black and white have no meaningful hue : they are recognized by their luminosity and saturation only
-const MAXIMUM_BLACK_LUMINOSITY = 55;
+const MAXIMUM_BLACK_LUMINOSITY = 70;
 
 const SAMPLE_STEP = 2; //we do not take every pixel in the circle of sampling, just half of them
 const MINIMUM_VOTES = 3; //the minimum votes a sample circle needs to have to be detected as known color
@@ -187,6 +187,7 @@ export class ColorsRecognizer {
         if (h >= 170 || h <= 10) return "Rouge"; //red is between 170 and 10 because H is looping if the value is over 179
         if (h >= 20 && h <= 40) return "Jaune";
         if (h >= 48 && h <= 78) return "Vert";
+        if (h >= 83 && h <= 101) return "Cyan"; //la 6e teinte du cube RGB, coincée entre le vert et le bleu
         if (h >= 105 && h <= 133) return "Bleu";
 
         //We have kinda restrictive teints because we rather want an unknown vote than a false positive of color

@@ -6,7 +6,8 @@ export const DIRECTIONS = {
 };
 
 export const ACTIONS = {
-    CHANGE_PLAYER: 'change_player'
+    CHANGE_PLAYER: 'change_player',
+    NOTHING: 'nothing' //dummy actions if  we ever need one
 }
 
 export const MAZE_SYMBOLS = {
