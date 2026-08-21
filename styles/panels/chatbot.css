@@ -55,9 +55,10 @@
     border-bottom-right-radius: 4px;
 }
 
+
 .zone-saisie-aide {
     width: min(900px, 95%);
-    /* display: flex; */
+    display: flex;
     align-items: center;
     gap: 10px;
 }
@@ -81,7 +82,8 @@
 .zone-saisie-aide button {
     width: 42px;
     height: 42px;
-    /* display: flex; */
+    flex-shrink: 0;
+    display: flex;
     justify-content: center;
     align-items: center;
     border: none;
