@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="styles/components/confirmModal.css">
     <link rel="stylesheet" href="styles/components/cinematics.css">
     <link rel="stylesheet" href="styles/components/successFlash.css">
+    <link rel="stylesheet" href="styles/components/victoryPanel.css">
     <link rel="stylesheet" href="styles/components/groovyTitle.css">
 
     <!-- Un fichier par panneau -->
@@ -113,8 +114,25 @@
         </div>
 
         <div id="panel-lsf-victory" class="view-panel">
-            <h2> Félicitations, vous avez signé le mot "Plan"... N'hésitez pas à demander au maître du jeu où il se
-                trouve...</h2>
+            <div class="victory-panel">
+                <p class="victory-text">Félicitations, vous avez signé le mot « Plan »... N'hésitez pas à demander au
+                    maître du jeu où il se trouve.</p>
+            </div>
+        </div>
+
+        <div id="panel-aruco-victory" class="view-panel">
+            <div class="victory-panel">
+                <h2 class="victory-title">Analyse validée</h2>
+                <p class="victory-text">La suite reposera sur votre jugement plutôt
+                    que sur celui des machines.</p>
+            </div>
+        </div>
+
+        <div id="panel-colors-victory" class="view-panel">
+            <div class="victory-panel">
+                <h2 class="victory-title">Apprentissage réussi</h2>
+                <p class="victory-text">Comme quoi le machine learning à la main c'est pas simple...</p>
+            </div>
         </div>
 
         <div id="panel-aruco" class="view-panel">
@@ -184,8 +202,9 @@
         </div>
 
         <div id="panel-guilty-victory" class="view-panel">
-            <h2>Accusation confirmée</h2>
-            <p>Le coupable a été démasqué. L'accès à l'énigme finale est déverrouillé.</p>
+            <div class="victory-panel">
+                <p class="victory-text">cété lui (ou elle) le (la) méchant(e)</p>
+            </div>
         </div>
 
         <div id="panel-final" class="view-panel">
@@ -207,8 +226,10 @@
         </div>
 
         <div id="panel-final-victory" class="view-panel">
-            <h2>Code accepté</h2>
-            <p>Le système est déverrouillé. Mission accomplie.</p>
+            <div class="victory-panel">
+                <p class="victory-text">Vous êtes vachement balèze (bon c'est l'heure d'apprendre ce qu'est le machine
+                    learning maintenant)</p>
+            </div>
         </div>
 
         <div id="panel-to-implement" class="view-panel">

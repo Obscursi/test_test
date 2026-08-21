@@ -8,6 +8,15 @@
     display: none;
 }
 
+/*
+ * Tout le contenu des panneaux est centré : les boîtes (labyrinthe, zones de saisie, image de
+ * l'énigme finale) par align-items, et le texte par text-align.
+ * Le chatbot rétablit un alignement à gauche de son côté, ses bulles ayant besoin de coller
+ * à un bord pour qu'on distingue le joueur du bot.
+ */
 .view-panel.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }

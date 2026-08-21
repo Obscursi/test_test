@@ -7,7 +7,9 @@
     background-color: #000;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 15px;
+    /* auto sur les côtés : le conteneur reste en display:block (posé par le JS), donc c'est la
+       marge automatique qui centre la caméra, pas un flex. */
+    margin: 0 auto 15px;
 }
 
 #webcam {

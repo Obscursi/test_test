@@ -33,8 +33,8 @@ export class TabManager {
         this.tabs = {
             welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
             lsf: new Tab(ENIGMA_IDS.LSF, '👉👈⬇️✋✋〰️➡️👌', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
-            aruco: new Tab(ENIGMA_IDS.ARUCO, 'Vrai ou faux', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco")),
-            colors: new Tab(ENIGMA_IDS.COLORS, 'Apprentissage coloré', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors")),
+            aruco: new Tab(ENIGMA_IDS.ARUCO, 'Vrai ou faux', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco"), document.getElementById("panel-aruco-victory")),
+            colors: new Tab(ENIGMA_IDS.COLORS, 'Apprentissage coloré', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors"), document.getElementById("panel-colors-victory")),
             chatbot: new Tab(HELP_IDS.CHATBOT, 'Chatbot du futur', document.querySelector('.tab-button[data-target="chatbot"]'), document.getElementById("panel-chatbot")),
             guilty: new Tab(ENIGMA_IDS.GUILTY, "c ki le vilain ?", document.querySelector('.tab-button[data-target="guilty"]'), document.getElementById("panel-guilty"), document.getElementById("panel-guilty-victory")),
             final: new Tab(ENIGMA_IDS.FINAL, 'Final Reckoning', document.querySelector('.tab-button[data-target="final"]'), document.getElementById("panel-final"), document.getElementById("panel-final-victory")),

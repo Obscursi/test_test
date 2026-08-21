@@ -10,6 +10,10 @@
 }
 
 .chat-aide {
+    /* On annule le centrage global des panneaux : les bulles doivent coller à un bord,
+       c'est ce qui permet de distinguer d'un coup d'oeil le joueur du bot. */
+    text-align: left;
+
     width: min(900px, 95%);
     height: 65vh;
     margin-bottom: 20px;

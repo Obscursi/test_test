@@ -1,0 +1,51 @@
+/* ==========================================================
+   PANNEAUX DE VICTOIRE DES ÉNIGMES
+   Un style commun à toutes les énigmes résolues : violet et blanc, centré.
+   S'utilise avec .victory-title pour le titre et .victory-text pour le corps ;
+   une énigme peut n'avoir que du texte (c'est le cas de la LSF).
+   ========================================================== */
+
+.victory-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+
+    max-width: 700px;
+    margin-top: 40px;
+    padding: 40px 50px;
+    box-sizing: border-box;
+
+    background: linear-gradient(160deg, rgba(45, 21, 80, 0.92), rgba(12, 6, 24, 0.95));
+    border: 1px solid rgba(165, 107, 255, 0.6);
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(165, 107, 255, 0.25);
+
+    text-align: center;
+}
+
+.victory-title {
+    margin: 0;
+    font-size: 2.1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 0 18px rgba(198, 150, 255, 0.9);
+}
+
+/* Trait dégradé sous le titre : sépare titre et texte sans ajouter d'élément dans le HTML */
+.victory-title::after {
+    content: "";
+    display: block;
+    width: 90px;
+    height: 2px;
+    margin: 16px auto 0;
+    background: linear-gradient(90deg, transparent, #a56bff, transparent);
+}
+
+.victory-text {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #e6d7ff;
+}
