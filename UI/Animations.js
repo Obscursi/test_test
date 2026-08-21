@@ -41,6 +41,8 @@ export class Animations {
             if (!this.successOverlay) return;
 
             this.successOverlay.classList.add("playing");
+            audioManagerInstance.playEnigmaSuccess(); //la cloche sonne au moment où le tampon apparaît
+
             await wait(SUCCESS_ANIMATION_MS);
             this.successOverlay.classList.remove("playing");
         });
