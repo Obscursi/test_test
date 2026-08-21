@@ -10,11 +10,20 @@ export const ACTIONS = {
     NOTHING: 'nothing' //dummy actions if  we ever need one
 }
 
+export const CHARACTERS = {
+    BLUE: 'blue',
+    YELLOW: 'yellow'
+};
+
 export const MAZE_SYMBOLS = {
     WALL: '#',
     FLOOR: '.',
-    START: 'S',
-    EXIT: 'E'
+    START: 'S',        // départ du bleu
+    EXIT: 'E',         // objectif du bleu
+    START_YELLOW: 'J', // départ du jaune
+    SWITCH: 'I',       // interrupteur : ouvre la grille quand un personnage marche dessus
+    GATE: 'G',         // grille : infranchissable tant que l'interrupteur est éteint
+    TREASURE: 'T'      // objectif du jaune
 };
 
 const MOVES = {
@@ -25,67 +34,133 @@ const MOVES = {
 };
 
 /**
- * Pure model of the maze mini game : it knows the walls and where the character stands, nothing about the DOM
- * nor about the colors used to control it. That way the same maze can be reused with another set of controls
- * (the second character of the enigma will only need a different color mapping).
+ * Pure model of the maze mini game : it knows the walls and where the characters stand, nothing about
+ * the DOM nor about the colors used to control it. Les contrôles vivent dans ColorsEnigma, ce qui
+ * permet de donner des commandes différentes à chaque personnage sans toucher à ce fichier.
+ *
+ * Tout est déduit du plan : un personnage n'existe que si le plan lui donne un départ, et il n'a un
+ * objectif que si le plan contient la case correspondante. Un niveau à un seul personnage et un
+ * niveau à deux utilisent donc exactement le même code.
  */
 export class Maze {
 
     /**
-     * @param {Array<string>} layout - one string per row, using MAZE_SYMBOLS ('#' wall, '.' floor, 'S' start, 'E' exit)
+     * @param {Array<string>} layout - one string per row, using MAZE_SYMBOLS
      */
     constructor(layout) {
         this.grid = layout.map(row => row.split(''));
         this.rows = this.grid.length;
         this.cols = this.grid[0].length;
 
-        this.start = this.findCell(MAZE_SYMBOLS.START);
-        this.exit = this.findCell(MAZE_SYMBOLS.EXIT);
+        this.starts = {
+            [CHARACTERS.BLUE]: this.findCell(MAZE_SYMBOLS.START),
+            [CHARACTERS.YELLOW]: this.findCell(MAZE_SYMBOLS.START_YELLOW)
+        };
+
+        // Le bleu sort par la porte au niveau 1 ; au niveau 2 il n'a pas d'objectif à lui,
+        // il sert seulement à ouvrir la voie au jaune, qui vise le trésor.
+        this.goals = {
+            [CHARACTERS.BLUE]: this.findCell(MAZE_SYMBOLS.EXIT),
+            [CHARACTERS.YELLOW]: this.findCell(MAZE_SYMBOLS.TREASURE)
+        };
+
+        this.switchCell = this.findCell(MAZE_SYMBOLS.SWITCH);
+
+        if (!this.starts[CHARACTERS.BLUE]) console.log("DEBUG Maze : ce labyrinthe n'a pas de départ 'S'");
 
         this.reset();
     }
 
+    /**
+     * @returns {{row:number, col:number}|null} null si le symbole est absent de ce labyrinthe
+     */
     findCell(symbol) {
         for (let row = 0; row < this.rows; row++) {
             const col = this.grid[row].indexOf(symbol);
             if (col !== -1) return { row, col };
         }
 
-        console.log(`DEBUG Maze : le symbole '${symbol}' est absent du labyrinthe`);
-        return { row: 1, col: 1 };
+        return null;
     }
 
     reset() {
-        this.position = { ...this.start };
+        // Un personnage n'existe que si le plan lui donne un point de départ
+        this.characters = Object.values(CHARACTERS)
+            .filter(name => this.starts[name])
+            .map(name => ({ name, position: { ...this.starts[name] } }));
+
+        this.activeIndex = 0;
+        this.switchActivated = false;
         this.isFinished = false;
+    }
+
+    get activeCharacter() {
+        return this.characters[this.activeIndex];
+    }
+
+    /**
+     * Passe la main au personnage suivant.
+     * @returns {object|null} le personnage désormais actif, null s'il n'y en a qu'un seul
+     */
+    changeCharacter() {
+        if (this.characters.length < 2) return null;
+
+        this.activeIndex = (this.activeIndex + 1) % this.characters.length;
+        return this.activeCharacter;
     }
 
     isWall(row, col) {
         if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return true; //outside of the grid
-        return this.grid[row][col] === MAZE_SYMBOLS.WALL;
+
+        const cell = this.grid[row][col];
+
+        if (cell === MAZE_SYMBOLS.WALL) return true;
+        if (cell === MAZE_SYMBOLS.GATE) return !this.switchActivated; //la grille barre le passage tant que l'interrupteur est éteint
+
+        return false;
     }
 
     /**
-     * Tries to move the character one cell in the given direction.
-     * @returns {{moved: boolean, finished: boolean}} moved is false when a wall blocks the way
+     * Déplace le personnage ACTIF d'une case dans la direction donnée.
+     * @returns {{moved:boolean, finished:boolean, switchJustActivated:boolean}} moved est faux quand un mur bloque
      */
     tryMove(direction) {
-        if (this.isFinished) return { moved: false, finished: true };
+        const nothingHappened = { moved: false, finished: this.isFinished, switchJustActivated: false };
+
+        if (this.isFinished) return nothingHappened;
 
         const move = MOVES[direction];
         if (!move) {
             console.log(`DEBUG Maze : la direction '${direction}' n'existe pas`);
-            return { moved: false, finished: false };
+            return nothingHappened;
         }
 
-        const row = this.position.row + move.row;
-        const col = this.position.col + move.col;
+        const character = this.activeCharacter;
+        const row = character.position.row + move.row;
+        const col = character.position.col + move.col;
 
-        if (this.isWall(row, col)) return { moved: false, finished: false };
+        if (this.isWall(row, col)) return nothingHappened;
 
-        this.position = { row, col };
-        this.isFinished = (row === this.exit.row && col === this.exit.col);
+        character.position = { row, col };
 
-        return { moved: true, finished: this.isFinished };
+        const switchJustActivated = this.stepOnSwitch(row, col);
+        this.isFinished = this.hasReachedGoal(character);
+
+        return { moved: true, finished: this.isFinished, switchJustActivated };
+    }
+
+    stepOnSwitch(row, col) {
+        if (!this.switchCell || this.switchActivated) return false;
+        if (row !== this.switchCell.row || col !== this.switchCell.col) return false;
+
+        this.switchActivated = true;
+        return true;
+    }
+
+    hasReachedGoal(character) {
+        const goal = this.goals[character.name];
+        if (!goal) return false; //ce personnage n'a pas d'objectif, il ouvre seulement la voie
+
+        return character.position.row === goal.row && character.position.col === goal.col;
     }
 }

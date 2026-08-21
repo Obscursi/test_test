@@ -1,5 +1,5 @@
 import { Enigma } from './Enigma.js';
-import { Maze, DIRECTIONS, ACTIONS } from '../MiniGames/Maze.js';
+import { Maze, DIRECTIONS, CHARACTERS } from '../MiniGames/Maze.js';
 import { ENIGMA_IDS, IRL_REWARDS } from '../../Utils/Constant.js';
 
 import inputManagerInstance from '../../Inputs/InputManager.js';
@@ -10,33 +10,55 @@ const TICK_MS = 3000;
 
 /**
  * The players have to discover by themselves that hiding one circle moves the character in the given direction.
+ *
  */
-const COLOR_TO_DIRECTION = {
-    "Rouge": DIRECTIONS.UP,
-    "Bleu": DIRECTIONS.DOWN,
-    "Jaune": DIRECTIONS.LEFT,
-    "Vert": DIRECTIONS.RIGHT
+const CONTROLS = {
+    [CHARACTERS.BLUE]: {
+        "Rouge": DIRECTIONS.UP,
+        "Bleu": DIRECTIONS.DOWN,
+        "Jaune": DIRECTIONS.LEFT,
+        "Vert": DIRECTIONS.RIGHT
+    },
+    [CHARACTERS.YELLOW]: {
+        "Vert": DIRECTIONS.UP,
+        "Jaune": DIRECTIONS.DOWN,
+        "Bleu": DIRECTIONS.LEFT,
+        "Rouge": DIRECTIONS.RIGHT
+    }
 };
 
-const COLOR_TO_CHANGE_PLAYER = {
-    "Cyan": ACTIONS.CHANGE_PLAYER,
-}
+// Cacher ce cercle donne la main à l'autre personnage
+const CHANGE_PLAYER_COLOR = "Cyan";
 
-const COLORS_USED = [...Object.keys(COLOR_TO_DIRECTION), ...Object.keys(COLOR_TO_CHANGE_PLAYER)];
+const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.BLUE]), CHANGE_PLAYER_COLOR];
 
 /**
- * '#' wall, '.' floor, 'S' start, 'E' exit.
- * The shortest way out is 12 moves (bas, droite, haut, droite, bas) and the corridor going down from
- * the start is a dead end, so a wrong guess costs moves without ever locking the players out.
+ * '#' mur, '.' sol, 'S' départ bleu, 'E' sortie du bleu,
+ * 'J' départ jaune, 'I' interrupteur, 'G' grille, 'T' trésor.
+ *
+ * Level 1 : one character, they are learning the rules of the game
+ *
+ * Level 2 : the player needs to change character to resolved this labyrinth
  */
-const MAZE_LAYOUT = [
-    "#######",
-    "#S#...#",
-    "#.#.#.#",
-    "#...#.#",
-    "#.###.#",
-    "#...#E#",
-    "#######"
+const MAZE_LEVELS = [
+    [
+        "#######",
+        "#S#...#",
+        "#.#.#.#",
+        "#...#.#",
+        "#.###.#",
+        "#...#E#",
+        "#######"
+    ],
+    [
+        "#########",
+        "#S..#J..#",
+        "#.#.#.#.#",
+        "#.#.#...#",
+        "#.#.#G###",
+        "#I..#..T#",
+        "#########"
+    ]
 ];
 
 export class ColorsEnigma extends Enigma {
@@ -44,21 +66,23 @@ export class ColorsEnigma extends Enigma {
     constructor() {
         super(ENIGMA_IDS.COLORS, "Scanner de Couleurs", [], IRL_REWARDS.V_AFTER_COLORS);
 
-        this.maze = new Maze(MAZE_LAYOUT);
-
         this.panel = uiManagerInstance.panelManager.panelColors;
-        this.panel.buildMaze(this.maze);
         this.panel.buildChips(COLORS_USED);
 
-        this.resetWindow();
+        this.loadLevel(0);
     }
 
     start() {
         super.start();
 
-        this.maze.reset();
-        this.panel.updatePlayerPosition(this.maze);
+        this.loadLevel(0);
+    }
 
+    loadLevel(index) {
+        this.level = index;
+        this.maze = new Maze(MAZE_LEVELS[index]);
+
+        this.panel.buildMaze(this.maze);
         this.resetWindow();
     }
 
@@ -118,7 +142,7 @@ export class ColorsEnigma extends Enigma {
 
     /**
      * A circle counts as hidden when it was missing for most of the window. Exactly one hidden circle
-     * means one move, anything else is ignored.
+     * means one action, anything else is ignored.
      */
     commitAction() {
         if (this.framesInWindow === 0) return;
@@ -127,33 +151,72 @@ export class ColorsEnigma extends Enigma {
         const hiddenColors = COLORS_USED.filter(color => this.hiddenFrames[color] > this.framesInWindow / 2);
 
         if (hiddenColors.length !== 1) {
-            this.panel.showNoAction(hiddenColors);
+            //Message masqué : dire aux joueurs quels cercles la caméra voit leur mâcherait le travail.
+            //Le décommenter est en revanche très utile pour régler la détection le jour de l'installation.
+            //this.panel.showNoAction(hiddenColors);
             return;
         }
 
-        const color = hiddenColors[0]
-        let result;
+        const color = hiddenColors[0];
 
-        if (COLOR_TO_CHANGE_PLAYER[color] === ACTIONS.CHANGE_PLAYER) { //with the color we either change the player
-            ///TODO : change player
+        if (color === CHANGE_PLAYER_COLOR) {
+            this.changeCharacter();
             return;
-        } else {
-            result = this.maze.tryMove(COLOR_TO_DIRECTION[hiddenColors[0]]); //or move in a direction
         }
 
+        this.moveActiveCharacter(color);
+    }
+
+    changeCharacter() {
+        const character = this.maze.changeCharacter();
+
+        //Un seul personnage dans ce labyrinthe : on ne dit rien. Révéler que le cyan ne sert pas
+        //encore éventerait l'existence du second personnage avant le niveau 2.
+        if (!character) return;
+
+        //Message masqué, comme l'anneau autour du personnage actif : aux joueurs de comprendre seuls
+        //que le cyan leur a donné la main sur l'autre personnage.
+        //this.panel.showCharacterChanged(character.name);
+
+        this.panel.renderMaze(this.maze);
+    }
+
+    moveActiveCharacter(color) {
+        const direction = CONTROLS[this.maze.activeCharacter.name][color];
+
+        if (!direction) { //cette couleur ne commande rien pour ce personnage
+            this.panel.showNoEffect(color);
+            return;
+        }
+
+        const result = this.maze.tryMove(direction);
 
         if (!result.moved) {
             this.panel.showBlocked();
             return;
         }
 
-        this.panel.updatePlayerPosition(this.maze);
+        this.panel.renderMaze(this.maze);
 
         if (result.finished) {
-            this.panel.showVictory();
-            this.onSuccess();
+            this.finishLevel();
+        } else if (result.switchJustActivated) {
+            this.panel.showSwitchActivated();
         } else {
             this.panel.showMoved();
         }
+    }
+
+    finishLevel() {
+        const nextLevel = this.level + 1;
+
+        if (nextLevel < MAZE_LEVELS.length) {
+            this.loadLevel(nextLevel);
+            this.panel.showLevelComplete(nextLevel + 1); //après loadLevel, qui réinitialise le message
+            return;
+        }
+
+        this.panel.showVictory();
+        this.onSuccess();
     }
 }

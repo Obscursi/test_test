@@ -82,9 +82,52 @@
     }
 }
 
-/* --- Le personnage --- */
+/* --- L'interrupteur, la grille et le trésor --- */
 
-.maze-player {
+.maze-cell.switch {
+    background: radial-gradient(circle, rgba(255, 214, 0, 0.75), rgba(255, 160, 0, 0.2) 75%);
+    border: 1px solid #ffd600;
+    border-radius: 4px;
+    box-shadow: inset 0 0 12px rgba(255, 214, 0, 0.5);
+}
+
+/* Barreaux verticaux : la grille se lit immédiatement comme un obstacle */
+.maze-cell.gate {
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(230, 200, 255, 0.85) 0 4px,
+            transparent 4px 11px),
+        rgba(90, 50, 140, 0.6);
+    border-radius: 4px;
+    transition: opacity 0.4s ease;
+}
+
+/* L'interrupteur a été actionné : les barreaux s'effacent, le passage est libre */
+.maze-grid.gate-open .maze-cell.gate {
+    opacity: 0.15;
+}
+
+/* Pulsation dorée, et non celle de la sortie : la lueur verte d'exitPulse virait l'or à l'olive */
+.maze-cell.treasure {
+    background: radial-gradient(circle, rgba(255, 214, 0, 0.7), rgba(255, 160, 0, 0.35));
+    border: 1px solid #ffd600;
+    border-radius: 4px;
+    animation: treasurePulse 1.8s infinite alternate;
+}
+
+@keyframes treasurePulse {
+    0% {
+        box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.5);
+    }
+
+    100% {
+        box-shadow: inset 0 0 24px rgba(255, 245, 180, 1);
+    }
+}
+
+/* --- Les personnages --- */
+
+.maze-character {
     position: absolute;
     top: 10px;
     /* aligné sur le padding de la grille */
@@ -95,15 +138,29 @@
     pointer-events: none;
 }
 
-/* Coeur blanc sur fond violet : c'est l'élément le plus lumineux de la grille, impossible à perdre */
-.maze-player::after {
+/* Coeur blanc sur fond violet : les personnages sont les éléments les plus lumineux de la grille */
+.maze-character::after {
     content: "";
     position: absolute;
     inset: 22%;
     border-radius: 50%;
+}
+
+.maze-character.blue::after {
     background: radial-gradient(circle at 35% 30%, #ffffff, #35d6ff 60%, #0b7fb8);
     box-shadow: 0 0 16px rgba(120, 220, 255, 0.95);
 }
+
+.maze-character.yellow::after {
+    background: radial-gradient(circle at 35% 30%, #ffffff, #ffd600 60%, #c88a00);
+    box-shadow: 0 0 16px rgba(255, 214, 0, 0.95);
+}
+
+/*
+ * Le personnage actif reçoit bien la classe "active" (voir PanelColors.renderMaze), mais elle n'est
+ * VOLONTAIREMENT pas stylée : c'est un escape game, aux joueurs de déduire lequel des deux répond
+ * à leurs couleurs. Pour réafficher le repère, il suffit de styler .maze-character.active ici.
+ */
 
 /* --- Le compte à rebours --- */
 

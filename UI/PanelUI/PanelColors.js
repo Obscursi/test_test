@@ -62,28 +62,51 @@ export class PanelColors {
             }
         }
 
-        this.playerElement = document.createElement("div");
-        this.playerElement.className = "maze-player";
-        this.gridElement.appendChild(this.playerElement);
+        // Un élément par personnage : le modèle décide combien il y en a, l'affichage suit.
+        this.characterElements = {};
 
-        this.updatePlayerPosition(maze);
+        for (const character of maze.characters) {
+            const element = document.createElement("div");
+            element.className = `maze-character ${character.name}`;
+
+            this.gridElement.appendChild(element);
+            this.characterElements[character.name] = element;
+        }
+
+        this.renderMaze(maze);
     }
 
     classOfCell(symbol) {
         if (symbol === MAZE_SYMBOLS.WALL) return "wall";
         if (symbol === MAZE_SYMBOLS.EXIT) return "exit";
         if (symbol === MAZE_SYMBOLS.START) return "start";
+        if (symbol === MAZE_SYMBOLS.START_YELLOW) return "start";
+        if (symbol === MAZE_SYMBOLS.SWITCH) return "switch";
+        if (symbol === MAZE_SYMBOLS.GATE) return "gate";
+        if (symbol === MAZE_SYMBOLS.TREASURE) return "treasure";
         if (symbol === MAZE_SYMBOLS.FLOOR) return "floor";
 
         console.error("DEBUG : le symbole de la class Cell n'ait pas reconnu");
         return;
     }
 
-    updatePlayerPosition(maze) {
-        if (!this.playerElement) return;
+    /**
+     * Replace chaque personnage, met en avant celui qui répond aux commandes, et ouvre la grille
+     * une fois l'interrupteur activé. Appelée après chaque action.
+     */
+    renderMaze(maze) {
+        for (const character of maze.characters) {
+            const element = this.characterElements?.[character.name];
+            if (!element) continue;
 
-        const { row, col } = maze.position;
-        this.playerElement.style.transform = `translate(${col * CELL_SIZE}px, ${row * CELL_SIZE}px)`;
+            const { row, col } = character.position;
+            element.style.transform = `translate(${col * CELL_SIZE}px, ${row * CELL_SIZE}px)`;
+
+            //l'anneau autour du personnage actif est le seul indice de qui obéit aux couleurs
+            element.classList.toggle("active", character === maze.activeCharacter);
+        }
+
+        this.gridElement.classList.toggle("gate-open", maze.switchActivated);
     }
 
     /**
@@ -155,6 +178,19 @@ export class PanelColors {
 
     showNoEffect(color) {
         this.showFeedback(`${color} : couleur non utilisée pour l'instant.`, "none");
+    }
+
+    showCharacterChanged(characterName) {
+        const label = (characterName === "yellow") ? "jaune" : "bleu";
+        this.showFeedback(`Vous contrôlez maintenant le personnage ${label}.`, "moved");
+    }
+
+    showSwitchActivated() {
+        this.showFeedback("Interrupteur activé : la grille s'ouvre !", "victory");
+    }
+
+    showLevelComplete(nextLevelNumber) {
+        this.showFeedback(`Niveau réussi ! Passage au labyrinthe ${nextLevelNumber}.`, "victory");
     }
 
     showVictory() {
