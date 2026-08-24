@@ -157,7 +157,7 @@ export class PanelColors {
     }
 
     showMoved() {
-        this.showFeedback("Déplacement enregistré.", "moved");
+        this.showFeedback("Action enregistrée.", "moved");
     }
 
     showBlocked() {
