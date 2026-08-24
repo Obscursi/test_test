@@ -167,7 +167,8 @@
 
         <div id="panel-victoire" class="view-panel" data-target="victoire" style="text-align: center; color: #007f8b;">
             <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
-            <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre équipe a résolu toutes les énigmes.
+            <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre intervention a permis l'arrestation du
+                coupable !
             </p>
         </div>
 
@@ -181,12 +182,16 @@
                     </svg>
                 </button>
             </div>
+
+            <p class="disclaimer">Chatbot est une IA, et peut se tromper.</p>
         </div>
 
         <div id="panel-guilty" class="view-panel">
             <h2>Qui accusez-vous ?</h2>
-            <p>Le chatbot a livré son verdict, mais une IA peut se tromper. Entrez le nom de la personne que vous
+            <p>Entrez le prénom de la personne que vous
                 jugez coupable.</p>
+            <p class="disclaimer">Ne mettez pas de trémas ou d'accents.</p>
+
             <div class="zone-accusation">
                 <input type="text" id="inputMessage-guilty" maxlength="30" placeholder="Nom du coupable"
                     autocomplete="off" />
