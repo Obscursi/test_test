@@ -83,7 +83,7 @@ export class PanelFinal {
         if (!this.timeElement) return;
 
         for (let i = seconds; i >= 0; i--) {
-            this.timeElement.textContent = `Perdu ! Temps restant avant la prochaine tentative : ${i} secondes`;
+            this.timeElement.textContent = `Attention, la prochaine tentative sera la dernière. ${i} secondes`;
             await wait(1000);
         }
 
