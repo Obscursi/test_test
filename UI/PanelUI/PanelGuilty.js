@@ -47,11 +47,11 @@ export class PanelGuilty {
     }
 
     showEmptyAccusation() {
-        this.showFeedback("Entre le nom de la personne que tu accuses.", "wrong");
+        this.showFeedback("Entre le prénom de la personne que tu accuses.", "wrong");
     }
 
     showWrongAccusation(nameTyped) {
-        this.showFeedback(`"${nameTyped}" n'est pas le coupable. Reprends les indices et réessaye.`, "wrong");
+        this.showFeedback(`"${nameTyped}" n'est pas le coupable.`, "wrong");
     }
 
     showRightAccusation(nameOfCulprit) {

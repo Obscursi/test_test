@@ -57,7 +57,7 @@ export class GuiltyEnigma extends Enigma {
             // On fait confirmer l'orthographe avant de compter le coup : une faute de frappe
             // ne doit pas coûter un cooldown de plusieurs minutes.
             const confirmed = await showConfirmAlert(
-                `Tu es sur le point d'accuser "${accusation}". Vérifie l'orthographe avant de valider, et ne mets pas d'accents / de trémas dans ta réponse.`
+                `Vous êtes sur le point d'accuser "${accusation}". Vérifiez l'orthographe avant de valider, ne mettez pas d'accents / de trémas dans votre réponse.`
             );
             if (!confirmed) continue;
 
