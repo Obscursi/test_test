@@ -8,7 +8,7 @@ import { showConfirmAlert } from '../../UI/AlertManager.js';
 const MAX_TRIES = 2;
 const SECONDS_BETWEEN_TRIES = 5;
 
-const VISUAL_FOLDER = "../../Utils/Pictures/FinalEnigma";
+const VISUAL_FOLDER = "../../../test_test/Utils/Pictures/FinalEnigma";
 
 const CODE_BY_TEAM = {
     A: "157-986-566-146",
