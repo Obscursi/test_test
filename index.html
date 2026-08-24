@@ -204,7 +204,7 @@
 
         <div id="panel-final" class="view-panel">
             <h2>Énigme finale</h2>
-            <p class="final-instruction">Décryptez le visuel et entrez le code d'accès. Attention : le nombre de
+            <p class="final-instruction">Attention : le nombre de
                 tentatives est limité.</p>
 
             <img id="final-visual" class="final-visual" alt="Visuel de l'énigme finale">
@@ -212,8 +212,9 @@
             <div class="zone-code-final">
                 <!-- pas de placeholder : il montrerait la forme du code avant même qu'on cherche -->
                 <input type="text" id="inputCode-final" maxlength="20" autocomplete="off" />
-                <button id="btnValider-final" type="button">Valider</button>
             </div>
+
+            <button id="btnValider-final" type="button">Valider</button>
 
             <p id="final-tries" class="final-tries"></p>
             <p id="final-time" class="final-time"></p>
