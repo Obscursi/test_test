@@ -76,3 +76,10 @@ button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+.disclaimer {
+    width: min(900px, 95%);
+    margin: 10px 0 0;
+    font-size: 0.68rem;
+    color: #b0a8c0;
+}
