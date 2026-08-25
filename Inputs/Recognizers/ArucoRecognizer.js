@@ -95,6 +95,14 @@ export class ArucoRecognizer {
         visionState.markers = [];
         visionState.sheetsVisible = [];
 
+
+        // Aruco n'affiche rien : le flux est rendu nativement par l'element <video> en dessous.
+        // On vide quand meme l'overlay, sinon le dernier dessin de l'enigme precedente
+        // (les cercles de Colors, la derniere frame de LSF) resterait fige par dessus.
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+
         for (const sheetID of [1, 2]) {
             if (this.sheetHomographyAge[sheetID] < 999) {
                 this.sheetHomographyAge[sheetID]++;
