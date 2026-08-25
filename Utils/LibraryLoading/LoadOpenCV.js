@@ -14,8 +14,9 @@ export async function initOpenCV() {
         // LE BOUCLIER : On cache temporairement la mémoire de MediaPipe
         // pour éviter qu'OpenCV ne l'écrase ou s'emmêle les pinceaux.
         // ==============================================================
+        const memoirePresente = Object.prototype.hasOwnProperty.call(window, 'Module');
         const memoireMediaPipe = window.Module;
-        window.Module = undefined;
+        delete window.Module; // shield so that it doesn't cause a problem when we init Mediapipe too
 
         // On crée l'import dynamiquement
         const script = document.createElement('script');
@@ -28,9 +29,11 @@ export async function initOpenCV() {
                 if (window.cv && window.cv.Mat) {
                     clearInterval(checkInterval);
 
-                    // On restaure la mémoire de MediaPipe maintenant qu'OpenCV est installé
-                    if (memoireMediaPipe !== undefined) {
+                    // following of the shield
+                    if (memoirePresente) {
                         window.Module = memoireMediaPipe;
+                    } else {
+                        delete window.Module;
                     }
 
                     console.log("👁️ OpenCV est totalement initialisé !");
