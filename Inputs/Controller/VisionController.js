@@ -57,6 +57,7 @@ export class VisionController {
                 this.video.srcObject.getTracks().forEach(track => track.stop());
                 this.video.srcObject = null;
             }
+            this.colorsRecognizer.detachVideoSource();
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         } else {
             // Allumage avec gestion stricte des erreurs matérielles
@@ -77,6 +78,11 @@ export class VisionController {
                         this.video.play().catch(e => {
                             this.handleHardwareCrash("Le navigateur bloque la lecture vidéo.");
                         });
+
+                        // Les dimensions de la vidéo ne sont connues qu'ici : c'est le seul
+                        // endroit où les recognizers peuvent allouer leurs buffers à la bonne taille
+                        this.colorsRecognizer.attachVideoSource();
+
                         this.webcamRunning = true;
                     }, { once: true });
                 })
@@ -138,6 +144,7 @@ export class VisionController {
             this.video.srcObject.getTracks().forEach(track => track.stop());
             this.video.srcObject = null;
         }
+        this.colorsRecognizer.detachVideoSource();
 
         // On prévient le joueur visuellement via l'interface
         if (uiManagerInstance && typeof showError === 'function') {

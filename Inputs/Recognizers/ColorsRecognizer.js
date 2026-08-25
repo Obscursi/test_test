@@ -39,27 +39,44 @@ export class ColorsRecognizer {
 
     async initColors() {
 
-
-
         //we charge openCV from the global variable
         cv = window.cv;
 
-        // allocation of the matrix
+        // Working matrix : OpenCV resizes them by itself, they do not depend on the webcam
         this.gray = new cv.Mat();
         this.blurred = new cv.Mat();
         this.hsv = new cv.Mat();
         this.circles = new cv.Mat();
 
-
-        this.cap = new cv.VideoCapture(this.video);
-        this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
-
-
-        //let zeroMat = cv.Mat.zeros(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
-
-        console.log("📸 ColorsEnigma : Capteur vidéo OpenCV initialisé.");
+        console.log("📸 ColorsEnigma : OpenCV initialisé.");
 
         return true;
+    }
+
+    /**
+     * Called by the VisionController once the webcam actually delivers images.
+     *
+     * srcMat must have the exact same size as the video, and videoWidth/videoHeight
+     * are only known at that moment : at initColors() time they are still 0.
+     */
+    attachVideoSource() {
+        this.cap = new cv.VideoCapture(this.video);
+        this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
+        this.lastVideoTime = -1;
+
+        console.log(`📸 ColorsEnigma : Capteur vidéo branché en ${this.video.videoWidth}×${this.video.videoHeight}.`);
+    }
+
+    /**
+     * Called when the webcam stops : the next start may have another resolution
+     */
+    detachVideoSource() {
+        if (this.srcMat) {
+            this.srcMat.delete();
+            this.srcMat = null;
+        }
+        this.cap = null;
+        this.lastVideoTime = -1;
     }
 
 
@@ -86,6 +103,8 @@ export class ColorsRecognizer {
         try {
             // Lecture de l'image
             this.cap.read(this.srcMat);
+
+            //this.srcMat = zeroMat;
 
             // Analyse et récupération des couleurs détectées sur cette frame
             this.detectedColorsThisFrame = this.detectColoredCircles(this.srcMat);
@@ -205,14 +224,12 @@ export class ColorsRecognizer {
     }
 
     cleanOfMemory() {
-        this.gray.delete();
-        this.blurred.delete();
-        this.hsv.delete();
-        this.circles.delete();
-
-        if (this.srcMat) {
-            this.srcMat.delete();
+        for (const matrix of [this.gray, this.blurred, this.hsv, this.circles]) {
+            if (matrix) matrix.delete();
         }
+        this.gray = this.blurred = this.hsv = this.circles = null;
+
+        this.detachVideoSource();
     }
 
 }
