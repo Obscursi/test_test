@@ -10,8 +10,6 @@ export class LsfRecognizer {
 
         this.handLandmarker = null;
         this.lastVideoTime = -1;
-
-        //this.loadMediapipe = new LoadMediapipe();
     }
 
     async initLsf() {
