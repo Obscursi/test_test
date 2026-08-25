@@ -39,7 +39,7 @@ export class ArucoRecognizer {
         this.lastAnalysedPicture = null;
     }
 
-    async initAruco() {
+    initAruco() {
         this.isInitialized = true;
         return true;
     }
