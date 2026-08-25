@@ -93,7 +93,6 @@ export class ColorsRecognizer {
     /**
  * Analyse une image pour trouver des cercles et retourne un Set des couleurs détectées.
  * @param {cv.Mat} srcMat - L'image source provenant du canvas.
- * @returns {Set<string>} - Set contenant les noms des couleurs identifiées.
  */
     detectColoredCircles(srcMat) {
         const colorsDetected = new Set();
