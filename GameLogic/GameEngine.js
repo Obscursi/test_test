@@ -48,21 +48,23 @@ class GameEngine {
         console.log("⚙️ GameEngine: Initialisation automatique du moteur...");
         uiManagerInstance.webcamButton.updateWebcamButton(false, false); // Bouton disabled "ATTENTE..."
 
+        // we init OpenCV in the global init function because it in 2 enigmas. Mediapipe is loaded in LsfRecognizer because it used only there
+        //I may change that and load all the librairies here but for the moment it is this way
+
+        //WE INITIATE BEFORE InputManager BECAUSE inputManagerInstance initiate visionController, which initiate Colors which used OpenCV 
+        //(Aruco is also initiated by visionController but it's spaghetti code so it works anyway, his init for the moment is... questionnable)
+        try {
+            await initOpenCV();
+        } catch (error) {
+            console.error("🚨 Échec d'OpenCV.", error);
+            return;
+        }
+
         const inputsReady = await inputManagerInstance.init();
 
         if (!inputsReady) {
             console.error("🚨 GameEngine: Échec de l'IA.");
             showError("Erreur fatale de l'IA. Vérifiez la console.");
-            return;
-        }
-
-
-        // we init OpenCV in the global init function because it is used by at least 2 enigmas. Mediapipe is loaded in LsfRecognizer because it used only there
-        //I may change that and load all the librairies here but for the moment it is this way
-        try {
-            await initOpenCV();
-        } catch (error) {
-            console.error("🚨 Échec d'OpenCV.", error);
             return;
         }
 
