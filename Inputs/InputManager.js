@@ -1,8 +1,5 @@
 import { VisionController } from './Controller/VisionController.js';
 import { KeyboardController } from './Controller/KeyboardController.js';
-
-// import { KeyboardController } from './KeyboardController.js'; // Prévu pour plus tard
-
 class InputManager {
     constructor() {
         // On récupère les éléments HTML ici pour les donner à la Vision
