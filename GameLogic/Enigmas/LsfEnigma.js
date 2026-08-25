@@ -14,8 +14,8 @@ export class LsfEnigma extends Enigma {
         super(ENIGMA_IDS.LSF, "Enigme LSF"); //this id (ENIGMA_IDS.LSF) is the same in UIManager, it is attached to the tab AND the Enigma
 
         // Les 4 lettres qui doivent être vues en même temps
-        //this.lettresRequises = ["P", "L", "A", "N"];
-        this.lettresRequises = ["P", "I"];
+        this.lettresRequises = ["P", "L", "A", "N"];
+        // this.lettresRequises = ["P", "I"];
 
         this.panel = uiManagerInstance.panelManager.panelLsf;
 
