@@ -38,11 +38,12 @@ export class VisionController {
     async init() {
         try {
             const initiateLsf = await this.lsfRecognizer.initLsf();
-            //const initiateColors = await this.colorsRecognizer.initColors();
-            console.log("siuee");
+            const initiateColors = await this.colorsRecognizer.initColors();
             const initiateAruco = await this.arucoRecognizer.initAruco();
-            return (initiateLsf && initiateAruco);
+
+            return (initiateLsf && initiateAruco && initiateColors);
         } catch (error) {
+            console.error("🚨 VisionController.init a échoué :", error);
             this.handleHardwareCrash("Erreur critique lors du chargement des modèles IA.");
             return false;
         }

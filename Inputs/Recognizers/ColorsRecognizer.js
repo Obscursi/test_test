@@ -33,6 +33,33 @@ export class ColorsRecognizer {
         this.detectedColorsThisFrame = new Set();
 
 
+
+    }
+
+
+    async initColors() {
+
+
+
+        //we charge openCV from the global variable
+        cv = window.cv;
+
+        // allocation of the matrix
+        this.gray = new cv.Mat();
+        this.blurred = new cv.Mat();
+        this.hsv = new cv.Mat();
+        this.circles = new cv.Mat();
+
+
+        this.cap = new cv.VideoCapture(this.video);
+        this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
+
+
+        //let zeroMat = cv.Mat.zeros(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
+
+        console.log("📸 ColorsEnigma : Capteur vidéo OpenCV initialisé.");
+
+        return true;
     }
 
 
@@ -41,36 +68,20 @@ export class ColorsRecognizer {
 
     updateColors(currentResults, webcamRunning) {
 
-        if (webcamRunning && this.video.currentTime !== this.lastVideoTime && this.video.videoWidth > 0) {
-            this.lastVideoTime = this.video.currentTime;
-            let nowInMs = Math.round(this.video.currentTime * 1000);
-            // drawing of the webcam flux on the page
-            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+        //if the webcam is not running || the image is not new
+        if (!webcamRunning || this.video.currentTime === this.lastVideoTime) {
 
+            return; //we discard it silently
+
+        } else if (this.video.videoWidth === 0) {
+
+            console.log("DEBUG : this.video.width not initiated but updateColors got called");
+            return;
         }
 
-        if (!this.gray) {
+        this.lastVideoTime = this.video.currentTime;
+        //this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height); //displaying the webcam flux 
 
-            //we charge openCV from the global variable
-            cv = window.cv;
-
-            // allocation of the matrix
-            this.gray = new cv.Mat();
-            this.blurred = new cv.Mat();
-            this.hsv = new cv.Mat();
-            this.circles = new cv.Mat();
-        }
-
-        // Sécurité : on attend que la webcam soit vraiment allumée
-        if (!this.video || this.video.videoWidth === 0 || this.video.videoHeight === 0) return;
-
-        // Initialisation du capteur OpenCV à la première image valide
-        if (!this.cap) {
-            this.cap = new cv.VideoCapture(this.video);
-            this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
-            console.log("📸 ColorsEnigma : Capteur vidéo OpenCV initialisé.");
-            console.log(`🚀 Début de l'énigme !`);
-        }
 
         try {
             // Lecture de l'image
@@ -80,7 +91,7 @@ export class ColorsRecognizer {
             this.detectedColorsThisFrame = this.detectColoredCircles(this.srcMat);
 
             // Affichage sur le canvas
-            cv.imshow(this.canvas, this.srcMat);
+            cv.imshow(this.canvas, this.srcMat); //display the webcam video flux + circle overlay combined
 
             currentResults.colors = this.detectedColorsThisFrame; //pushing the result to the VisionController
         } catch (err) {
