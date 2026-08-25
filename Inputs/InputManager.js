@@ -24,7 +24,6 @@ class InputManager {
 
     update(tabId) {
         this.vision.update(tabId);
-        // this.keyboard.update();
     }
 
     getState() {
