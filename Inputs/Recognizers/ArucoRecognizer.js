@@ -36,10 +36,10 @@ export class ArucoRecognizer {
 
     initState() {
         this.sheetHomographies = {
-            1: null, 
+            1: null,
             2: null
         };
-        
+
         this.sheetHomographyAge = {
             1: 999,
             2: 999
@@ -108,12 +108,12 @@ export class ArucoRecognizer {
                 }
             }
         }
-        
+
         try {
             this.readFrame(this.srcMat);
             this.detector.detectMarkers(this.gray, corners, ids, rejected);
 
-            let cornersPixels = {};   
+            let cornersPixels = {};
 
             if (ids.rows > 0) {
 
@@ -148,7 +148,7 @@ export class ArucoRecognizer {
             }
 
             let sheetCornersPixels = {};
-            
+
             for (const sheet of this.sheets) {
 
                 for (const IDDetected of sheet.corners) {
@@ -156,14 +156,14 @@ export class ArucoRecognizer {
                     const saved = this.savedSheetCorners[sheet.ID][IDDetected];
                     const age = this.sheetCornerAge[sheet.ID][IDDetected];
 
-                    if (saved && age!== undefined && age <= this.maxCornerAge) {
+                    if (saved && age !== undefined && age <= this.maxCornerAge) {
                         sheetCornersPixels[IDDetected] = [saved.x, saved.y];
                     }
-             
+
                 }
-            
+
             }
-            
+
             let pPixel = new cv.Mat(1, 1, cv.CV_32FC2);
             let pReal = new cv.Mat();
 
@@ -202,7 +202,7 @@ export class ArucoRecognizer {
                     H.delete();
                     pointsPixels.delete();
                 } else if (
-                    this.sheetHomographies[s.ID] && 
+                    this.sheetHomographies[s.ID] &&
                     (this.sheetHomographyAge[s.ID] <= this.maxHomographyAge)
                 ) {
 
@@ -214,17 +214,17 @@ export class ArucoRecognizer {
                         pPixel.data32F[0] = cornersPixels[markerID][0];
                         pPixel.data32F[1] = cornersPixels[markerID][1];
                         cv.perspectiveTransform(pPixel, pReal, H);
-                        
+
                         visionState.markers.push({
-                                id: parseInt(markerID),
-                                sheetID: s.ID,
-                                x: pReal.data32F[0],
-                                y: pReal.data32F[1]
+                            id: parseInt(markerID),
+                            sheetID: s.ID,
+                            x: pReal.data32F[0],
+                            y: pReal.data32F[1]
                         });
                     }
                 }
             }
-                
+
 
             pPixel.delete();
             pReal.delete();
@@ -237,7 +237,7 @@ export class ArucoRecognizer {
             ids.delete();
             rejected.delete();
         }
-        
+
     }
 
 
@@ -249,5 +249,3 @@ export class ArucoRecognizer {
         this.clahe.apply(this.gray, this.gray);
     }
 }
-    
-  
