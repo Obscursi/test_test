@@ -35,8 +35,31 @@ export class ArucoRecognizer {
     }
 
     initState() {
-
         this.lastAnalysedPicture = null;
+
+        this.sheetHomographies = {
+            1: null, 
+            2: null
+        };
+        
+        this.sheetHomographyAge = {
+            1: 999,
+            2: 999
+        };
+
+        this.maxHomographyAge = 200;
+
+        this.savedSheetCorners = {
+            1: {},
+            2: {}
+        };
+
+        this.sheetCornerAge = {
+            1: {},
+            2: {}
+        };
+
+        this.maxCornerAge = 200;
     }
 
     initAruco() {
@@ -74,13 +97,28 @@ export class ArucoRecognizer {
         visionState.markers = [];
         visionState.sheetsVisible = [];
 
+        for (const sheetID of [1, 2]) {
+            if (this.sheetHomographyAge[sheetID] < 999) {
+                this.sheetHomographyAge[sheetID]++;
+            }
+        }
+
+        for (const sheet of this.sheets) {
+            for (const IDDetected of sheet.corners) {
+                if (this.sheetCornerAge[sheet.ID][IDDetected] !== undefined) {
+                    this.sheetCornerAge[sheet.ID][IDDetected]++;
+                }
+            }
+        }
+        
         try {
             this.readFrame(this.srcMat);
             this.detector.detectMarkers(this.gray, corners, ids, rejected);
 
-            let cornersPixels = {};
+            let cornersPixels = {};   
 
             if (ids.rows > 0) {
+                
                 cv.drawDetectedMarkers(this.gray, corners, ids);
 
                 for (let i = 0; i < ids.rows; ++i) {
@@ -95,25 +133,61 @@ export class ArucoRecognizer {
 
                     cornersPixels[IDDetected] = [cx, cy];
 
+                    for (const sheet of this.sheets) {
+
+                        if (sheet.corners.includes(IDDetected)) {
+
+                            this.savedSheetCorners[sheet.ID][IDDetected] = {
+                                x: cx,
+                                y: cy
+                            };
+
+                            this.sheetCornerAge[sheet.ID][IDDetected] = 0;
+                        }
+                    }
+
                     // Suppression indispensable de la matrice temporaire
                     markerMat.delete();
                 }
             }
 
+            let sheetCornersPixels = {};
+            
+            for (const sheet of this.sheets) {
+
+                for (const IDDetected of sheet.corners) {
+
+                    const saved = this.savedSheetCorners[sheet.ID][IDDetected];
+                    const age = this.sheetCornerAge[sheet.ID][IDDetected];
+
+                    if (saved && age!== undefined && age <= this.maxCornerAge) {
+                        sheetCornersPixels[IDDetected] = [saved.x, saved.y];
+                    }
+             
+                }
+            
+            }
+            
             let pPixel = new cv.Mat(1, 1, cv.CV_32FC2);
             let pReal = new cv.Mat();
 
             for (let s of this.sheets) {
                 let [ul, ur, dr, dl] = s.corners;
 
-                if (ul in cornersPixels && ur in cornersPixels && dr in cornersPixels && dl in cornersPixels) {
+                if (ul in sheetCornersPixels && ur in sheetCornersPixels && dr in sheetCornersPixels && dl in sheetCornersPixels) {
                     // On enregistre que cette feuille est bien visible
                     visionState.sheetsVisible.push(s.ID);
 
-                    let pointsPixels = cv.matFromArray(4, 1, cv.CV_32FC2, [...cornersPixels[ul], ...cornersPixels[ur], ...cornersPixels[dr], ...cornersPixels[dl]]);
+                    let pointsPixels = cv.matFromArray(4, 1, cv.CV_32FC2, [...sheetCornersPixels[ul], ...sheetCornersPixels[ur], ...sheetCornersPixels[dr], ...sheetCornersPixels[dl]]);
                     let H = cv.findHomography(pointsPixels, this.realPoints);
 
                     if (!H.empty()) {
+                        if (this.sheetHomographies[s.ID]) {
+                            this.sheetHomographies[s.ID].delete();
+                        }
+                        this.sheetHomographies[s.ID] = H.clone();
+                        this.sheetHomographyAge[s.ID] = 0;
+
                         for (let markerID in cornersPixels) {
                             pPixel.data32F[0] = cornersPixels[markerID][0];
                             pPixel.data32F[1] = cornersPixels[markerID][1];
@@ -128,10 +202,33 @@ export class ArucoRecognizer {
                             });
                         }
                     }
+
                     H.delete();
                     pointsPixels.delete();
+                } else if (
+                    this.sheetHomographies[s.ID] && 
+                    (this.sheetHomographyAge[s.ID] <= this.maxHomographyAge)
+                ) {
+
+                    let H = this.sheetHomographies[s.ID];
+
+                    visionState.sheetsVisible.push(s.ID);
+
+                    for (const markerID in cornersPixels) {
+                        pPixel.data32F[0] = cornersPixels[markerID][0];
+                        pPixel.data32F[1] = cornersPixels[markerID][1];
+                        cv.perspectiveTransform(pPixel, pReal, H);
+                        
+                        visionState.markers.push({
+                                id: parseInt(markerID),
+                                sheetID: s.ID,
+                                x: pReal.data32F[0],
+                                y: pReal.data32F[1]
+                        });
+                    }
                 }
             }
+                
 
             pPixel.delete();
             pReal.delete();
@@ -144,19 +241,15 @@ export class ArucoRecognizer {
             ids.delete();
             rejected.delete();
         }
+        
     }
+
 
     readFrame(src) {
         const cv = window.cv;
         this.cap.read(src);
 
-        let rgbaPlanes = new cv.MatVector();
-        cv.split(src, rgbaPlanes);
-        let firstPlane = rgbaPlanes.get(0);
-        firstPlane.copyTo(this.gray);
-        firstPlane.delete();
-        rgbaPlanes.delete();
-
+        cv.cvtColor(src, this.gray, cv.COLOR_RGBA2GRAY);
         this.clahe.apply(this.gray, this.gray);
 
         if (this.lastAnalysedPicture) {
@@ -164,5 +257,6 @@ export class ArucoRecognizer {
         }
         this.lastAnalysedPicture = this.gray.clone();
     }
-
 }
+    
+  

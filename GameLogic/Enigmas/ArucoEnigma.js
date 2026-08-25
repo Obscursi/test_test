@@ -9,7 +9,7 @@ export class ArucoEnigma extends Enigma {
 
         // Configuration métier du jeu
         this.positionTolerance = 10;
-        this.nbIterations = 20;
+        this.nbIterations = 100;
         this.maxID = 100;
 
         this.dictCards = {
@@ -143,8 +143,9 @@ export class ArucoEnigma extends Enigma {
                 text = `Nombre de cartes correctes et bien placées: ${nbCardsOK} sur ${nbCardsToPlace} cartes`;
             }
         } else {
-            text = "Tous les coins des feuilles ne sont pas visibles !";
+            text = "Tous les coins du plateau de jeu ne sont pas visibles ! N'hésitez pas à passer la main brièvement devant la caméra pendant la vérification.";
             mess = "";
+            mess2 = "";
         }
 
         document.getElementById("result").textContent = text;
