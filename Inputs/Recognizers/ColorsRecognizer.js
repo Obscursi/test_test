@@ -1,4 +1,3 @@
-
 let cv;
 
 //Every color detected first met thos requirements (if not it is considered as an unknown color)
@@ -15,30 +14,27 @@ export class ColorsRecognizer {
 
     constructor(videoElement, canvasElement) {
         this.video = videoElement;
-        this.canvas = canvasElement;
+        this.canvas = canvasElement;   // overlay : uniquement les cercles, fond transparent
         this.ctx = this.canvas.getContext("2d");
 
         this.lastVideoTime = -1;
 
-        // Pre-allocation of matrix
+        // working matrix, allocated by initColors
         this.gray = null;
         this.blurred = null;
         this.hsv = null;
         this.circles = null;
 
-        // variables for the webcam lecture
+        // variables for the webcam lecture, allocated by attachVideoSource
         this.cap = null;
         this.srcMat = null;
 
-        this.detectedColorsThisFrame = new Set();
-
-
+        //this.detectedColorsThisFrame = new Set(); not used anymore right now
 
     }
 
 
     async initColors() {
-
         //we charge openCV from the global variable
         cv = window.cv;
 
@@ -64,6 +60,12 @@ export class ColorsRecognizer {
         this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
         this.lastVideoTime = -1;
 
+        // L'overlay passe a la resolution reelle du flux : les coordonnees des cercles sont
+        // exprimees dans l'espace du Mat, elles tombent donc juste sans mise a l'echelle.
+        // Le CSS continue d'afficher le tout en 640x480, aligne sur l'element <video>.
+        this.canvas.width = this.video.videoWidth;
+        this.canvas.height = this.video.videoHeight;
+
         console.log(`📸 ColorsEnigma : Capteur vidéo branché en ${this.video.videoWidth}×${this.video.videoHeight}.`);
     }
 
@@ -77,55 +79,50 @@ export class ColorsRecognizer {
         }
         this.cap = null;
         this.lastVideoTime = -1;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-
-
-
 
 
     updateColors(currentResults, webcamRunning) {
 
-        //if the webcam is not running || the image is not new
-        if (!webcamRunning || this.video.currentTime === this.lastVideoTime) {
-
+        //if the webcam is not running || the source is not plugged yet || the image is not new
+        if (!webcamRunning || !this.cap || this.video.currentTime === this.lastVideoTime) {
             return; //we discard it silently
-
-        } else if (this.video.videoWidth === 0) {
-
-            console.log("DEBUG : this.video.width not initiated but updateColors got called");
-            return;
         }
 
         this.lastVideoTime = this.video.currentTime;
-        //this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height); //displaying the webcam flux 
 
+        // Le flux webcam est affiché nativement par l'élément <video> placé en dessous :
+        // il n'y a rien à dessiner pour lui. On ne s'occupe que de l'overlay, remis à vide.
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         try {
             // Lecture de l'image
             this.cap.read(this.srcMat);
 
-            //this.srcMat = zeroMat;
+            // Analyse : la detection ne dessine rien, elle rend ce qu'elle a trouve
+            const { colorsDetected, circlesDetected } = this.detectColoredCircles(this.srcMat);
 
-            // Analyse et récupération des couleurs détectées sur cette frame
-            this.detectedColorsThisFrame = this.detectColoredCircles(this.srcMat);
+            // Affichage : l'overlay est construit a partir du resultat de la detection
+            this.drawCirclesOverlay(circlesDetected);
 
-            // Affichage sur le canvas
-            cv.imshow(this.canvas, this.srcMat); //display the webcam video flux + circle overlay combined
-
-            currentResults.colors = this.detectedColorsThisFrame; //pushing the result to the VisionController
+            currentResults.colors = colorsDetected; //pushing the result to the VisionController
         } catch (err) {
             console.error("Erreur de traitement OpenCV :", err);
         }
-
-
     }
 
     /**
- * Analyse une image pour trouver des cercles et retourne un Set des couleurs détectées.
- * @param {cv.Mat} srcMat - L'image source provenant du canvas.
- */
+     * Analyse une image pour trouver des cercles. Ne dessine rien : elle rend seulement ce
+     * qu'elle a vu, a charge de l'appelant d'en faire un overlay.
+     *
+     * @param {cv.Mat} srcMat - L'image source lue depuis la webcam par le VideoCapture.
+     * @returns {{colorsDetected: Set<string>, circlesDetected: Array<{x: number, y: number, radius: number}>}}
+     */
     detectColoredCircles(srcMat) {
         const colorsDetected = new Set();
+        const circlesDetected = [];
 
         cv.cvtColor(srcMat, this.gray, cv.COLOR_RGBA2GRAY);
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
@@ -133,7 +130,7 @@ export class ColorsRecognizer {
         // Paramètres de détection de cercles
         cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 38, 10, 50);
 
-        if (this.circles.cols === 0) return colorsDetected;
+        if (this.circles.cols === 0) return { colorsDetected, circlesDetected };
 
         cv.cvtColor(srcMat, this.hsv, cv.COLOR_RGBA2RGB);
         cv.cvtColor(this.hsv, this.hsv, cv.COLOR_RGB2HSV);
@@ -147,14 +144,34 @@ export class ColorsRecognizer {
 
             if (couleurDetectee !== "Unknown") {
                 colorsDetected.add(couleurDetectee);
-
-                // Dessin visuel sur l'image
-                cv.circle(srcMat, new cv.Point(x, y), radius, new cv.Scalar(255, 0, 0, 255), 3);
-                cv.circle(srcMat, new cv.Point(x, y), 3, new cv.Scalar(0, 255, 0, 255), -1);
+                circlesDetected.push({ x, y, radius });
             }
         }
 
-        return colorsDetected;
+        return { colorsDetected, circlesDetected };
+    }
+
+    /**
+     * Builds the overlay from what the detection returned : outline + center dot per circle.
+     *
+     * Vector drawing on a transparent canvas, so the webcam flux underneath stays untouched.
+     *
+     * @param {Array<{x: number, y: number, radius: number}>} circlesDetected
+     */
+    drawCirclesOverlay(circlesDetected) {
+        this.ctx.strokeStyle = "#FF0000";
+        this.ctx.lineWidth = 3;
+        this.ctx.fillStyle = "#00FF00";
+
+        for (const { x, y, radius } of circlesDetected) {
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            this.ctx.stroke();
+
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            this.ctx.fill();
+        }
     }
 
     /**

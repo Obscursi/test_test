@@ -15,7 +15,7 @@ export class VisionController {
     // On passe la vidéo et le canvas en paramètres pour ne pas chercher dans le document HTML
     constructor(videoElement, canvasElement) {
         this.video = videoElement;
-        this.canvas = canvasElement;
+        this.canvas = canvasElement;   // overlay : le flux webcam est affiché nativement en dessous
         this.ctx = this.canvas.getContext("2d");
 
         //this.gestureRecognizer = null;
@@ -24,7 +24,7 @@ export class VisionController {
 
         this.currentResults = {
             gestures: [],      // Pour le LsfRecognizer
-            colors: new Set(),        // Pour le ColorsRecognizer
+            //colors: new Set(),        // Pour le ColorsRecognizer, pas utilisé actuellement
             markers: [],       // Pour le ArucoRecognizer
             sheetsVisible: []  // Pour le ArucoRecognizer
         };

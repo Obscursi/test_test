@@ -12,10 +12,8 @@
     margin: 0 auto 15px;
 }
 
-#webcam {
-    display: none;
-}
-
+/* Les deux calques se superposent exactement, en mode miroir */
+#webcam,
 canvas {
     position: absolute;
     left: 0;
@@ -26,6 +24,16 @@ canvas {
     /* Mode miroir */
 }
 
+/* Le flux webcam : affiché nativement par le navigateur, aucun JS par frame.
+   object-fit: fill est obligatoire, pas cosmétique : un canvas remplit toujours sa boîte CSS
+   en déformant si besoin, alors qu'une vidéo conserve son ratio par défaut (contain).
+   Sans "fill", une webcam qui n'est pas en 4:3 décale le flux par rapport à l'overlay. */
+#webcam {
+    z-index: 1;
+    object-fit: fill;
+}
+
+/* L'overlay des reconnaissances (cercles, mains...), transparent par dessus */
 #mp_canvas {
     z-index: 2;
     pointer-events: none;
