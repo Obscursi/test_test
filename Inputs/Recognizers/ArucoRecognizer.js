@@ -35,8 +35,6 @@ export class ArucoRecognizer {
     }
 
     initState() {
-        this.lastAnalysedPicture = null;
-
         this.sheetHomographies = {
             1: null, 
             2: null
@@ -251,11 +249,6 @@ export class ArucoRecognizer {
 
         cv.cvtColor(src, this.gray, cv.COLOR_RGBA2GRAY);
         this.clahe.apply(this.gray, this.gray);
-
-        if (this.lastAnalysedPicture) {
-            this.lastAnalysedPicture.delete();
-        }
-        this.lastAnalysedPicture = this.gray.clone();
     }
 }
     
