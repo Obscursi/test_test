@@ -116,8 +116,6 @@ export class ArucoRecognizer {
             let cornersPixels = {};   
 
             if (ids.rows > 0) {
-                
-                cv.drawDetectedMarkers(this.gray, corners, ids);
 
                 for (let i = 0; i < ids.rows; ++i) {
                     let IDDetected = ids.data32S[i];
