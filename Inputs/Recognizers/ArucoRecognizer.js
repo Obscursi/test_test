@@ -236,7 +236,6 @@ export class ArucoRecognizer {
 
             pPixel.delete();
             pReal.delete();
-            cv.imshow(this.canvas, this.srcMat);
 
         } catch (err) {
             console.error("Erreur vision Aruco :", err);
