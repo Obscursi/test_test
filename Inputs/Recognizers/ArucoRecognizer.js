@@ -61,30 +61,63 @@ export class ArucoRecognizer {
     }
 
     initAruco() {
+        const cv = window.cv;
+
+        // Tout ce qui ne depend pas des dimensions de la video
+        this.gray = new cv.Mat();
+        this.realPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, this.realWidth, 0, this.realWidth, this.realHeight, 0, this.realHeight]);
+        this.clahe = new cv.CLAHE(1.5, new cv.Size(4, 4));
+
+        let dictionary = cv.getPredefinedDictionary(cv.DICT_4X4_100);
+        let parameters = new cv.aruco_DetectorParameters();
+        let refineParameters = new cv.aruco_RefineParameters(10.0, 3.0, true);
+        this.detector = new cv.aruco_ArucoDetector(dictionary, parameters, refineParameters);
+
         this.isInitialized = true;
         return true;
     }
 
-    updateAruco(visionState, webcamRunning) {
-        // 1. Sécurité : On ne fait rien si la webcam n'est pas prête
-        if (!webcamRunning || !this.video || this.video.videoWidth === 0) return;
-
+    /**
+     * Called by the VisionController once the webcam actually delivers images :
+     * videoWidth/videoHeight are still 0 at initAruco() time.
+     */
+    attachVideoSource() {
         const cv = window.cv;
 
-        // 2. Initialisation paresseuse des matrices si ce n'est pas fait
-        if (!this.cap) {
-            this.cap = new cv.VideoCapture(this.video);
-            this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
-            this.gray = new cv.Mat();
+        this.cap = new cv.VideoCapture(this.video);
+        this.srcMat = new cv.Mat(this.video.videoHeight, this.video.videoWidth, cv.CV_8UC4);
 
-            this.realPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, this.realWidth, 0, this.realWidth, this.realHeight, 0, this.realHeight]);
-            this.clahe = new cv.CLAHE(1.5, new cv.Size(4, 4));
+        console.log(`🎯 ArucoEnigma : Capteur vidéo branché en ${this.video.videoWidth}×${this.video.videoHeight}.`);
+    }
 
-            let dictionary = cv.getPredefinedDictionary(cv.DICT_4X4_100);
-            let parameters = new cv.aruco_DetectorParameters();
-            let refineParameters = new cv.aruco_RefineParameters(10.0, 3.0, true);
-            this.detector = new cv.aruco_ArucoDetector(dictionary, parameters, refineParameters);
+    /**
+     * Called when the webcam stops : the next start may have another resolution
+     */
+    detachVideoSource() {
+        if (this.srcMat) {
+            this.srcMat.delete();
+            this.srcMat = null;
         }
+        this.cap = null;
+
+        // Les homographies et les coins memorises sont exprimes en pixels : ils ne veulent
+        // plus rien dire si le prochain flux n'a pas la meme resolution.
+        for (const sheetID of [1, 2]) {
+            if (this.sheetHomographies[sheetID]) {
+                this.sheetHomographies[sheetID].delete();
+                this.sheetHomographies[sheetID] = null;
+            }
+            this.sheetHomographyAge[sheetID] = 999;
+            this.savedSheetCorners[sheetID] = {};
+            this.sheetCornerAge[sheetID] = {};
+        }
+    }
+
+    updateAruco(visionState, webcamRunning) {
+        // 1. Sécurité : on ne fait rien tant que la source vidéo n'est pas branchée
+        if (!webcamRunning || !this.cap) return;
+
+        const cv = window.cv;
 
         let corners = new cv.MatVector();
         let ids = new cv.Mat();
