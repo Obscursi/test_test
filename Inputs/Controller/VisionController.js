@@ -62,7 +62,10 @@ export class VisionController {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         } else {
             // Allumage avec gestion stricte des erreurs matérielles
-            navigator.mediaDevices.getUserMedia({ video: true })
+            // 720p : le mode natif le plus bas de la camera, donc aucune perte de fps materielle.
+            // "ideal" et non "exact" : si la camera refuse, on prend ce qu'elle donne plutot
+            // que d'echouer. C'est attachVideoSource qui lit la resolution reellement accordee.
+            navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
                 .then((stream) => {
                     this.video.srcObject = stream;
 
@@ -79,6 +82,14 @@ export class VisionController {
                         this.video.play().catch(e => {
                             this.handleHardwareCrash("Le navigateur bloque la lecture vidéo.");
                         });
+
+                        // cv.VideoCapture dimensionne son canvas interne sur video.width /
+                        // video.height (les ATTRIBUTS HTML), pas sur videoWidth / videoHeight
+                        // (la vraie taille du flux). On les aligne avant de construire les
+                        // VideoCapture, sinon read() lève "Bad size of input mat".
+                        // L'affichage n'en dépend pas : il est fixé par le CSS.
+                        this.video.width = this.video.videoWidth;
+                        this.video.height = this.video.videoHeight;
 
                         // Les dimensions de la vidéo ne sont connues qu'ici : c'est le seul
                         // endroit où les recognizers peuvent allouer leurs buffers à la bonne taille

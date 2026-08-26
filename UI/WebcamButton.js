@@ -22,8 +22,14 @@ export class WebcamButton {
                 await this.prepareWebcamAutorisation();
 
                 try {
-                    // Le navigateur met le code en pause ici pour demander la caméra
-                    await navigator.mediaDevices.getUserMedia({ video: true });
+                    // Le navigateur met le code en pause ici pour demander la caméra.
+                    // Mêmes contraintes que le VisionController, sinon la caméra s'ouvre
+                    // une première fois en 640x480 et le 720p demandé ensuite peut être ignoré.
+                    const flux = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
+
+                    // Ce flux ne sert qu'à obtenir l'autorisation : on le relâche tout de suite,
+                    // sinon la caméra reste allumée et occupée pour rien.
+                    flux.getTracks().forEach(track => track.stop());
 
                     // VICTOIRE : La caméra est acceptée, on débloque le UIManager !
                     resolve(true);

@@ -10,6 +10,16 @@ export class LsfRecognizer {
 
         this.handLandmarker = null;
         this.lastVideoTime = -1;
+
+        // MediaPipe tourne sur CPU : on ne lui donne pas la pleine resolution de la camera.
+        // Le flux est redimensionne dans ce canvas hors ecran avant d'etre analyse.
+        this.analysisWidth = 640;
+        this.analysisHeight = 360;
+
+        this.analysisCanvas = document.createElement("canvas");
+        this.analysisCanvas.width = this.analysisWidth;
+        this.analysisCanvas.height = this.analysisHeight;
+        this.analysisCtx = this.analysisCanvas.getContext("2d", { willReadFrequently: false });
     }
 
     async initLsf() {
@@ -26,10 +36,15 @@ export class LsfRecognizer {
             this.lastVideoTime = this.video.currentTime;
             let nowInMs = Math.round(this.video.currentTime * 1000);
 
-            // Dessin de la vidéo en fond
-            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+            // Le flux est affiché nativement par l'élément <video> placé sous l'overlay :
+            // on ne le redessine pas, on repart juste d'un overlay vide.
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-            const results = this.handLandmarker.detectForVideo(this.video, nowInMs);
+            // Réduction avant analyse : MediaPipe est en delegate CPU, le coût de son
+            // prétraitement suit le nombre de pixels qu'on lui donne.
+            this.analysisCtx.drawImage(this.video, 0, 0, this.analysisWidth, this.analysisHeight);
+
+            const results = this.handLandmarker.detectForVideo(this.analysisCanvas, nowInMs);
             const drawingUtils = new DrawingUtils(this.ctx);
 
             this.drawMediapipeHandsOverlay(results, drawingUtils);

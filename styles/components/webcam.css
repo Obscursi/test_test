@@ -3,7 +3,7 @@
 .videoView {
     position: relative;
     width: 640px;
-    height: 480px;
+    height: 360px;
     background-color: #000;
     border-radius: 8px;
     overflow: hidden;
@@ -19,7 +19,7 @@ canvas {
     left: 0;
     top: 0;
     width: 640px;
-    height: 480px;
+    height: 360px;
     transform: scaleX(-1);
     /* Mode miroir */
 }
@@ -27,7 +27,8 @@ canvas {
 /* Le flux webcam : affiché nativement par le navigateur, aucun JS par frame.
    object-fit: fill est obligatoire, pas cosmétique : un canvas remplit toujours sa boîte CSS
    en déformant si besoin, alors qu'une vidéo conserve son ratio par défaut (contain).
-   Sans "fill", une webcam qui n'est pas en 4:3 décale le flux par rapport à l'overlay. */
+   Sans "fill", une webcam qui n'est pas au ratio de la boîte décale le flux par rapport
+   à l'overlay. La boîte est en 16:9 pour coller au 720p demandé par le VisionController. */
 #webcam {
     z-index: 1;
     object-fit: fill;
