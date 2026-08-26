@@ -36,15 +36,17 @@ export class LsfRecognizer {
             this.lastVideoTime = this.video.currentTime;
             let nowInMs = Math.round(this.video.currentTime * 1000);
 
-            // Le flux est affiché nativement par l'élément <video> placé sous l'overlay :
-            // on ne le redessine pas, on repart juste d'un overlay vide.
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
             // Réduction avant analyse : MediaPipe est en delegate CPU, le coût de son
             // prétraitement suit le nombre de pixels qu'on lui donne.
             this.analysisCtx.drawImage(this.video, 0, 0, this.analysisWidth, this.analysisHeight);
 
             const results = this.handLandmarker.detectForVideo(this.analysisCanvas, nowInMs);
+
+            // Fond = la frame qui vient d'etre analysee, et non l'element <video> en direct.
+            // Sinon les landmarks, qui coutent le temps d'une inference, trainent derriere
+            // une image qui a deja avance. On masque volontairement la video native ici.
+            this.ctx.drawImage(this.analysisCanvas, 0, 0, this.canvas.width, this.canvas.height);
+
             const drawingUtils = new DrawingUtils(this.ctx);
 
             this.drawMediapipeHandsOverlay(results, drawingUtils);
