@@ -173,7 +173,7 @@ export class PanelColors {
             ? "aucun cercle caché"
             : `cachés : ${hiddenColors.join(", ")}`;
 
-        this.showFeedback(`Aucune action (${detail}).`, "none");
+        this.showFeedback(``);
     }
 
     showNoEffect(color) {
