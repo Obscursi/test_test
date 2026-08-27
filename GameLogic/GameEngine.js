@@ -104,7 +104,7 @@ class GameEngine {
 
         this.timer.start();
 
-        this.putEnigmaIntoTheActivePool(ENIGMA_IDS.COLORS); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
+        //this.putEnigmaIntoTheActivePool(ENIGMA_IDS.COLORS); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
         this.putEnigmaIntoTheActivePool(ENIGMA_IDS.ARUCO); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
 
 
