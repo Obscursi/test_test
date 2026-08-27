@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>JEPEIA</title>
+  <defs>
+    <clipPath id="screen">
+      <path d="M5 14.2 L11.2 8 H32 V5 H49.8 L59 14.2 V49.8 L52.8 56 H32 V59 H14.2 L5 49.8 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Contour chanfreine cyan -->
+  <path d="M13 2 H51 L62 13 V51 L51 62 H13 L2 51 V13 Z" fill="#69cbd2"/>
+
+  <!-- Ecran : bordure epaisse en haut-gauche / bas-droite, fine ailleurs -->
+  <path d="M5 14.2 L11.2 8 H32 V5 H49.8 L59 14.2 V49.8 L52.8 56 H32 V59 H14.2 L5 49.8 Z" fill="#244259"/>
+
+  <!-- Grille technique -->
+  <g clip-path="url(#screen)" stroke="#24556a" stroke-width="1.8" fill="none">
+    <path d="M18 0 V64 M32 0 V64 M46 0 V64 M0 18 H64 M0 32 H64 M0 46 H64"/>
+  </g>
+
+  <!-- Monogramme J -->
+  <path d="M22 17 H42 V38 L36 45 H26 L20 38 V33 H27 V36 L29.5 39 H32.5 L35 36 V24 H22 Z" fill="#69cbd2"/>
+</svg>
