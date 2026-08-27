@@ -20,6 +20,7 @@ export class ColorsRecognizer {
         this.lastVideoTime = -1;
 
         // working matrix, allocated by initColors
+        this.small = null;
         this.gray = null;
         this.blurred = null;
         this.hsv = null;
@@ -39,6 +40,7 @@ export class ColorsRecognizer {
         cv = window.cv;
 
         // Working matrix : OpenCV resizes them by itself, they do not depend on the webcam
+        this.small = new cv.Mat();
         this.gray = new cv.Mat();
         this.blurred = new cv.Mat();
         this.hsv = new cv.Mat();
@@ -124,7 +126,12 @@ export class ColorsRecognizer {
         const colorsDetected = new Set();
         const circlesDetected = [];
 
-        cv.cvtColor(srcMat, this.gray, cv.COLOR_RGBA2GRAY);
+        // Une pastille de couleur est une grosse tache : la moitie de la resolution suffit
+        // largement, et divise par 4 le cout de toute la chaine qui suit. En 720p l'image
+        // reduite fait 640x360, soit l'echelle a laquelle les rayons ci-dessous ont ete regles.
+        cv.pyrDown(srcMat, this.small);
+
+        cv.cvtColor(this.small, this.gray, cv.COLOR_RGBA2GRAY);
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
 
         // Paramètres de détection de cercles
@@ -132,7 +139,7 @@ export class ColorsRecognizer {
 
         if (this.circles.cols === 0) return { colorsDetected, circlesDetected };
 
-        cv.cvtColor(srcMat, this.hsv, cv.COLOR_RGBA2RGB);
+        cv.cvtColor(this.small, this.hsv, cv.COLOR_RGBA2RGB);
         cv.cvtColor(this.hsv, this.hsv, cv.COLOR_RGB2HSV);
 
         for (let i = 0; i < this.circles.cols; ++i) {
@@ -159,17 +166,21 @@ export class ColorsRecognizer {
      * @param {Array<{x: number, y: number, radius: number}>} circlesDetected
      */
     drawCirclesOverlay(circlesDetected) {
+        // Les cercles sont exprimes dans l'espace de l'image reduite, l'overlay est a la
+        // resolution du flux : on remet a l'echelle plutot que de detecter en pleine taille.
+        const scale = this.small.cols > 0 ? this.canvas.width / this.small.cols : 1;
+
         this.ctx.strokeStyle = "#FF0000";
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = 3 * scale;
         this.ctx.fillStyle = "#00FF00";
 
         for (const { x, y, radius } of circlesDetected) {
             this.ctx.beginPath();
-            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            this.ctx.arc(x * scale, y * scale, radius * scale, 0, 2 * Math.PI);
             this.ctx.stroke();
 
             this.ctx.beginPath();
-            this.ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            this.ctx.arc(x * scale, y * scale, 3 * scale, 0, 2 * Math.PI);
             this.ctx.fill();
         }
     }
@@ -241,10 +252,10 @@ export class ColorsRecognizer {
     }
 
     cleanOfMemory() {
-        for (const matrix of [this.gray, this.blurred, this.hsv, this.circles]) {
+        for (const matrix of [this.small, this.gray, this.blurred, this.hsv, this.circles]) {
             if (matrix) matrix.delete();
         }
-        this.gray = this.blurred = this.hsv = this.circles = null;
+        this.small = this.gray = this.blurred = this.hsv = this.circles = null;
 
         this.detachVideoSource();
     }
