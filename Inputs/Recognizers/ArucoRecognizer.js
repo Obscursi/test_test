@@ -35,6 +35,10 @@ export class ArucoRecognizer {
     }
 
     initState() {
+
+        this.minFrameInterval = 60; //frame analysed before telling the verdict
+        this.lastProcessedAt = 0;
+
         this.sheetHomographies = {
             1: null,
             2: null
@@ -116,6 +120,11 @@ export class ArucoRecognizer {
     updateAruco(visionState, webcamRunning) {
         // 1. Sécurité : on ne fait rien tant que la source vidéo n'est pas branchée
         if (!webcamRunning || !this.cap) return;
+
+        // 2. Cadence propre a Aruco 
+        const now = performance.now();
+        if (now - this.lastProcessedAt < this.minFrameInterval) return;
+        this.lastProcessedAt = now;
 
         const cv = window.cv;
 
