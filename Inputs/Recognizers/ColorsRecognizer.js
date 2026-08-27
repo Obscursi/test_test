@@ -5,7 +5,11 @@ const MINIMUM_SATURATION = 90;
 const MINIMUM_LUMINOSITY = 70;
 
 const SAMPLE_STEP = 2; //we do not take every pixel in the circle of sampling, just half of them
-const MINIMUM_VOTES = 3; //the minimum votes a sample circle needs to have to be detected as known color
+const MINIMUM_VOTES = 3;    //the minimum votes a sample circle needs to have to be detected as known color, should never be useful
+// it's a security if the circle is too small (it is used but if we delete it should still work)
+
+//Part of ALL the sampled pixels that must agree, Unknown ones included. 
+const MINIMUM_CONSENSUS = 0.5;
 
 export class ColorsRecognizer {
 
@@ -196,7 +200,9 @@ export class ColorsRecognizer {
         const votes = {};
         let mainColor = "Unknown";
         let bestScore = 0;
-        let validVotes = 0;
+        let totalSamples = 0;
+
+        //let sH = 0, sS = 0, sV = 0, n = 0; //to uncomment with the sH+= pixe.. line and the one before thre turn => prints the value of the color detected
 
         for (let dy = -radiusOfSample; dy <= radiusOfSample; dy += SAMPLE_STEP) {
             for (let dx = -radiusOfSample; dx <= radiusOfSample; dx += SAMPLE_STEP) {
@@ -207,11 +213,16 @@ export class ColorsRecognizer {
                 if (px < 0 || py < 0 || px >= this.hsv.cols || py >= this.hsv.rows) continue;
 
                 const pixel = this.hsv.ucharPtr(py, px);
+                //sH += pixel[0]; sS += pixel[1]; sV += pixel[2]; n++;
+
+                //Counted BEFORE the Unknown test : an unreadable pixel is a pixel that disagrees,
+                //not a pixel that does not exist.
+                totalSamples++;
+
                 const colorSeen = this.analyseColorHSV(pixel[0], pixel[1], pixel[2]);
 
                 if (colorSeen === "Unknown") continue;
 
-                validVotes++;
                 votes[colorSeen] = (votes[colorSeen] || 0) + 1;
 
                 if (votes[colorSeen] > bestScore) {
@@ -222,8 +233,9 @@ export class ColorsRecognizer {
         }
 
         if (bestScore < MINIMUM_VOTES) return "Unknown";
-        if (bestScore <= validVotes / 2) return "Unknown";
+        if (bestScore < totalSamples * MINIMUM_CONSENSUS) return "Unknown";
 
+        //if (n && Math.random() < 0.1) console.log(`H=${(sH / n) | 0} S=${(sS / n) | 0} V=${(sV / n) | 0}`);
         return mainColor;
     }
 
@@ -239,8 +251,8 @@ export class ColorsRecognizer {
         if (h >= 170 || h <= 10) return "Rouge"; //red is between 170 and 10 because H is looping if the value is over 179
         if (h >= 20 && h <= 40) return "Jaune";
         if (h >= 48 && h <= 78) return "Vert";
-        if (h >= 83 && h <= 101) return "Cyan"; //la 6e teinte du cube RGB, coincée entre le vert et le bleu
-        if (h >= 105 && h <= 133) return "Bleu";
+        if (h >= 83 && h <= 106) return "Cyan"; //la 6e teinte du cube RGB, coincée entre le vert et le bleu
+        if (h >= 110 && h <= 133) return "Bleu"; //for both of my test sheets it was around h=110
 
         //We have kinda restrictive teints because we rather want an unknown vote than a false positive of color
         return "Unknown";
