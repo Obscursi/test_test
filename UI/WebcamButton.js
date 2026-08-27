@@ -1,69 +1,51 @@
-import uiManagerInstance from '../UI/UIManager.js';
-import { ENIGMA_IDS } from '../Utils/Constant.js';
+import inputManagerInstance from '../Inputs/InputManager.js';
 
 
 export class WebcamButton {
 
     constructor() {
         this.btnWebcam = document.getElementById("webcamButton");
+        this.webcamContainer = document.getElementById("webcam-container");
+
+        //le bouton change de rôle au fil des clics : il faut donc retenir où on en est
+        this.cameraAllumee = false;
     }
+
     /**
-     * Point d'entrée principal du clic sur le bouton de démarrage.
-     * Cette fonction bloque l'exécution jusqu'à ce que la caméra soit autorisée.
+     * Point d'entrée principal du clic sur le bouton de démarrage. Le même bouton sert deux fois :
+     *   1er clic : il n'allume que la caméra, le temps que l'équipe cadre le plateau de jeu ;
+     *   2e clic  : il lance la mission.
+     * La promesse ne se résout donc qu'au deuxième clic : le code appelant (UIManager) reste
+     * en pause tant que le cadrage n'est pas validé.
      */
     initWebcamButtonEvent() {
         if (!this.btnWebcam) return Promise.reject("Bouton introuvable");
 
-        // NOUVEAU : On encapsule l'écouteur dans une Promise.
-        // Le code appelant (UIManager) sera mis en pause jusqu'à ce qu'on appelle resolve().
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
-            this.btnWebcam.addEventListener('click', async () => {
-                await this.prepareWebcamAutorisation();
+            this.btnWebcam.addEventListener('click', () => {
 
-                try {
-                    // Le navigateur met le code en pause ici pour demander la caméra.
-                    // Mêmes contraintes que le VisionController, sinon la caméra s'ouvre
-                    // une première fois en 640x480 et le 720p demandé ensuite peut être ignoré.
-                    const flux = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
-
-                    // Ce flux ne sert qu'à obtenir l'autorisation : on le relâche tout de suite,
-                    // sinon la caméra reste allumée et occupée pour rien.
-                    flux.getTracks().forEach(track => track.stop());
-
-                    // VICTOIRE : La caméra est acceptée, on débloque le UIManager !
-                    resolve(true);
-
-                } catch (erreur) {
-                    this.buttonChangeIfCameraAccessRefused(erreur);
-
-                    // ÉCHEC : On rejette la promesse, le UIManager ira dans son bloc "catch"
-                    reject(erreur);
+                if (!this.cameraAllumee) {
+                    this.showWebcamFeed();
+                    return; //on ne résout pas : la mission n'est pas encore lancée
                 }
-            });
 
+                resolve(true);
+            });
         });
     }
-    /**
-     * Modifie l'état du bouton et laisse le temps au navigateur de s'actualiser.
-     */
-    async prepareWebcamAutorisation() {
-        this.btnWebcam.disabled = true;
-        this.btnWebcam.innerText = "AUTORISATION REQUISE (VOIR POP-UP)...";
-        this.btnWebcam.style.animation = "none";
-        this.btnWebcam.style.backgroundColor = "#f57c00";
-
-        // La fameuse micro-pause pour que le CSS s'applique avant la pop-up
-        await new Promise(resolve => setTimeout(resolve, 50));
-    }
 
     /**
-     * Verrouille l'interface si l'utilisateur refuse la caméra.
+     * 1er clic : la balise <video> est en autoplay, afficher son conteneur suffit à voir l'image.
+     * Le bouton change alors d'étiquette pour proposer le vrai départ de la mission.
      */
-    buttonChangeIfCameraAccessRefused(erreur) {
-        console.warn("Accès caméra refusé :", erreur);
-        this.btnWebcam.innerText = "ACCÈS REFUSÉ. SYSTÈME VERROUILLÉ.";
-        this.btnWebcam.style.backgroundColor = "#ff5252";
+    showWebcamFeed() {
+        this.cameraAllumee = true;
+
+        inputManagerInstance.toggleWebcam(); //c'est ici que le navigateur demande l'autorisation
+        this.webcamContainer.style.display = "block";
+
+        this.btnWebcam.innerText = "DÉMARRER LA MISSION";
     }
 
     /**
@@ -76,14 +58,9 @@ export class WebcamButton {
             return;
         }
 
-        // L'IA est prête, le bouton s'allume !
+        // L'IA est prête, le bouton s'allume ! Il n'allume d'abord que la caméra.
         this.btnWebcam.disabled = false;
-        this.btnWebcam.innerText = "DÉMARRER LA MISSION";
+        this.btnWebcam.innerText = "ALLUMER LA CAMÉRA";
     }
 
 }
-
-
-
-
-
