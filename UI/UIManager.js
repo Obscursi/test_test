@@ -37,9 +37,6 @@ class UIManager {
             return false;
         }
 
-        // la caméra tourne déjà depuis le 1er clic : il ne reste que la boucle de jeu à lancer
-        gameEngineInstance.start();
-
         const waitingTime = this.animations.launchAnimationOutOfWelcomePanel();
         await this.panelManager.panelWelcome.transitionToBeginningTab(waitingTime);
 

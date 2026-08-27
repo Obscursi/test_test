@@ -3,7 +3,6 @@
 #loadingMessage {
     color: #007f8b;
     font-weight: bold;
-    margin-left: 15px;
 }
 
 
@@ -45,4 +44,15 @@
     100% {
         box-shadow: 0 0 30px rgba(0, 127, 139, 0.9);
     }
+}
+
+
+/* --- Les deux étapes de l'accueil : activer la caméra, puis démarrer la mission --- */
+
+.welcome-actions {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
 }
