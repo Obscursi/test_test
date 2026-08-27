@@ -37,10 +37,10 @@ class GameEngine {
 
         this.timer = new Timer();
 
-        //to lower the fps rendering (not used because it works well for now without it)
-        // this.fpsTarget = 10;
-        // this.frameInterval = 1000 / this.fpsTarget;
-        // this.lastFrameTime = 0;
+        //to lower the fps rendering : the loop is capped
+        this.fpsTarget = 10;
+        this.frameInterval = 1000 / this.fpsTarget;
+        this.lastFrameTime = 0;
     }
 
     // asynchronous initialisation (async waits for the files to load instead of interpreting the lines of code without stopping)
@@ -108,7 +108,8 @@ class GameEngine {
         this.putEnigmaIntoTheActivePool(ENIGMA_IDS.ARUCO); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
 
 
-        requestAnimationFrame(() => this.loop());
+        this.lastFrameTime = 0; // 0 so that the very first frame is never skipped
+        requestAnimationFrame((now) => this.loop(now));
     }
 
     /**
@@ -142,10 +143,16 @@ class GameEngine {
     }
 
     // The main loop, heartbeat of the program
-    // in the future may need to limit the refreshrate of this loop. Actually it is 60Hz, but it depends on the screen you are using
-    loop() {
+    // capped at this.fpsTarget : requestAnimationFrame follows the screen (60Hz, 120Hz...), so we skip the frames coming too early
+    loop(now) {
         if (!this.isRunning) return;
-        requestAnimationFrame(() => this.loop());
+        requestAnimationFrame((timestamp) => this.loop(timestamp));
+
+        const elapsed = now - this.lastFrameTime;
+        if (elapsed < this.frameInterval) return; // too early : this frame is skipped
+
+        // we do not store "now" directly : keeping the remainder avoids drifting away from the target fps
+        this.lastFrameTime = now - (elapsed % this.frameInterval);
 
         if (!this.isTransitioning) {
             this.activeEnigmas.forEach(currentEnigma => {
