@@ -99,7 +99,7 @@ export class TerminalManager {
         audioManagerInstance.playMysteriousSwell();
 
         // 3. Effet de Scramble (Décryptage de caractères)
-        const finalString = "💻 TERMINAL";
+        const finalString = "💻 OUVRIR LE TERMINAL 💻";
         const randomChars = "01$!*@#%&ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let iterations = 0;
 
