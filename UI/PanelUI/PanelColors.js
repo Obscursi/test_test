@@ -173,7 +173,7 @@ export class PanelColors {
             ? "aucun cercle caché"
             : `cachés : ${hiddenColors.join(", ")}`;
 
-        this.showFeedback(``);
+        this.showFeedback(`Aucune action effectuée`);
     }
 
     showNoEffect(color) {
@@ -181,8 +181,8 @@ export class PanelColors {
     }
 
     showCharacterChanged(characterName) {
-        const label = (characterName === "yellow") ? "jaune" : "bleu";
-        this.showFeedback(`Vous contrôlez maintenant le personnage ${label}.`, "moved");
+        //const label = (characterName === "yellow") ? "jaune" : "bleu";
+        this.showFeedback(`Vous contrôlez maintenant le personnage .`);
     }
 
     showSwitchActivated() {

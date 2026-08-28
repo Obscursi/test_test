@@ -161,6 +161,7 @@ export class ColorsEnigma extends Enigma {
 
         if (color === CHANGE_PLAYER_COLOR) {
             this.changeCharacter();
+            this.pannel.showCharacterChanged();
             return;
         }
 
