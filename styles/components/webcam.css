@@ -12,7 +12,7 @@
     margin: 0 auto 15px;
 }
 
-/* Les deux calques se superposent exactement, en mode miroir */
+/* Les deux calques se superposent exactement */
 #webcam,
 canvas {
     position: absolute;
@@ -20,8 +20,6 @@ canvas {
     top: 0;
     width: 640px;
     height: 360px;
-    transform: scaleX(-1);
-    /* Mode miroir */
 }
 
 /* Le flux webcam : affiché nativement par le navigateur, aucun JS par frame.
