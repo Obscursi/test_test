@@ -1,6 +1,6 @@
 .btn-tab-container {
     display: flex;
-    /* border-bottom: 2px solid #ccc; */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
     margin-bottom: 10px;
 
     /* pas de gap : les onglets sont collés, c'est l'onglet actif qui crée l'espace en grossissant */
