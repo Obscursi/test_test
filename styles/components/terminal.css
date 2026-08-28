@@ -1,10 +1,14 @@
 .fixed-terminal-btn {
     display: none;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    /* Le cadre du fond (styles/base.css) est étiré aux dimensions du viewport :
+       dans le coin bas-droit son liseré cyan remonte jusqu'à 9,4 % de la hauteur.
+       Des décalages en vh/vw suivent donc le cadre sur tous les écrans, là où des
+       pixels fixes finissent dessous sur un grand écran et trop haut sur un petit.
+       Le max() garde une marge minimale sur une fenêtre très courte. */
+    bottom: max(20px, 11vh);
+    right: max(20px, 2.5vw);
     z-index: 100;
-    /* Ajoute ton style futuriste ici */
 }
 
 .modal-hidden {

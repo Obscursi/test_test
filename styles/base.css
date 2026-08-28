@@ -26,15 +26,20 @@ body {
     font-family: var(--font-main);
     margin: 2em;
     color: #3d3d3d;
-    background-color: #f4f6f8;
 
-    background-image: url('../Utils/Pictures/background.jpeg');
+    /* Couleur du liseré sombre qui borde l'image : elle bouche les éventuels
+       arrondis d'un demi-pixel sur les bords, et sert de fond le temps du chargement. */
+    background-color: #231f20;
 
-    /* L'image s'étire ou se compresse pour couvrir tout l'écran sans se déformer */
-    background-size: cover;
+    background-image: url('../Utils/Pictures/background.png');
 
-    /* L'image reste toujours centrée */
-    background-position: center;
+    /* L'image n'est pas une texture mais un cadre d'interface : ses bordures doivent
+       toujours tomber sur les bords de la fenêtre. Avec « cover » elles se décalent
+       selon le format de l'écran (rognées en 16/10, visibles en 16/9), et les éléments
+       posés en position fixed ne savent plus où se placer. On l'étire donc exactement
+       à la taille du viewport : la grille intérieure se déforme de quelques pourcents,
+       ce qui ne se voit pas, mais le cadre est identique partout. */
+    background-size: 100% 100%;
 
     /* Empêche l'image de se répéter comme une mosaïque si l'écran est trop grand */
     background-repeat: no-repeat;
