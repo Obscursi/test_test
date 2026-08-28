@@ -61,6 +61,15 @@
 }
 
 
+/* On trace le liseré avec outline et non avec la bordure : la bordure de 3px sert déjà à réserver
+   la place du contour blanc de l'onglet actif, la toucher ferait sauter les onglets d'un clic à l'autre.
+   L'offset négatif ramène le trait sur le bord extérieur, à la place qu'occupera le contour blanc. */
+.tab-button:not(.active) {
+    outline: 2px solid rgba(0, 0, 0, 0.6);
+    outline-offset: -1px;
+}
+
+
 /* ---------------------------------------------------
     Modifier : Active or not
 --------------------------------------------------- */
