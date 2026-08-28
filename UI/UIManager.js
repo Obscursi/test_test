@@ -31,7 +31,7 @@ class UIManager {
     async initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
 
         try {
-            const isWebcamButtonReady = await this.webcamButton.initWebcamButtonEvent();
+            await this.webcamButton.initWebcamButtonEvent();
         } catch (error) {
             console.log("DEBUG : probleme webcam");
             return false;
