@@ -161,7 +161,6 @@ export class ColorsEnigma extends Enigma {
 
         if (color === CHANGE_PLAYER_COLOR) {
             this.changeCharacter();
-            this.pannel.showCharacterChanged();
             return;
         }
 
@@ -175,10 +174,7 @@ export class ColorsEnigma extends Enigma {
         //encore éventerait l'existence du second personnage avant le niveau 2.
         if (!character) return;
 
-        //Message masqué, comme l'anneau autour du personnage actif : aux joueurs de comprendre seuls
-        //que le cyan leur a donné la main sur l'autre personnage.
-        //this.panel.showCharacterChanged(character.name);
-
+        this.panel.showCharacterChanged(character.name);
         this.panel.renderMaze(this.maze);
     }
 

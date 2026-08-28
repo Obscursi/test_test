@@ -181,8 +181,8 @@ export class PanelColors {
     }
 
     showCharacterChanged(characterName) {
-        //const label = (characterName === "yellow") ? "jaune" : "bleu";
-        this.showFeedback(`Vous contrôlez maintenant le personnage .`);
+        const label = (characterName === "yellow") ? "jaune" : "bleu";
+        this.showFeedback(`Vous contrôlez maintenant le personnage ${label}.`);
     }
 
     showSwitchActivated() {
