@@ -2,19 +2,22 @@ import {
     HandLandmarker,
     FilesetResolver,
     DrawingUtils
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/vision_bundle.mjs";
+} from "../Libraries/mediapipe/vision_bundle.mjs";
 
 export { DrawingUtils, HandLandmarker };
 
+// URLs absolues construites depuis ce module : le wasm et le modèle sont
+// chargés correctement quelle que soit la page qui importe ce fichier.
+const WASM_PATH = new URL("../Libraries/mediapipe/wasm", import.meta.url).href;
+const MODEL_PATH = new URL("../Libraries/mediapipe/models/hand_landmarker.task", import.meta.url).href;
+
 export async function initMediapipe() {
     try {
-        const vision = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
-        );
+        const vision = await FilesetResolver.forVisionTasks(WASM_PATH);
 
         const handLandmarker = await HandLandmarker.createFromOptions(vision, {
             baseOptions: {
-                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+                modelAssetPath: MODEL_PATH,
                 delegate: "CPU"
             },
             runningMode: "VIDEO",
