@@ -15,11 +15,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     btnCamera.addEventListener("click", () => {
         inputManagerInstance.toggleWebcam();
         uiManagerInstance.webcamButton.showWebcamFeed();
+
+        // Un bouton pour commencer le jeu : la caméra tourne déjà, il ne reste que la boucle à lancer.
+        // (le UIManager écoute lui aussi ce clic, pour la transition hors de l'accueil)
+        btnWebcam.addEventListener("click", () => {
+            gameEngineInstance.start();
+        });
     });
 
     // Un bouton pour commencer le jeu : la caméra tourne déjà, il ne reste que la boucle à lancer.
     // (le UIManager écoute lui aussi ce clic, pour la transition hors de l'accueil)
-    btnWebcam.addEventListener("click", () => {
-        gameEngineInstance.start();
-    });
+    // btnWebcam.addEventListener("click", () => {
+    //     gameEngineInstance.start();
+    // });
 });
