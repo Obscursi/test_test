@@ -27,6 +27,9 @@ export class WebcamButton {
     showWebcamFeed() {
         this.webcamContainer.style.display = "block";
 
+        //la caméra ne s'allume qu'une fois : on retire le bouton pour qu'un second clic ne l'éteigne pas
+        if (this.btnCamera) this.btnCamera.style.display = "none";
+
         this.btnWebcam.disabled = false; //la mission ne peut partir qu'une fois la caméra allumée
     }
 
