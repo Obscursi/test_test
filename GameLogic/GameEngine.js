@@ -14,6 +14,7 @@ import { Timer } from './Timer.js';
 
 import { showError } from '../UI/AlertManager.js';
 import { showVictoryScreen } from '../UI/AlertManager.js';
+import { showDefeatScreen } from '../UI/AlertManager.js';
 import { showRewardAlert } from '../UI/AlertManager.js';
 
 import { initOpenCV } from '../Utils/LibraryLoading/LoadOpenCV.js';
@@ -35,7 +36,7 @@ class GameEngine {
         //first of the two conditions unlocking the guilty enigma, the second one being the LSF enigma resolved
         this.chatbotHasFoundCulprit = false;
 
-        this.timer = new Timer();
+        this.timer = new Timer(() => this.handleTimeOver());
 
         //to lower the fps rendering : the loop is capped
         this.fpsTarget = 10;
@@ -268,6 +269,18 @@ class GameEngine {
         uiManagerInstance.animations.launchUnlockingEnigmaAnimation('victoire');
         showVictoryScreen();
         this.isRunning = false;
+    }
+
+    /**
+     * Le compte à rebours est arrivé à zéro : la partie est perdue. On coupe la boucle principale
+     * (plus aucune énigme n'est mise à jour) et on affiche l'écran de défaite, qui fait disparaître
+     * les boutons des onglets pour qu'il n'y ait plus rien à faire.
+     */
+    handleTimeOver() {
+        if (!this.isRunning) return; //la partie est déjà finie (victoire), on ne l'écrase pas
+
+        this.isRunning = false;
+        showDefeatScreen();
     }
 
     cleanMemory(enigmaToComplete) {

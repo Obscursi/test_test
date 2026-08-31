@@ -1,4 +1,5 @@
 import uiManagerInstance from './UIManager.js';
+import { ENIGMA_STATUS } from '../Utils/Constant.js';
 
 export function showError(messageInfo) {
     const modal = document.getElementById('hardware-error-modal');
@@ -21,6 +22,17 @@ export function showError(messageInfo) {
 
 export function showVictoryScreen() {
     uiManagerInstance.tabManager.showTab('victoire');
+}
+
+
+/**
+ * Fin de partie perdue : on ouvre l'onglet de défaite (comme l'écran de victoire, il n'a pas de
+ * bouton dans la navigation) puis on coupe tous les accès au jeu.
+ */
+export function showDefeatScreen() {
+    uiManagerInstance.tabManager.tabs['defaite'].status = ENIGMA_STATUS.AVAILABLE;
+    uiManagerInstance.tabManager.showTab('defaite');
+    uiManagerInstance.tabManager.lockInterfaceForEndOfGame();
 }
 
 

@@ -7,9 +7,13 @@ const MISSION_DURATION_MS = 1 * 60 * 60 * 1000;
  */
 export class Timer {
 
-    constructor() {
+    /**
+     * @param {Function} onTimeOver - appelée une seule fois, quand le compte à rebours atteint zéro
+     */
+    constructor(onTimeOver = null) {
         this.startTime = null;
         this.interval = null;
+        this.onTimeOver = onTimeOver;
     }
 
     start() {
@@ -47,6 +51,12 @@ export class Timer {
 
         if (remaining === 0) {
             this.stop(); //we stop the timer if it has reach 0
+
+            if (this.onTimeOver) {
+                const callback = this.onTimeOver;
+                this.onTimeOver = null; //on ne prévient qu'une fois, même si tick est rappelée
+                callback();
+            }
         }
     }
 }

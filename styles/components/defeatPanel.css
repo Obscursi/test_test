@@ -1,0 +1,50 @@
+/* ==========================================================
+   ÉCRAN DE DÉFAITE
+   Affiché quand le compte à rebours atteint zéro : même mise en page que les
+   panneaux de victoire, mais en rouge pour marquer l'échec de la mission.
+   ========================================================== */
+
+.defeat-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+
+    max-width: 700px;
+    margin-top: 40px;
+    padding: 40px 50px;
+    box-sizing: border-box;
+
+    background: linear-gradient(160deg, rgba(80, 15, 25, 0.92), rgba(24, 5, 8, 0.95));
+    border: 1px solid rgba(255, 60, 90, 0.6);
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(255, 0, 60, 0.25);
+
+    text-align: center;
+}
+
+.defeat-title {
+    margin: 0;
+    font-size: 2.1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 0 18px rgba(255, 100, 120, 0.9);
+}
+
+/* Trait dégradé sous le titre, comme sur les panneaux de victoire */
+.defeat-title::after {
+    content: "";
+    display: block;
+    width: 90px;
+    height: 2px;
+    margin: 16px auto 0;
+    background: linear-gradient(90deg, transparent, #ff3c5a, transparent);
+}
+
+.defeat-text {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #ffd7dd;
+}

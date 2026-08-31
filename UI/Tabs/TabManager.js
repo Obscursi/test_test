@@ -38,7 +38,8 @@ export class TabManager {
             chatbot: new Tab(HELP_IDS.CHATBOT, 'Chatbot du futur', document.querySelector('.tab-button[data-target="chatbot"]'), document.getElementById("panel-chatbot")),
             guilty: new Tab(ENIGMA_IDS.GUILTY, "c ki le vilain ?", document.querySelector('.tab-button[data-target="guilty"]'), document.getElementById("panel-guilty"), document.getElementById("panel-guilty-victory")),
             final: new Tab(ENIGMA_IDS.FINAL, 'Final Reckoning', document.querySelector('.tab-button[data-target="final"]'), document.getElementById("panel-final"), document.getElementById("panel-final-victory")),
-            victoire: new Tab('victoire', 'Veni vidi vici', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire"))
+            victoire: new Tab('victoire', 'Veni vidi vici', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire")),
+            defaite: new Tab('defaite', 'Temps écoulé', document.querySelector('.tab-button[data-target="defaite"]'), document.getElementById("panel-defaite"))
         };
     }
 
@@ -104,6 +105,19 @@ export class TabManager {
         } else {
             console.log("DEBUG : tabContainer undefined, cannot show or hide the naviguation bar ");
         }
+    }
+
+    /**
+     * Fin de partie : on retire tout ce qui permettrait de continuer à jouer (les boutons des
+     * onglets et celui du terminal), la webcam n'ayant plus de raison d'être affichée non plus.
+     * À appeler APRÈS le showTab de l'écran final, car showTab réaffiche la barre de navigation.
+     */
+    lockInterfaceForEndOfGame() {
+        if (this.tabContainer) this.tabContainer.style.display = "none";
+        if (this.webcamContainer) this.webcamContainer.style.display = "none";
+
+        const terminalButton = document.getElementById('btn-open-terminal');
+        if (terminalButton) terminalButton.style.display = "none";
     }
 
     unlockAndShowBeginningPanels() {

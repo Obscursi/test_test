@@ -14,7 +14,7 @@ export function renderTimer(minutes, seconds) {
 
     timerElement.textContent = `${minutes}:${seconds}`;
 
-    if (minutes === 0 && seconds === 0) timerElement.classList.add("finished");
+    if (minutes === "00" && seconds === "00") timerElement.classList.add("finished");
 }
 
 export function showTimer(visible) {

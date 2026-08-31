@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="styles/components/cinematics.css">
     <link rel="stylesheet" href="styles/components/successFlash.css">
     <link rel="stylesheet" href="styles/components/victoryPanel.css">
+    <link rel="stylesheet" href="styles/components/defeatPanel.css">
     <link rel="stylesheet" href="styles/components/groovyTitle.css">
 
     <!-- Un fichier par panneau -->
@@ -60,6 +61,9 @@
 
         <!-- l'écran de victoire s'ouvre par le code, jamais par un clic : le bouton reste caché (pas de classe available) -->
         <button class="tab-button" data-target="victoire">Should not be displayed - victory</button>
+
+        <!-- même principe pour l'écran de défaite, ouvert par le code quand le chrono tombe à zéro -->
+        <button class="tab-button" data-target="defaite">Should not be displayed - defeat</button>
 
         <!-- caché sur l'accueil, affiché partout ailleurs une fois la mission lancée -->
         <div id="mission-timer" class="mission-timer"></div>
@@ -189,6 +193,14 @@
             <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre intervention a permis l'arrestation du
                 coupable !
             </p>
+        </div>
+
+        <div id="panel-defaite" class="view-panel defeat-panel-container">
+            <div class="defeat-panel">
+                <h2 class="defeat-title">Temps écoulé</h2>
+                <p class="defeat-text">Le compte à rebours est arrivé à zéro : la mission est un échec, le coupable
+                    s'est échappé et les données avec lui ! </p>
+            </div>
         </div>
 
         <div id="panel-chatbot" class="view-panel">
