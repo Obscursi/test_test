@@ -9,7 +9,7 @@ export class ArucoEnigma extends Enigma {
 
         // Configuration métier du jeu
         this.positionTolerance = 10;
-        this.nbIterations = 60;
+        this.nbIterations = 25;
         this.maxID = 100;
 
         this.dictCards = {
