@@ -8,6 +8,7 @@ import { showTimer } from '../TimerUI.js';
 import { ENIGMA_STATUS } from '../../Utils/Constant.js';
 import { ENIGMA_IDS } from '../../Utils/Constant.js';
 import { HELP_IDS } from '../../Utils/Constant.js';
+import { SCREEN_IDS } from '../../Utils/Constant.js';
 
 
 import gameEngineInstance from '../../GameLogic/GameEngine.js';
@@ -21,8 +22,8 @@ export class TabManager {
 
         this.webcamContainer = document.getElementById("webcam-container");
 
-        this.activeTabId = 'welcome';
-        this.tabs['welcome'].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
+        this.activeTabId = SCREEN_IDS.WELCOME;
+        this.tabs[SCREEN_IDS.WELCOME].status = ENIGMA_STATUS.AVAILABLE; // we may have problem if we don't do that
         this.showTab(this.activeTabId);
 
         this.tabContainer = document.querySelector('.btn-tab-container');
@@ -31,15 +32,15 @@ export class TabManager {
 
     loadTabs() {
         this.tabs = {
-            welcome: new Tab('welcome', 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
+            welcome: new Tab(SCREEN_IDS.WELCOME, 'Accueil', document.querySelector('.tab-button[data-target="dummy-button"]'), document.getElementById("panel-welcome")), // we use a dummy button for welcome because it is not a tab we will access after the beginning
             lsf: new Tab(ENIGMA_IDS.LSF, 'Signes', document.querySelector('.tab-button[data-target="lsf"]'), document.getElementById("panel-lsf"), document.getElementById("panel-lsf-victory")),
             aruco: new Tab(ENIGMA_IDS.ARUCO, 'Vrai ou faux', document.querySelector('.tab-button[data-target="aruco"]'), document.getElementById("panel-aruco"), document.getElementById("panel-aruco-victory")),
             colors: new Tab(ENIGMA_IDS.COLORS, 'Apprentissage coloré', document.querySelector('.tab-button[data-target="colors"]'), document.getElementById("panel-colors"), document.getElementById("panel-colors-victory")),
             chatbot: new Tab(HELP_IDS.CHATBOT, 'Chatbot du futur', document.querySelector('.tab-button[data-target="chatbot"]'), document.getElementById("panel-chatbot")),
             guilty: new Tab(ENIGMA_IDS.GUILTY, "c ki le vilain ?", document.querySelector('.tab-button[data-target="guilty"]'), document.getElementById("panel-guilty"), document.getElementById("panel-guilty-victory")),
             final: new Tab(ENIGMA_IDS.FINAL, 'Final Reckoning', document.querySelector('.tab-button[data-target="final"]'), document.getElementById("panel-final"), document.getElementById("panel-final-victory")),
-            victoire: new Tab('victoire', 'Veni vidi vici', document.querySelector('.tab-button[data-target="victoire"]'), document.getElementById("panel-victoire")),
-            defaite: new Tab('defaite', 'Temps écoulé', document.querySelector('.tab-button[data-target="defaite"]'), document.getElementById("panel-defaite"))
+            victory: new Tab(SCREEN_IDS.VICTORY, 'Veni vidi vici', document.querySelector('.tab-button[data-target="victory"]'), document.getElementById("panel-victory")),
+            defeat: new Tab(SCREEN_IDS.DEFEAT, 'Temps écoulé', document.querySelector('.tab-button[data-target="defeat"]'), document.getElementById("panel-defeat"))
         };
     }
 
@@ -79,13 +80,13 @@ export class TabManager {
 
         this.displayOrNotWebcam(tabId);
         this.displayOrNotNavigationBar(tabId); //we don't display the naviguation bar only on the welcome page for the moment
-        showTimer(tabId !== 'welcome'); //le compte à rebours suit le joueur sur tous les onglets sauf l'accueil
+        showTimer(tabId !== SCREEN_IDS.WELCOME); //le compte à rebours suit le joueur sur tous les onglets sauf l'accueil
     }
 
     displayOrNotWebcam(tabId) {
         const tabsWithWebcam = [ENIGMA_IDS.LSF, ENIGMA_IDS.ARUCO, ENIGMA_IDS.COLORS];
 
-        if (tabId === 'welcome') return; //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
+        if (tabId === SCREEN_IDS.WELCOME) return; //security so that we don't check gameEngineInstance in the welcome page (gameEngineInstance has yet to start)
 
         if (!this.webcamContainer) {
             console.log("DEBUG : webcamcontainer is not defined anymore");
@@ -101,7 +102,7 @@ export class TabManager {
 
     displayOrNotNavigationBar(tabId) {
         if (this.tabContainer) {
-            this.tabContainer.style.display = (tabId === 'welcome') ? "none" : "flex";
+            this.tabContainer.style.display = (tabId === SCREEN_IDS.WELCOME) ? "none" : "flex";
         } else {
             console.log("DEBUG : tabContainer undefined, cannot show or hide the naviguation bar ");
         }

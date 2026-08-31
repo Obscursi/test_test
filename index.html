@@ -60,10 +60,10 @@
         <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
 
         <!-- l'écran de victoire s'ouvre par le code, jamais par un clic : le bouton reste caché (pas de classe available) -->
-        <button class="tab-button" data-target="victoire">Should not be displayed - victory</button>
+        <button class="tab-button" data-target="victory">Should not be displayed - victory</button>
 
         <!-- même principe pour l'écran de défaite, ouvert par le code quand le chrono tombe à zéro -->
-        <button class="tab-button" data-target="defaite">Should not be displayed - defeat</button>
+        <button class="tab-button" data-target="defeat">Should not be displayed - defeat</button>
 
         <!-- caché sur l'accueil, affiché partout ailleurs une fois la mission lancée -->
         <div id="mission-timer" class="mission-timer"></div>
@@ -188,14 +188,14 @@
         </div>
 
 
-        <div id="panel-victoire" class="view-panel" data-target="victoire" style="text-align: center; color: #007f8b;">
+        <div id="panel-victory" class="view-panel" data-target="victory" style="text-align: center; color: #007f8b;">
             <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
             <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre intervention a permis l'arrestation du
                 coupable !
             </p>
         </div>
 
-        <div id="panel-defaite" class="view-panel defeat-panel-container">
+        <div id="panel-defeat" class="view-panel defeat-panel-container">
             <div class="defeat-panel">
                 <h2 class="defeat-title">Temps écoulé</h2>
                 <p class="defeat-text">Le compte à rebours est arrivé à zéro : la mission est un échec, le coupable

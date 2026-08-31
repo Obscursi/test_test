@@ -1,5 +1,6 @@
 import uiManagerInstance from './UIManager.js';
 import { ENIGMA_STATUS } from '../Utils/Constant.js';
+import { SCREEN_IDS } from '../Utils/Constant.js';
 
 export function showError(messageInfo) {
     const modal = document.getElementById('hardware-error-modal');
@@ -21,7 +22,7 @@ export function showError(messageInfo) {
 
 
 export function showVictoryScreen() {
-    uiManagerInstance.tabManager.showTab('victoire');
+    uiManagerInstance.tabManager.showTab(SCREEN_IDS.VICTORY);
 }
 
 
@@ -30,8 +31,8 @@ export function showVictoryScreen() {
  * bouton dans la navigation) puis on coupe tous les accès au jeu.
  */
 export function showDefeatScreen() {
-    uiManagerInstance.tabManager.tabs['defaite'].status = ENIGMA_STATUS.AVAILABLE;
-    uiManagerInstance.tabManager.showTab('defaite');
+    uiManagerInstance.tabManager.tabs[SCREEN_IDS.DEFEAT].status = ENIGMA_STATUS.AVAILABLE;
+    uiManagerInstance.tabManager.showTab(SCREEN_IDS.DEFEAT);
     uiManagerInstance.tabManager.lockInterfaceForEndOfGame();
 }
 

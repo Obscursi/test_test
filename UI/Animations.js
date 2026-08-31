@@ -2,6 +2,7 @@ import uiManagerInstance from './UIManager.js';
 
 import audioManagerInstance from '../Audio/AudioManager.js';
 import { wait } from '../Utils/UtilFunctions.js';
+import { SCREEN_IDS } from '../Utils/Constant.js';
 
 const SUCCESS_ANIMATION_MS = 1400;
 const UNLOCK_ANIMATION_MS = 5000; //needs to be the same in css cinematics.css
@@ -88,7 +89,7 @@ export class Animations {
         this.btnWebcam.innerText = "ACCÈS VALIDÉ...";
         this.btnWebcam.style.backgroundColor = "#ff5252";
 
-        const welcomePanel = uiManagerInstance.tabManager.tabs['welcome'].panel;
+        const welcomePanel = uiManagerInstance.tabManager.tabs[SCREEN_IDS.WELCOME].panel;
         const welcomePanelElements = Array.from(welcomePanel.children);
 
         welcomePanelElements.forEach((element, index) => {
