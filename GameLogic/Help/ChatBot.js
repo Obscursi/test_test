@@ -10,6 +10,8 @@ const PASSIONS = ["volley", "tennis", "natation", "basket", "handball", "golf", 
     "dessin", "cuisine", "patisserie", "peinture", "photographie", "poterie", "lecture", "jardinage",
     "astronomie", "crochet", "tricot", "quidditch"];
 
+const INSISTANCE = "Es-tu sûr ? J'ai des informations qui pourraient t'intéresser.";
+
 export class ChatBot {
 
     constructor({ panelChatbot, equipe = CURRENT_TEAM } = {}) {
@@ -86,7 +88,12 @@ export class ChatBot {
             resultat: {
                 question: "Recherche terminée. Veux-tu que je t'explique ma décision ?",
                 actions: { recommencer: () => this.resetAll() },
-                transitions: { oui: "explication", non: "majorite", recommencer: "debut" }
+                transitions: { oui: "explication", non: "confirmation-explication", recommencer: "debut" }
+            },
+            "confirmation-explication": {
+                question: INSISTANCE,
+                actions: { recommencer: () => this.resetAll() },
+                transitions: { oui: "majorite", non: "explication", recommencer: "debut" }
             },
             explication: {
                 question: ["Le critère du rugby m'indique que c'est un garçon.", "Es-tu d'accord avec ce que j'ai fait ?"],
