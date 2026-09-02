@@ -1,6 +1,7 @@
 import { MAZE_SYMBOLS } from '../../GameLogic/MiniGames/Maze.js';
 
-const CELL_SIZE = 52; // px, pushed to the CSS variable --maze-cell so both sides always agree
+// La taille d'une case vit dans le CSS (--maze-cell, styles/panels/colors.css) : c'est ce qui permet
+// aux media queries de rétrécir le labyrinthe sur les petites fenêtres sans toucher au JS.
 
 // Only used to draw the dot of each chip, so the players can link a chip to a real circle on the table
 const COLOR_SWATCHES = {
@@ -51,8 +52,7 @@ export class PanelColors {
         }
 
         this.gridElement.innerHTML = "";
-        this.gridElement.style.setProperty("--maze-cell", `${CELL_SIZE}px`);
-        this.gridElement.style.gridTemplateColumns = `repeat(${maze.cols}, ${CELL_SIZE}px)`;
+        this.gridElement.style.gridTemplateColumns = `repeat(${maze.cols}, var(--maze-cell))`;
 
         for (let row = 0; row < maze.rows; row++) {
             for (let col = 0; col < maze.cols; col++) {
@@ -100,7 +100,9 @@ export class PanelColors {
             if (!element) continue;
 
             const { row, col } = character.position;
-            element.style.transform = `translate(${col * CELL_SIZE}px, ${row * CELL_SIZE}px)`;
+            // en multiples de --maze-cell : les personnages suivent automatiquement la taille des cases
+            element.style.transform =
+                `translate(calc(var(--maze-cell) * ${col}), calc(var(--maze-cell) * ${row}))`;
 
             //l'anneau autour du personnage actif est le seul indice de qui obéit aux couleurs
             element.classList.toggle("active", character === maze.activeCharacter);

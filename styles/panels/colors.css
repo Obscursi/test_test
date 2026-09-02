@@ -7,13 +7,22 @@
     --maze-floor: #0b0616;
     --maze-accent: #a56bff;
     --maze-exit: #69f0ae;
+
+    /* Taille d'une case : le JS lit la même variable, donc les media queries plus bas suffisent
+       à rétrécir tout le labyrinthe (murs, personnages, colonnes de la grille) d'un seul endroit. */
+    --maze-cell: 52px;
 }
 
+/*
+ * nowrap : le labyrinthe et la colonne de droite restent côte à côte quelle que soit la largeur
+ * de la fenêtre. Sans ça, la longueur du message de retour suffisait à faire passer les pastilles
+ * sous la grille dès que la fenêtre occupait une demi-écran.
+ */
 .maze-layout {
     display: flex;
     align-items: flex-start;
-    gap: 40px;
-    flex-wrap: wrap;
+    gap: clamp(14px, 2.5vw, 40px);
+    flex-wrap: nowrap;
     margin-top: 20px;
 }
 
@@ -21,6 +30,8 @@
 
 .maze-grid {
     position: relative;
+    /* la grille garde sa taille : c'est la colonne de droite qui absorbe la place restante */
+    flex: 0 0 auto;
     display: grid;
     padding: 10px;
     background: #07030f;
@@ -164,11 +175,18 @@
 
 /* --- Le compte à rebours --- */
 
+/*
+ * flex-basis 0 + min-width 0 : la colonne se dimensionne sur la place restante et JAMAIS sur son
+ * contenu, donc un message long ne peut plus élargir la mise en page.
+ */
 .maze-side {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 22px;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 260px;
 }
 
 .countdown {
@@ -249,11 +267,18 @@
 
 /* --- Le retour après chaque action --- */
 
+/*
+ * Le message retourne à la ligne au lieu de pousser la colonne, et la hauteur réservée couvre
+ * trois lignes pour que la grille ne saute pas d'un message à l'autre.
+ */
 .maze-feedback {
     margin: 0;
-    min-height: 1.4em;
+    width: 100%;
+    min-height: 4.2em;
     font-weight: bold;
     text-align: center;
+    overflow-wrap: anywhere;
+    hyphens: auto;
 }
 
 .maze-feedback.moved {
@@ -270,4 +295,69 @@
 
 .maze-feedback.victory {
     color: #69f0ae;
+}
+
+
+/* --- Les petits écrans en paysage --- */
+
+/*
+ * On rétrécit les cases plutôt que d'empiler : sur une fenêtre en demi-écran, la grille et les
+ * pastilles doivent rester côte à côte. Seuls les téléphones en portrait passent sous 480px.
+ */
+@media (max-width: 1100px) {
+    #panel-colors {
+        --maze-cell: 42px;
+    }
+
+    .maze-side {
+        max-width: 220px;
+    }
+
+    .countdown {
+        width: 80px;
+        height: 80px;
+    }
+
+    .countdown-value {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 860px) {
+    #panel-colors {
+        --maze-cell: 34px;
+    }
+
+    .maze-side {
+        max-width: 180px;
+        gap: 14px;
+    }
+
+    .color-chip {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+
+    .countdown {
+        width: 64px;
+        height: 64px;
+    }
+
+    .countdown-value {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 680px) {
+    #panel-colors {
+        --maze-cell: 26px;
+    }
+
+    .maze-side {
+        max-width: 150px;
+    }
+
+    .maze-feedback {
+        font-size: 0.8rem;
+    }
 }
