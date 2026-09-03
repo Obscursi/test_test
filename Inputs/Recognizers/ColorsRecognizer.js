@@ -133,7 +133,7 @@ export class ColorsRecognizer {
         cv.pyrDown(srcMat, this.small);
 
         cv.cvtColor(this.small, this.gray, cv.COLOR_RGBA2GRAY);
-        cv.GaussianBlur(this.gray, this.blurred, new cv.Size(9, 9), 2, 2);
+        cv.GaussianBlur(this.gray, this.blurred, new cv.Size(5, 5), 1, 1);
 
         // Paramètres de détection de cercles
         cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 38, 10, 50);
