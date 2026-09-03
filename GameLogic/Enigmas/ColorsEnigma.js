@@ -28,7 +28,9 @@ const CONTROLS = {
 };
 
 // Cacher ce cercle donne la main à l'autre personnage
-const CHANGE_PLAYER_COLOR = "Cyan";
+// Le cyan a ete abandonne : sa teinte est a 10 unites de celle du fond bleu du plateau,
+// la detection ne pouvait pas les separer de facon fiable. Voir COLOR_REFERENCES.
+const CHANGE_PLAYER_COLOR = "Magenta";
 
 const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.BLUE]), CHANGE_PLAYER_COLOR];
 

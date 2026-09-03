@@ -4,13 +4,14 @@ import { MAZE_SYMBOLS } from '../../GameLogic/MiniGames/Maze.js';
 // aux media queries de rétrécir le labyrinthe sur les petites fenêtres sans toucher au JS.
 
 // Only used to draw the dot of each chip, so the players can link a chip to a real circle on the table
+// Ce sont les encres du plateau, celles listees dans COLOR_REFERENCES (ColorsRecognizer) :
+// la pastille a l'ecran doit avoir la meme couleur que celle posee sur la table.
 const COLOR_SWATCHES = {
-    "Rouge": "#e00000",
-    "Jaune": "#f2d200",
-    "Vert": "#00a63f",
-    "Cyan": "#00c8dc",
-    "Bleu": "#0057d8",
-    "Noir": "#000000"
+    "Rouge": "#ff1e1e",
+    "Jaune": "#ffd400",
+    "Vert": "#00b050",
+    "Bleu": "#3b1fe0",
+    "Magenta": "#ff00ff"
 };
 
 export class PanelColors {
