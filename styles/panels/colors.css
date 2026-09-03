@@ -361,3 +361,90 @@
         font-size: 0.8rem;
     }
 }
+
+/* --- Le réglage des couleurs --- */
+
+/*
+ * Un bandeau discret sous le labyrinthe : il ne sert qu'avant la partie, il ne doit donc jamais
+ * pousser la grille ni attirer l'oeil pendant qu'on joue.
+ */
+.colors-calibration {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(165, 107, 255, 0.25);
+}
+
+.calibration-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.calibration-button {
+    padding: 7px 16px;
+    background: rgba(18, 8, 34, 0.85);
+    border: 1px solid rgba(165, 107, 255, 0.45);
+    border-radius: 30px;
+    color: #f0e6ff;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.calibration-button:hover {
+    background: rgba(165, 107, 255, 0.25);
+    border-color: var(--maze-accent);
+}
+
+.calibration-message {
+    margin: 10px 0 0;
+    min-height: 1.2em;      /* la place est réservée, le bandeau ne saute pas quand le texte arrive */
+    color: #d9ccf5;
+    font-size: 0.85rem;
+}
+
+/* Les 5 couleurs côte à côte : la liste ne prend qu'une ligne tant que la fenêtre est large */
+.calibration-rows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.calibration-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(18, 8, 34, 0.85);
+    border: 1px solid rgba(165, 107, 255, 0.45);
+    border-radius: 30px;
+    color: #f0e6ff;
+    font-size: 0.85rem;
+}
+
+.calibration-name {
+    font-weight: bold;
+    min-width: 66px;
+}
+
+.calibration-select {
+    background: rgba(11, 6, 22, 0.9);
+    border: 1px solid rgba(165, 107, 255, 0.45);
+    border-radius: 6px;
+    color: #f0e6ff;
+    font-size: 0.8rem;
+    padding: 3px 6px;
+    cursor: pointer;
+}
+
+@media (max-width: 680px) {
+    .calibration-row {
+        font-size: 0.75rem;
+    }
+
+    .calibration-name {
+        min-width: 54px;
+    }
+}

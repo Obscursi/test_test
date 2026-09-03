@@ -12,13 +12,8 @@ const MINIMUM_VOTES = 3;    //the minimum votes a sample circle needs to have to
 const MINIMUM_CONSENSUS = 0.5;
 
 /**
- * Teinte OpenCV (0 a 179) de chaque pastille, telle que la CAMERA la voit — pas telle
- * qu'on l'a demandee a l'imprimante. Les deux different beaucoup : l'encre `ink` est ce
- * qu'il y a dans le SVG, `hue` est ce qui est ressorti du papier, mesure le 2026-09-03
- * avec colorsDebug(true).
- *
- * L'imprimante decale jusqu'a 18 unites (le vert demande a 74 est sorti a 56, le magenta
- * demande a 150 est sorti a 167).
+* the hue value is the one we saw on one of our prints. It is likely to be changed with
+* the color calibration system.
  */
 const COLOR_REFERENCES = [
     { name: "Rouge", hue: 7, ink: "#ff1e1e" }, //original svg hue : 0
@@ -29,8 +24,13 @@ const COLOR_REFERENCES = [
 ];
 
 // Ecart de teinte tolere avec la reference la plus proche. La moitie du plus petit ecart
-// entre deux pastilles imprimees, ici 20 entre le rouge et le magenta. 
+// entre deux pastilles imprimees, ici 20 entre le rouge et le magenta.
 const MAX_HUE_GAP = 10;
+
+// Les teintes ci-dessus mises de cote avant tout reglage : c'est la que ramene le bouton
+// "couleurs d'origine", quand un reglage est parti de travers.
+const DEFAULT_HUES = COLOR_REFERENCES.map(reference => reference.hue);
+
 
 // Mis a true, la detection dit tout ce qu'elle voit : les cercles nommes ET ceux qu'elle
 // n'a pas su nommer, avec leur HSV, dans la console et sur l'image.
@@ -64,6 +64,12 @@ export class ColorsRecognizer {
         this.srcMat = null;
 
         this.lastDebugLog = 0;
+
+        // Les cercles de la derniere image analysee, dans lesquels le reglage vient piocher.
+        this.lastCircles = [];
+
+        // Non nul pendant un reglage : les 5 cercles figes, dans l'ordre de leurs numeros.
+        this.calibrationCircles = null;
 
         //this.detectedColorsThisFrame = new Set(); not used anymore right now
 
@@ -141,6 +147,8 @@ export class ColorsRecognizer {
             // Analyse : la detection ne dessine rien, elle rend ce qu'elle a trouve
             const { colorsDetected, circlesDetected } = this.detectColoredCircles(this.srcMat);
 
+            this.lastCircles = circlesDetected;
+
             // Affichage : l'overlay est construit a partir du resultat de la detection
             this.drawCirclesOverlay(circlesDetected);
 
@@ -215,9 +223,13 @@ export class ColorsRecognizer {
         this.ctx.textAlign = "center";
         this.ctx.textBaseline = "bottom";
 
-        for (const circle of circlesDetected) {
+        // we freeze the picture when calibrating
+        const calibrating = this.calibrationCircles !== null;
+        const circles = calibrating ? this.calibrationCircles : circlesDetected;
+
+        for (const [index, circle] of circles.entries()) {
             const named = circle.name !== "Unknown";
-            if (!named && !DEBUG_COLORS) continue;
+            if (!named && !DEBUG_COLORS && !calibrating) continue;
 
             const x = circle.x * scale;
             const y = circle.y * scale;
@@ -234,8 +246,28 @@ export class ColorsRecognizer {
             this.ctx.arc(x, y, 3 * scale, 0, 2 * Math.PI);
             this.ctx.fill();
 
-            if (DEBUG_COLORS) this.drawCircleLabel(circle, x, y, radius, scale);
+            if (calibrating) this.drawCircleNumber(index + 1, x, y, scale);
+            else if (DEBUG_COLORS) this.drawCircleLabel(circle, x, y, radius, scale);
         }
+    }
+
+    /**
+     * the drawing on the picture of the number of each circle when calibrating
+     */
+    drawCircleNumber(number, x, y, scale) {
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 13 * scale, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+        this.ctx.font = `bold ${Math.round(20 * scale)}px sans-serif`;
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = "#FFFFFF";
+        this.ctx.fillText(String(number), x, y + scale);
+
+        //on remet l'état que le reste du dessin attend
+        this.ctx.font = `${Math.round(13 * scale)}px monospace`;
+        this.ctx.textBaseline = "bottom";
     }
 
     /**
@@ -429,6 +461,91 @@ export class ColorsRecognizer {
     hueDistance(a, b) {
         const gap = Math.abs(a - b) % 180;
         return Math.min(gap, 180 - gap);
+    }
+
+    /**
+     *
+     * @returns {{count: number, guess: Object<string, number>}} guess est vide si count != 5
+     */
+    startCalibration() {
+        // De haut en bas puis de gauche à droite : la numérotation ne dépend plus de l'ordre
+        // dans lequel HoughCircles a rendu les cercles, qui change à chaque image.
+        const circles = [...this.lastCircles].sort((a, b) => a.y - b.y || a.x - b.x);
+
+        if (circles.length !== COLOR_REFERENCES.length) {
+            this.calibrationCircles = null;
+            return { count: circles.length, guess: {} };
+        }
+
+        this.calibrationCircles = circles;
+        return { count: circles.length, guess: this.guessCalibration(circles) };
+    }
+
+    /**
+     */
+    guessCalibration(circles) {
+        const guess = {};
+        const taken = new Set();
+
+        for (const reference of COLOR_REFERENCES) {
+            let closest = 0;
+            let smallestGap = 180;
+
+            for (let index = 0; index < circles.length; index++) {
+                if (taken.has(index)) continue;
+
+                const gap = this.hueDistance(circles[index].hue, reference.hue);
+
+                if (gap < smallestGap) {
+                    smallestGap = gap;
+                    closest = index;
+                }
+            }
+
+            guess[reference.name] = closest;
+            taken.add(closest);
+        }
+
+        return guess;
+    }
+
+    /**
+     * Each color takes the circle we told it to take
+     *
+     * @param {Object<string, number>} assignment - nom de couleur -> numéro de cercle moins 1
+     */
+    applyCalibration(assignment) {
+        if (!this.calibrationCircles) return;
+
+        for (const reference of COLOR_REFERENCES) {
+            const circle = this.calibrationCircles[assignment[reference.name]];
+
+            if (circle) reference.hue = circle.hue;
+        }
+
+        // Le réglage repart à zéro au rechargement de la page. Les teintes sont écrites dans la
+        // console : les recopier dans COLOR_REFERENCES suffit à les rendre définitives.
+        console.log("🎨 teintes réglées :", COLOR_REFERENCES.map(r => r.hue).join(", "));
+    }
+
+    /**
+     * Gets back to original colors
+     */
+    resetCalibration() {
+        COLOR_REFERENCES.forEach((reference, index) => {
+            reference.hue = DEFAULT_HUES[index];
+        });
+
+        this.calibrationCircles = null;
+
+        console.log("🎨 teintes revenues à leur valeur d'origine :", DEFAULT_HUES.join(", "));
+    }
+
+    /**
+     * erase the numbers and let the camera go live again
+     */
+    stopCalibration() {
+        this.calibrationCircles = null;
     }
 
     cleanOfMemory() {

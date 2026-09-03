@@ -71,11 +71,26 @@ export class ColorsEnigma extends Enigma {
         this.panel = uiManagerInstance.panelManager.panelColors;
         this.panel.buildChips(COLORS_USED);
 
+        // Le réglage des teintes : le panneau montre, le recognizer mesure, l'énigme les relie.
+        // C'est le seul endroit qui connaît les deux, donc le seul où ce branchement a sa place.
+        this.colorsRecognizer = inputManagerInstance.vision.colorsRecognizer;
+
+        this.panel.connectCalibration({
+            onAdjust: () => this.colorsRecognizer.startCalibration(),
+            onApply: assignment => this.colorsRecognizer.applyCalibration(assignment),
+            onReset: () => this.colorsRecognizer.resetCalibration(),
+            onValidate: () => this.colorsRecognizer.stopCalibration()
+        });
+
         this.loadLevel(0);
     }
 
     start() {
         super.start();
+
+        // Les numéros d'un réglage laissé en plan cacheraient les cercles de la partie qui commence
+        this.colorsRecognizer.stopCalibration();
+        this.panel.showCalibration("");
 
         this.loadLevel(0);
     }
