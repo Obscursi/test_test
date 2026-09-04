@@ -6,8 +6,6 @@ import { ENIGMA_IDS } from '../../Utils/Constant.js';
 import uiManagerInstance from '../../UI/UIManager.js';
 
 import { showError } from '../../UI/AlertManager.js';
-import { wait } from '../../Utils/UtilFunctions.js';
-
 
 
 
