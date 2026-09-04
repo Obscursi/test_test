@@ -4,13 +4,14 @@ import { MAZE_SYMBOLS } from '../../GameLogic/MiniGames/Maze.js';
 // aux media queries de rétrécir le labyrinthe sur les petites fenêtres sans toucher au JS.
 
 // Only used to draw the dot of each chip, so the players can link a chip to a real circle on the table
+// Ce sont les encres du plateau, celles listees dans COLOR_REFERENCES (ColorsRecognizer) :
+// la pastille a l'ecran doit avoir la meme couleur que celle posee sur la table.
 const COLOR_SWATCHES = {
-    "Rouge": "#e00000",
-    "Jaune": "#f2d200",
-    "Vert": "#00a63f",
-    "Cyan": "#00c8dc",
-    "Bleu": "#0057d8",
-    "Noir": "#000000"
+    "Rouge": "#ff1e1e",
+    "Jaune": "#ffd400",
+    "Vert": "#00b050",
+    "Bleu": "#3b1fe0",
+    "Magenta": "#ff00ff"
 };
 
 export class PanelColors {
@@ -25,6 +26,16 @@ export class PanelColors {
 
         this.playerElement = null;
         this.chips = {};
+
+        // Le réglage des couleurs
+        this.adjustButton = document.getElementById("btn-calibration-adjust");
+        this.resetButton = document.getElementById("btn-calibration-reset");
+        this.validateButton = document.getElementById("btn-calibration-validate");
+        this.calibrationMessage = document.getElementById("calibration-message");
+        this.calibrationRows = document.getElementById("calibration-rows");
+
+        this.calibrationSelects = {};
+        this.previousAssignment = {};
 
         this.prepareCountdownRing();
     }
@@ -147,6 +158,131 @@ export class PanelColors {
         for (const [color, chip] of Object.entries(this.chips)) {
             chip.classList.toggle("masked", !seen.has(color));
         }
+    }
+
+    // ===================== Le réglage des couleurs =====================
+    //
+    // Le panneau ne connaît pas la détection : il reçoit trois fonctions et se contente de montrer
+    // ce qu'elles rendent. C'est ColorsEnigma qui les relie au ColorsRecognizer.
+
+    /**
+     * @param {{onAdjust: Function, onApply: Function, onReset: Function, onValidate: Function}} actions
+     *        onAdjust rend {count, guess}, onApply reçoit un nom de couleur -> numéro de cercle
+     */
+    connectCalibration(actions) {
+        this.calibration = actions;
+
+        this.adjustButton?.addEventListener("click", () => this.startCalibration());
+        this.resetButton?.addEventListener("click", () => this.resetCalibration());
+        this.validateButton?.addEventListener("click", () => this.validateCalibration());
+    }
+
+    /**
+     * Freeze the picture and show the color to calibrate only if 5 circles are detected
+     */
+    startCalibration() {
+        const { count, guess } = this.calibration.onAdjust();
+
+        if (count > 5) {
+            this.showCalibration(`${count} cercles détectés au lieu de 5 : masquez ou retirez les cercles en trop.`);
+            return;
+        }
+
+        if (count < 5) {
+            this.showCalibration(`${count} cercle(s) détecté(s) sur 5 : les 5 pastilles doivent être visibles.`);
+            return;
+        }
+
+        this.showCalibration("Chaque couleur doit pointer vers le numéro écrit sur son cercle.", guess);
+
+        this.calibration.onApply(guess);
+    }
+
+    resetCalibration() {
+        this.calibration.onReset();
+        this.showCalibration("Couleurs revenues à leur réglage d'origine.");
+    }
+
+    /**
+     * Termine le réglage : les cercles figés et leurs numéros laissent la place au flux vivant.
+     */
+    validateCalibration() {
+        this.calibration.onValidate();
+        this.showCalibration("Réglage terminé.");
+    }
+
+    /**
+     * The list of colors and the message about the calibration
+     *
+     * @param {Object<string, number>} [assignment] - sans lui, la liste est simplement vidée
+     */
+    showCalibration(message, assignment) {
+        if (this.calibrationMessage) this.calibrationMessage.textContent = message;
+        if (this.validateButton) this.validateButton.hidden = !assignment;
+        if (!this.calibrationRows) return;
+
+        this.calibrationRows.innerHTML = "";
+        this.calibrationSelects = {};
+        this.previousAssignment = { ...assignment };
+
+        for (const [color, circleIndex] of Object.entries(assignment ?? {})) {
+            this.calibrationRows.appendChild(this.buildCalibrationRow(color, circleIndex));
+        }
+    }
+
+    buildCalibrationRow(color, circleIndex) {
+        const row = document.createElement("label");
+        row.className = "calibration-row";
+
+        const dot = document.createElement("span");
+        dot.className = "color-chip-dot";
+        dot.style.backgroundColor = COLOR_SWATCHES[color] ?? "#9e9e9e";
+
+        const name = document.createElement("span");
+        name.className = "calibration-name";
+        name.textContent = color;
+
+        const select = document.createElement("select");
+        select.className = "calibration-select";
+
+        for (let index = 0; index < 5; index++) {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = `Cercle ${index + 1}`;
+            select.appendChild(option);
+        }
+
+        select.value = circleIndex;
+        select.addEventListener("change", () => this.changeCalibration(color));
+
+        row.append(dot, name, select);
+        this.calibrationSelects[color] = select;
+
+        return row;
+    }
+
+    /**
+    * 2 colors can't have the same circle, if we change a color, the circle having previously
+    * this color switches to the color now without any circle (not really understandable probably
+    * but you know there should be no one reading this anyways)
+     */
+    changeCalibration(changedColor) {
+        const chosen = this.calibrationSelects[changedColor].value;
+
+        for (const [color, select] of Object.entries(this.calibrationSelects)) {
+            if (color !== changedColor && select.value === chosen) {
+                select.value = this.previousAssignment[changedColor];
+            }
+        }
+
+        const assignment = {};
+
+        for (const [color, select] of Object.entries(this.calibrationSelects)) {
+            assignment[color] = Number(select.value);
+        }
+
+        this.previousAssignment = assignment;
+        this.calibration.onApply(assignment);
     }
 
     updateCountdown(remainingRatio, secondsLeft) {
