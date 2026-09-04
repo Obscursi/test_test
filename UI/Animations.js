@@ -16,7 +16,7 @@ export class Animations {
 
         this.successOverlay = document.getElementById("success-flash");
 
-        this.btnWebcam = document.getElementById("webcamButton");
+        this.btnStart = document.getElementById("startButton");
 
         //we use queue so that animations does not overlap on each other
         this.queue = Promise.resolve();
@@ -86,8 +86,8 @@ export class Animations {
          * @returns {number} Le temps total (en ms) que va durer l'explosion.
          */
     launchAnimationOutOfWelcomePanel() {
-        this.btnWebcam.innerText = "ACCÈS VALIDÉ...";
-        this.btnWebcam.style.backgroundColor = "#ff5252";
+        this.btnStart.innerText = "ACCÈS VALIDÉ...";
+        this.btnStart.style.backgroundColor = "#ff5252";
 
         const welcomePanel = uiManagerInstance.tabManager.tabs[SCREEN_IDS.WELCOME].panel;
         const welcomePanelElements = Array.from(welcomePanel.children);

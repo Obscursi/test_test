@@ -1,4 +1,4 @@
-import { WebcamButton } from './WebcamButton.js'; //we import the entire class but we only use initWebcamButtonEvent 
+import { StartButton } from './StartButton.js'; //we import the entire class but we only use initStartButtonEvent
 import { Tab } from './Tabs/Tab.js';
 import { Animations } from './Animations.js';
 import { TabManager } from './Tabs/TabManager.js';
@@ -23,7 +23,7 @@ class UIManager {
         this.tabManager = new TabManager();
         this.animations = new Animations();
         this.panelManager = new PanelManager();
-        this.webcamButton = new WebcamButton();
+        this.startButton = new StartButton();
         this.terminalManager = new TerminalManager();
         this.chatBot = new ChatBot({ panelChatbot: this.panelManager.panelChatbot });
     }
@@ -31,7 +31,7 @@ class UIManager {
     async initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
 
         try {
-            await this.webcamButton.initWebcamButtonEvent();
+            await this.startButton.initStartButtonEvent();
         } catch (error) {
             console.log("DEBUG : probleme webcam");
             return false;

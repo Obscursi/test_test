@@ -8,25 +8,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     await gameEngineInstance.init();
 
     const btnCamera = document.getElementById("cameraButton");
-    const btnWebcam = document.getElementById("webcamButton");
+    const btnStart = document.getElementById("startButton");
 
     // Un bouton pour allumer la caméra : le navigateur demande l'autorisation, puis on affiche
     // le flux pour que l'équipe cadre le plateau de jeu.
     // { once: true } : le bouton disparaît après ce clic (showWebcamFeed), on n'écoute donc plus rien
     btnCamera.addEventListener("click", () => {
         inputManagerInstance.toggleWebcam();
-        uiManagerInstance.webcamButton.showWebcamFeed();
+        uiManagerInstance.startButton.showWebcamFeed();
 
         // Un bouton pour commencer le jeu : la caméra tourne déjà, il ne reste que la boucle à lancer.
         // (le UIManager écoute lui aussi ce clic, pour la transition hors de l'accueil)
-        btnWebcam.addEventListener("click", () => {
+        btnStart.addEventListener("click", () => {
             gameEngineInstance.start();
         });
     }, { once: true });
 
     // Un bouton pour commencer le jeu : la caméra tourne déjà, il ne reste que la boucle à lancer.
     // (le UIManager écoute lui aussi ce clic, pour la transition hors de l'accueil)
-    // btnWebcam.addEventListener("click", () => {
+    // btnStart.addEventListener("click", () => {
     //     gameEngineInstance.start();
     // });
 });

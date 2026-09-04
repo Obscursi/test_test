@@ -112,7 +112,7 @@ package "🖥️ UI (L'Interface)" {
 
   class Animations
   class TerminalManager
-  class WebcamButton
+  class StartButton
   class AlertManager
 }
 
@@ -155,7 +155,7 @@ UIManager *-- TabManager
 UIManager *-- PanelManager
 UIManager *-- Animations
 UIManager *-- TerminalManager
-UIManager *-- WebcamButton
+UIManager *-- StartButton
 TabManager *-- Tab
 PanelManager *-- PanelWelcome
 PanelManager *-- PanelLsf
