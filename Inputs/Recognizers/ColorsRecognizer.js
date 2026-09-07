@@ -152,6 +152,10 @@ export class ColorsRecognizer {
             // Affichage : l'overlay est construit a partir du resultat de la detection
             this.drawCirclesOverlay(circlesDetected);
 
+            if (colorsDetected.size < COLOR_REFERENCES.length) {
+                this.drawCalibrationWarning();
+            }
+
             if (DEBUG_COLORS) this.logCircles(circlesDetected);
 
             currentResults.colors = colorsDetected; //pushing the result to the VisionController
@@ -228,8 +232,7 @@ export class ColorsRecognizer {
         const circles = calibrating ? this.calibrationCircles : circlesDetected;
 
         for (const [index, circle] of circles.entries()) {
-            const named = circle.name;//!== "Unknown";
-            if (!named && !DEBUG_COLORS && !calibrating) continue;
+            const named = circle.name !== "Unknown";
 
             const x = circle.x * scale;
             const y = circle.y * scale;
@@ -245,10 +248,34 @@ export class ColorsRecognizer {
             this.ctx.beginPath();
             this.ctx.arc(x, y, 3 * scale, 0, 2 * Math.PI);
             this.ctx.fill();
-
+            7
+            //if the circle is a known colors it is red, if not orange.
             if (calibrating) this.drawCircleNumber(index + 1, x, y, scale);
             else if (DEBUG_COLORS) this.drawCircleLabel(circle, x, y, radius, scale);
         }
+    }
+
+    /**
+     */
+    drawCalibrationWarning() {
+        const size = Math.round(this.canvas.width / 12);
+
+        // "center" + "middle" : le point donné à strokeText/fillText devient le milieu du texte,
+        // donc le milieu de l'image le centre vraiment, quelle que soit la longueur du message.
+        this.ctx.font = `bold ${size}px sans-serif`;
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+
+        const x = this.canvas.width / 2;
+        const y = this.canvas.height / 2;
+
+        // Un contour noir sous le rouge : le message reste lisible sur n'importe quelle image
+        this.ctx.lineWidth = Math.max(2, size / 8);
+        this.ctx.strokeStyle = "#000000";
+        this.ctx.strokeText("CALIBRATION REQUISE", x, y);
+
+        this.ctx.fillStyle = "#FF0000";
+        this.ctx.fillText("CALIBRATION REQUISE", x, y);
     }
 
     /**
