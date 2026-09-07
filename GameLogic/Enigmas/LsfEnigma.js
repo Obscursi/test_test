@@ -10,12 +10,11 @@ const MAX_GAP_MS = 500;
 
 export class LsfEnigma extends Enigma {
     constructor() {
-        // On appelle le constructeur de la classe parente (Enigma)
+
         super(ENIGMA_IDS.LSF, "Enigme LSF", [], IRL_REWARDS.V_AFTER_LSF); //this id (ENIGMA_IDS.LSF) is the same in UIManager, it is attached to the tab AND the Enigma
 
         // Les 4 lettres qui doivent être vues en même temps
         this.lettresRequises = ["P", "L", "A", "N"];
-        // this.lettresRequises = ["P", "I"];
 
         this.panel = uiManagerInstance.panelManager.panelLsf;
 
