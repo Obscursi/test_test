@@ -71,6 +71,8 @@ export class ColorsRecognizer {
         // Non nul pendant un reglage : les 5 cercles figes, dans l'ordre de leurs numeros.
         this.calibrationCircles = null;
 
+        this.calibrationDone = false;
+
         //this.detectedColorsThisFrame = new Set(); not used anymore right now
 
     }
@@ -152,7 +154,7 @@ export class ColorsRecognizer {
             // Affichage : l'overlay est construit a partir du resultat de la detection
             this.drawCirclesOverlay(circlesDetected);
 
-            if (colorsDetected.size < COLOR_REFERENCES.length) {
+            if (colorsDetected.size < COLOR_REFERENCES.length && !this.calibrationDone) {
                 this.drawCalibrationWarning();
             }
 
@@ -552,6 +554,7 @@ export class ColorsRecognizer {
         // Le réglage repart à zéro au rechargement de la page. Les teintes sont écrites dans la
         // console : les recopier dans COLOR_REFERENCES suffit à les rendre définitives.
         console.log("🎨 teintes réglées :", COLOR_REFERENCES.map(r => r.hue).join(", "));
+        this.calibrationDone = true;
     }
 
     /**
