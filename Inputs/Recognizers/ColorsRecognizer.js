@@ -228,7 +228,7 @@ export class ColorsRecognizer {
         const circles = calibrating ? this.calibrationCircles : circlesDetected;
 
         for (const [index, circle] of circles.entries()) {
-            const named = circle.name !== "Unknown";
+            const named = circle.name;//!== "Unknown";
             if (!named && !DEBUG_COLORS && !calibrating) continue;
 
             const x = circle.x * scale;
