@@ -14,6 +14,8 @@ export class Timer {
         this.startTime = null;
         this.interval = null;
         this.onTimeOver = onTimeOver;
+
+        this.addEventListenerForAddTimeCheat();
     }
 
     start() {
@@ -28,6 +30,28 @@ export class Timer {
     stop() {
         clearInterval(this.interval);
         this.interval = null;
+    }
+
+    /**
+     * Ajoute du temps à la mission en cours (code de triche). On recule startTime pour que
+     * getRemainingMs() retrouve naturellement le temps ajouté, sans toucher à MISSION_DURATION_MS.
+     * @param {number} ms
+     */
+    addTime(ms) {
+        if (this.startTime === null) return; //le timer n'a pas encore démarré
+
+        this.startTime += ms;
+        this.tick(); //on rafraîchit l'affichage tout de suite
+    }
+
+    /**
+     * Code de triche : écoute le raccourci clavier "time" et ajoute 3 minutes.
+     */
+    addEventListenerForAddTimeCheat() {
+        document.addEventListener('cheatcode_add_time', () => {
+            console.log("🐸 Triche : +3 minutes ajoutées au chrono.");
+            this.addTime(3 * 60 * 1000);
+        });
     }
 
     /**

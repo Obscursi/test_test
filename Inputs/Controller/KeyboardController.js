@@ -1,6 +1,11 @@
 export class KeyboardController {
     constructor() {
-        this.cheatCode = "uio";
+        // code -> nom de l'événement déclenché sur document
+        this.cheatCodes = {
+            "uio": "cheatcode_force_resolve",
+            "time": "cheatcode_add_time",
+        };
+        this.maxCheatCodeLength = Math.max(...Object.keys(this.cheatCodes).map(code => code.length));
         this.keyBuffer = "";
 
         this.initKeyboardListener();
@@ -13,9 +18,9 @@ export class KeyboardController {
 
             this.keyBuffer += e.key.toLowerCase();
 
-            // On maintient la taille du buffer à celle du code
-            if (this.keyBuffer.length > this.cheatCode.length) {
-                this.keyBuffer = this.keyBuffer.slice(-this.cheatCode.length);
+            // On maintient la taille du buffer à celle du plus long code
+            if (this.keyBuffer.length > this.maxCheatCodeLength) {
+                this.keyBuffer = this.keyBuffer.slice(-this.maxCheatCodeLength);
             }
 
             this.checkPatterns();
@@ -23,10 +28,13 @@ export class KeyboardController {
     }
 
     checkPatterns() {
-        if (this.keyBuffer === this.cheatCode) {
-            console.log("🐸 Code de triche activé !");
-            document.dispatchEvent(new CustomEvent('cheatcode_force_resolve'));
-            this.keyBuffer = ""; // Reset après succès
+        for (const [code, eventName] of Object.entries(this.cheatCodes)) {
+            if (this.keyBuffer.endsWith(code)) {
+                console.log(`🐸 Code de triche activé : ${code}`);
+                document.dispatchEvent(new CustomEvent(eventName));
+                this.keyBuffer = ""; // Reset après succès
+                break;
+            }
         }
     }
 }
