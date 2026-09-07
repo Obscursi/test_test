@@ -164,7 +164,7 @@ export class ColorsRecognizer {
      * Analyse une image pour trouver des cercles. Ne dessine rien : elle rend seulement ce
      * qu'elle a vu, a charge de l'appelant d'en faire un overlay.
      *
-     * Elle rend TOUS les cercles trouves, y compris ceux dont la couleur est restee Unknown 
+     * Elle rend TOUS les cercles trouves, y compris ceux dont la couleur est restée Unknown 
      *
      * @param {cv.Mat} srcMat - L'image source lue depuis la webcam par le VideoCapture.
      * @returns {{colorsDetected: Set<string>, circlesDetected: Array<{x: number, y: number, radius: number, name: string, hue: number, saturation: number, value: number, consensus: number}>}}
@@ -322,8 +322,7 @@ export class ColorsRecognizer {
     }
 
     /**
-     * De combien la teinte mesuree rate la reference la plus proche. Au dela de MAX_HUE_GAP
-     * le cercle sort Unknown : c'est le nombre a regarder pour recaler COLOR_REFERENCES.
+     * gap between the actuel teint and the referance. if Over MAX_HUE_GAP the colors is unknown
      */
     gapToClosestReference(hue) {
         let smallest = 180;
