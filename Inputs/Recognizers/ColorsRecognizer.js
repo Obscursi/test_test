@@ -492,6 +492,13 @@ export class ColorsRecognizer {
     }
 
     /**
+     * Le nombre de cercles vus sur la derniere image. 
+     */
+    circlesCount() {
+        return this.lastCircles.length;
+    }
+
+    /**
      *
      * @returns {{count: number, guess: Object<string, number>}} guess est vide si count != 5
      */

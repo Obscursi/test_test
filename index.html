@@ -164,11 +164,10 @@
 
         <div id="panel-colors" class="view-panel">
 
-            <p class="disclaimer">Faites attention que les 5 disques de couleurs soient bien détéctés (rond rouge avec
-                un point vert
-                au milieu), et inversement que d'autres objets ne soient pas pris pour des disques</p>
+            <p class="disclaimer">Faites attention que les 5 disques de couleurs soient bien détéctés et inversement que
+                d'autres objets ne soient pas pris pour des disques</p>
 
-            <div class="maze-layout">
+            <div id="maze-layout" class="maze-layout" hidden>
                 <div id="maze-grid" class="maze-grid"></div>
 
                 <div class="maze-side">
@@ -187,18 +186,19 @@
             </div>
 
             <div class="colors-calibration">
-                <div class="calibration-actions">
-                    <button id="btn-calibration-adjust" type="button" class="calibration-button">Calibrer les
-                        couleurs</button>
-                    <button id="btn-calibration-reset" type="button" class="calibration-button">Remettre les couleurs
-                        d'origine</button>
-                    <button id="btn-calibration-validate" type="button" class="calibration-button"
-                        hidden>Valider</button>
-                </div>
-
                 <p id="calibration-message" class="calibration-message"></p>
 
                 <div id="calibration-rows" class="calibration-rows"></div>
+
+                <div class="calibration-actions">
+                    <button id="btn-calibration-adjust" type="button" class="calibration-button" hidden>Recalibrer le
+                        scanner</button>
+                    <button id="btn-calibration-reset" type="button" class="calibration-button" hidden>Remettre les
+                        couleurs d'origine</button>
+                    <button id="btn-calibration-validate" type="button" class="calibration-button"
+                        hidden>Valider</button>
+                    <button id="btn-calibration-fix" type="button" class="calibration-button" hidden>Corriger</button>
+                </div>
             </div>
 
 

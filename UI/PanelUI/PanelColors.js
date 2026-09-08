@@ -1,7 +1,12 @@
 import { MAZE_SYMBOLS } from '../../GameLogic/MiniGames/Maze.js';
 
-// La taille d'une case vit dans le CSS (--maze-cell, styles/panels/colors.css) : c'est ce qui permet
-// aux media queries de rétrécir le labyrinthe sur les petites fenêtres sans toucher au JS.
+
+const CIRCLES_EXPECTED = 5;
+
+// Combien d'images d'affilée doivent montrer les 5 pastilles avant de figer l'image. Une seule
+// bonne image peut être un hasard : une main en train de sortir du champ en laisse passer.
+const STABLE_FRAMES = 5;
+
 
 // Only used to draw the dot of each chip, so the players can link a chip to a real circle on the table
 // Ce sont les encres du plateau, celles listees dans COLOR_REFERENCES (ColorsRecognizer) :
@@ -18,6 +23,7 @@ export class PanelColors {
 
     constructor() {
 
+        this.mazeLayout = document.getElementById("maze-layout");
         this.gridElement = document.getElementById("maze-grid");
         this.ringElement = document.getElementById("countdown-ring");
         this.countdownValue = document.getElementById("countdown-value");
@@ -31,11 +37,17 @@ export class PanelColors {
         this.adjustButton = document.getElementById("btn-calibration-adjust");
         this.resetButton = document.getElementById("btn-calibration-reset");
         this.validateButton = document.getElementById("btn-calibration-validate");
+        this.fixButton = document.getElementById("btn-calibration-fix");
         this.calibrationMessage = document.getElementById("calibration-message");
         this.calibrationRows = document.getElementById("calibration-rows");
 
         this.calibrationSelects = {};
         this.previousAssignment = {};
+
+        // "scanning" : on cherche les 5 pastilles, "confirm" : on montre le réglage deviné,
+        // "fixing" : les joueurs le corrigent, "ready" : le labyrinthe est en jeu.
+        this.scannerState = "scanning";
+        this.stableFrames = 0;
 
         this.prepareCountdownRing();
     }
@@ -162,63 +174,125 @@ export class PanelColors {
 
     // ===================== Le réglage des couleurs =====================
     //
-    // Le panneau ne connaît pas la détection : il reçoit trois fonctions et se contente de montrer
+    // Le panneau ne connaît pas la détection : il reçoit des fonctions et se contente de montrer
     // ce qu'elles rendent. C'est ColorsEnigma qui les relie au ColorsRecognizer.
 
     /**
-     * @param {{onAdjust: Function, onApply: Function, onReset: Function, onValidate: Function}} actions
-     *        onAdjust rend {count, guess}, onApply reçoit un nom de couleur -> numéro de cercle
+     * @param {{onFreeze: Function, onApply: Function, onReset: Function, onValidate: Function,
+     *          onRestart: Function}} actions
+     *        onFreeze rend {count, guess}, onApply reçoit un nom de couleur -> numéro de cercle
      */
     connectCalibration(actions) {
         this.calibration = actions;
 
-        this.adjustButton?.addEventListener("click", () => this.startCalibration());
+        this.adjustButton?.addEventListener("click", () => this.restartScanner());
         this.resetButton?.addEventListener("click", () => this.resetCalibration());
         this.validateButton?.addEventListener("click", () => this.validateCalibration());
+        this.fixButton?.addEventListener("click", () => this.fixCalibration());
     }
 
     /**
-     * Freeze the picture and show the color to calibrate only if 5 circles are detected
+     * L'état décide de tout ce qui se voit : le labyrinthe n'apparaît qu'une fois le scanner
+     * validé, et chaque bouton n'est là qu'au moment où il veut dire quelque chose.
      */
-    startCalibration() {
-        const { count, guess } = this.calibration.onAdjust();
+    setScannerState(state) {
+        this.scannerState = state;
 
-        if (count > 5) {
-            this.showCalibration(`${count} cercles détectés au lieu de 5 : masquez ou retirez les cercles en trop.`);
+        if (this.mazeLayout) this.mazeLayout.hidden = (state !== "ready");
+        if (this.calibrationRows) this.calibrationRows.hidden = (state === "scanning" || state === "ready");
+
+        if (this.adjustButton) this.adjustButton.hidden = (state !== "ready");
+        if (this.resetButton) this.resetButton.hidden = (state !== "ready");
+        if (this.validateButton) this.validateButton.hidden = (state === "scanning" || state === "ready");
+        if (this.fixButton) this.fixButton.hidden = (state !== "confirm");
+    }
+
+    /**
+     * Retour à la recherche des pastilles. Le labyrinthe disparaît
+     */
+    restartScanner() {
+        this.calibration.onRestart();
+
+        this.stableFrames = 0;
+        this.setScannerState("scanning");
+        this.showCalibration("");
+    }
+
+    /**
+     * Appelée à chaque image tant que le scanner n'est pas réglé.
+     */
+    updateScanner(circlesCount) {
+        if (this.scannerState !== "scanning") return;
+
+        if (circlesCount !== CIRCLES_EXPECTED) {
+            this.stableFrames = 0;
+            this.setCalibrationMessage(`Initialisation du scanner : ${circlesCount} cercles sur `
+                + `${CIRCLES_EXPECTED} détectés. Les 5 cercles de couleurs doivent être visibles, et eux seuls.`);
             return;
         }
 
-        if (count < 5) {
-            this.showCalibration(`${count} cercle(s) détecté(s) sur 5 : les 5 pastilles doivent être visibles.`);
+        this.stableFrames++;
+
+        if (this.stableFrames >= STABLE_FRAMES) this.freezeCalibration();
+    }
+
+    /**
+     * Fige l'image et applique le réglage deviné : les joueurs n'ont plus qu'à dire s'il est juste.
+     */
+    freezeCalibration() {
+        const { count, guess } = this.calibration.onFreeze();
+
+        if (count !== CIRCLES_EXPECTED) { //l'image a changé entre-temps : on repart en recherche
+            this.stableFrames = 0;
             return;
         }
 
-        this.showCalibration("Chaque couleur doit pointer vers le numéro écrit sur son cercle.", guess);
+        this.setScannerState("confirm");
+        this.showCalibration("Scanner en cours de calibration. Chaque couleur affiche-t-elle bien le numéro écrit sur son cercle ?",
+            guess);
 
         this.calibration.onApply(guess);
     }
 
-    resetCalibration() {
-        this.calibration.onReset();
-        this.showCalibration("Couleurs revenues à leur réglage d'origine.");
+    /**
+     */
+    fixCalibration() {
+        this.setScannerState("fixing");
+        this.showCalibration("Donnez à chaque couleur le numéro écrit sur son cercle, puis validez.",
+            this.previousAssignment, true);
     }
 
     /**
-     * Termine le réglage : les cercles figés et leurs numéros laissent la place au flux vivant.
+     * Les teintes d'origine, et retour à la case départ
+     */
+    resetCalibration() {
+        this.calibration.onReset();
+        this.restartScanner();
+    }
+
+    /**
+     * Termine le réglage : les cercles figés et leurs numéros laissent la place au flux vivant,
+     * et le labyrinthe apparaît.
      */
     validateCalibration() {
         this.calibration.onValidate();
-        this.showCalibration("Réglage terminé.");
+
+        this.setScannerState("ready");
+        this.showCalibration(""); // we delete the message writed previously
+    }
+
+    setCalibrationMessage(message) {
+        if (this.calibrationMessage) this.calibrationMessage.textContent = message;
     }
 
     /**
      * The list of colors and the message about the calibration
      *
      * @param {Object<string, number>} [assignment] - sans lui, la liste est simplement vidée
+     * @param {boolean} [editable] - les numéros sont lus seulement, sauf pendant une correction
      */
-    showCalibration(message, assignment) {
-        if (this.calibrationMessage) this.calibrationMessage.textContent = message;
-        if (this.validateButton) this.validateButton.hidden = !assignment;
+    showCalibration(message, assignment, editable = false) {
+        this.setCalibrationMessage(message);
         if (!this.calibrationRows) return;
 
         this.calibrationRows.innerHTML = "";
@@ -226,11 +300,11 @@ export class PanelColors {
         this.previousAssignment = { ...assignment };
 
         for (const [color, circleIndex] of Object.entries(assignment ?? {})) {
-            this.calibrationRows.appendChild(this.buildCalibrationRow(color, circleIndex));
+            this.calibrationRows.appendChild(this.buildCalibrationRow(color, circleIndex, editable));
         }
     }
 
-    buildCalibrationRow(color, circleIndex) {
+    buildCalibrationRow(color, circleIndex, editable) {
         const row = document.createElement("label");
         row.className = "calibration-row";
 
@@ -242,10 +316,29 @@ export class PanelColors {
         name.className = "calibration-name";
         name.textContent = color;
 
+        const number = editable ? this.buildCircleSelect(color, circleIndex) : this.buildCircleLabel(circleIndex);
+
+        row.append(dot, name, number);
+
+        return row;
+    }
+
+    /**
+     * Le numéro deviné, simplement affiché : il n'y a qu'à le comparer au cercle sur la table.
+     */
+    buildCircleLabel(circleIndex) {
+        const label = document.createElement("span");
+        label.className = "calibration-number";
+        label.textContent = `Cercle ${circleIndex + 1}`;
+
+        return label;
+    }
+
+    buildCircleSelect(color, circleIndex) {
         const select = document.createElement("select");
         select.className = "calibration-select";
 
-        for (let index = 0; index < 5; index++) {
+        for (let index = 0; index < CIRCLES_EXPECTED; index++) {
             const option = document.createElement("option");
             option.value = index;
             option.textContent = `Cercle ${index + 1}`;
@@ -255,10 +348,9 @@ export class PanelColors {
         select.value = circleIndex;
         select.addEventListener("change", () => this.changeCalibration(color));
 
-        row.append(dot, name, select);
         this.calibrationSelects[color] = select;
 
-        return row;
+        return select;
     }
 
     /**

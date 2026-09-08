@@ -26,6 +26,12 @@
     margin-top: 20px;
 }
 
+/* Le labyrinthe n'apparaît qu'une fois le scanner réglé. La règle display ci-dessus l'emporterait
+ * sur le hidden du navigateur : il faut la contredire explicitement. */
+.maze-layout[hidden] {
+    display: none;
+}
+
 /* --- La grille --- */
 
 .maze-grid {
@@ -365,8 +371,8 @@
 /* --- Le réglage des couleurs --- */
 
 /*
- * Un bandeau discret sous le labyrinthe : il ne sert qu'avant la partie, il ne doit donc jamais
- * pousser la grille ni attirer l'oeil pendant qu'on joue.
+ * Seul à l'écran pendant le réglage du scanner, ce bandeau redevient discret sous le labyrinthe
+ * une fois la partie lancée : il ne doit alors ni pousser la grille ni attirer l'oeil.
  */
 .colors-calibration {
     margin-top: 18px;
@@ -378,15 +384,17 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 14px;
 }
 
 .calibration-button {
-    padding: 12px 26px;
+    padding: 8px 18px;
     background: rgba(120, 12, 24, 0.85);
     border: 2px solid rgba(255, 70, 90, 0.7);
     border-radius: 30px;
     color: #ffe8ea;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease;
@@ -397,19 +405,37 @@
     border-color: #ff4b5c;
 }
 
+/*
+ * C'est la consigne que les joueurs suivent debout, à un mètre de l'écran, en manipulant le
+ * plateau : elle doit se lire d'un coup d'oeil. Le contour noir la garde lisible quelle que soit
+ * l'image de la webcam derrière.
+ */
 .calibration-message {
     margin: 10px 0 0;
     min-height: 1.2em;      /* la place est réservée, le bandeau ne saute pas quand le texte arrive */
-    color: #d9ccf5;
-    font-size: 0.85rem;
+    color: #f4eeff;
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 2px 5px rgba(0, 0, 0, 0.7);
 }
 
 /* Les 5 couleurs côte à côte : la liste ne prend qu'une ligne tant que la fenêtre est large */
 .calibration-rows {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
     margin-top: 10px;
+}
+
+.calibration-rows[hidden] {
+    display: none;
 }
 
 .calibration-row {
@@ -427,6 +453,12 @@
 .calibration-name {
     font-weight: bold;
     min-width: 66px;
+}
+
+/* Le numéro deviné, simplement lu : tant que la devinette est juste, il n'y a rien à manipuler. */
+.calibration-number {
+    color: #c9b6f0;
+    font-size: 0.8rem;
 }
 
 .calibration-select {

@@ -75,11 +75,15 @@ export class ColorsEnigma extends Enigma {
         // C'est le seul endroit qui connaît les deux, donc le seul où ce branchement a sa place.
         this.colorsRecognizer = inputManagerInstance.vision.colorsRecognizer;
 
+        // Le labyrinthe ne tourne qu'une fois le scanner réglé
+        this.isScannerReady = false;
+
         this.panel.connectCalibration({
-            onAdjust: () => this.colorsRecognizer.startCalibration(),
+            onFreeze: () => this.colorsRecognizer.startCalibration(),
             onApply: assignment => this.colorsRecognizer.applyCalibration(assignment),
             onReset: () => this.colorsRecognizer.resetCalibration(),
-            onValidate: () => this.colorsRecognizer.stopCalibration()
+            onValidate: () => this.setScannerReady(true),
+            onRestart: () => this.setScannerReady(false)
         });
 
         this.loadLevel(0);
@@ -88,11 +92,19 @@ export class ColorsEnigma extends Enigma {
     start() {
         super.start();
 
-        // Les numéros d'un réglage laissé en plan cacheraient les cercles de la partie qui commence
-        this.colorsRecognizer.stopCalibration();
-        this.panel.showCalibration("");
+        // Le réglage du scanner est le premier geste de l'énigme : il remet aussi à zéro les
+        // numéros d'un réglage laissé en plan, qui cacheraient les cercles de la partie qui commence.
+        this.panel.restartScanner();
 
         this.loadLevel(0);
+    }
+
+    setScannerReady(ready) {
+        this.colorsRecognizer.stopCalibration(); //l'image figée laisse la place au flux vivant
+        this.isScannerReady = ready;
+
+        // Une fenêtre commencée pendant le réglage compterait des cercles cachés par un bras
+        if (ready) this.resetWindow();
     }
 
     loadLevel(index) {
@@ -118,6 +130,13 @@ export class ColorsEnigma extends Enigma {
         if (this.isResolved) return;
 
         inputManagerInstance.update(this.id);
+
+        // Pendant le réglage, la seule chose qui compte est le nombre de pastilles que voit la caméra
+        if (!this.isScannerReady) {
+            this.panel.updateScanner(this.colorsRecognizer.circlesCount());
+            return;
+        }
+
         const playerState = inputManagerInstance.getState();
         this.checkCondition(playerState);
     }
