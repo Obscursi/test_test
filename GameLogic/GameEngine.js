@@ -181,7 +181,7 @@ class GameEngine {
     * Change the status of an enigma toENIGMA_STATUS.RESOLVED, shows the button of the eventual enigmas unlocked, clean the memory of the old Enigma, check if we are in the good enigma to unlock the terminal and check if we are finished and we can display the victory button
     * @param {string} idEnigma
     */
-    completeEnigma(idEnigma, enigmasToUnlock = []) {
+    completeEnigma(idEnigma, enigmasToUnlock = [], skipAnimations = false) {
         if (this.isTransitioning) return;
         this.isTransitioning = true;
 
@@ -202,10 +202,17 @@ class GameEngine {
 
         //Les animations qui suivent partagent une file d'attente : elles se jouent l'une après
         //l'autre, dans l'ordre où on les demande ici, sans bloquer la suite de cette fonction.
-        uiManagerInstance.animations.launchSuccessAnimation(); //toujours, que l'énigme débloque quelque chose ou non
+        //skipAnimations : cas du cheat code, on veut juste les pop-ups et le déblocage, sans cinématique
+        if (!skipAnimations) {
+            uiManagerInstance.animations.launchSuccessAnimation(); //toujours, que l'énigme débloque quelque chose ou non
+        }
 
         enigmasToUnlock.forEach(nextId => {
-            this.activateEnigmaWithAnimation(nextId);
+            if (skipAnimations) {
+                this.activateEnigmaWithoutAnimation(nextId);
+            } else {
+                this.activateEnigmaWithAnimation(nextId);
+            }
         });
 
         this.grantPhysicalRewardOf(idEnigma);

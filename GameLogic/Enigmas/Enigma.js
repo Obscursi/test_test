@@ -36,10 +36,10 @@ export class Enigma {
     }
 
     // Action visuelle personnalisée après victoire (à définir pour chaque énigme)
-    onSuccess() {//
+    onSuccess(skipAnimations = false) {//
         console.log(`L'énigme avec le nom : "${this.name}" et l'id : "${this.id}" a été résolue. `);
         this.isResolved = true;
-        gameEngineInstance.completeEnigma(this.id, this.enigmesSuivantes);
+        gameEngineInstance.completeEnigma(this.id, this.enigmesSuivantes, skipAnimations);
         uiManagerInstance.tabManager.showTab(this.id); //this reloads the page, showing now the panel of victory instead of the normal panel
 
 
@@ -86,6 +86,6 @@ export class Enigma {
      */
     forceResolve() {
         console.log(`⚡ Résolution forcée par l'admin pour : ${this.name}`);
-        this.onSuccess();
+        this.onSuccess(true); //pas de cinématique pour le cheat code
     }
 }
