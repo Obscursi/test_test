@@ -103,7 +103,7 @@ export class PanelColors {
         if (symbol === MAZE_SYMBOLS.WALL) return "wall";
         if (symbol === MAZE_SYMBOLS.EXIT) return "exit";
         if (symbol === MAZE_SYMBOLS.START) return "start";
-        if (symbol === MAZE_SYMBOLS.START_YELLOW) return "start";
+        if (symbol === MAZE_SYMBOLS.START_ORANGE) return "start";
         if (symbol === MAZE_SYMBOLS.SWITCH) return "switch";
         if (symbol === MAZE_SYMBOLS.GATE) return "gate";
         if (symbol === MAZE_SYMBOLS.TREASURE) return "treasure";
@@ -410,9 +410,12 @@ export class PanelColors {
         this.showFeedback(`${color} : couleur non utilisée pour l'instant.`, "none");
     }
 
+    /**
+     * Le seul message en vert du labyrinthe
+     */
     showCharacterChanged(characterName) {
-        const label = (characterName === "yellow") ? "jaune" : "bleu";
-        this.showFeedback(`Vous contrôlez maintenant le personnage ${label}.`);
+        const label = (characterName === "orange") ? "orange" : "marron";
+        this.showFeedback(`Vous contrôlez maintenant le personnage ${label}.`, "character");
     }
 
     showSwitchActivated() {

@@ -163,14 +163,14 @@
     border-radius: 50%;
 }
 
-.maze-character.blue::after {
-    background: radial-gradient(circle at 35% 30%, #ffffff, #35d6ff 60%, #0b7fb8);
-    box-shadow: 0 0 16px rgba(120, 220, 255, 0.95);
+.maze-character.brown::after {
+    background: radial-gradient(circle at 35% 30%, #ffffff, #a0642d 60%, #5a3416);
+    box-shadow: 0 0 16px rgba(200, 140, 80, 0.95);
 }
 
-.maze-character.yellow::after {
-    background: radial-gradient(circle at 35% 30%, #ffffff, #ffd600 60%, #c88a00);
-    box-shadow: 0 0 16px rgba(255, 214, 0, 0.95);
+.maze-character.orange::after {
+    background: radial-gradient(circle at 35% 30%, #ffffff, #ff8c1a 60%, #b85000);
+    box-shadow: 0 0 16px rgba(255, 140, 26, 0.95);
 }
 
 /*
@@ -300,6 +300,11 @@
 }
 
 .maze-feedback.victory {
+    color: #69f0ae;
+}
+
+/* Le changement de personnage (magenta) : vert, pour ne pas se confondre avec un déplacement */
+.maze-feedback.character {
     color: #69f0ae;
 }
 

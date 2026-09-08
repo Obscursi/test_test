@@ -5,21 +5,21 @@ import { ENIGMA_IDS, IRL_REWARDS } from '../../Utils/Constant.js';
 import inputManagerInstance from '../../Inputs/InputManager.js';
 import uiManagerInstance from '../../UI/UIManager.js';
 
-// One action is committed every 3 seconds, whatever the players do in between.
-const TICK_MS = 3000;
+// One action is committed every 6 seconds, whatever the players do in between.
+const TICK_MS = 6000;
 
 /**
  * The players have to discover by themselves that hiding one circle moves the character in the given direction.
  *
  */
 const CONTROLS = {
-    [CHARACTERS.BLUE]: {
+    [CHARACTERS.BROWN]: {
         "Rouge": DIRECTIONS.UP,
         "Bleu": DIRECTIONS.DOWN,
         "Jaune": DIRECTIONS.LEFT,
         "Vert": DIRECTIONS.RIGHT
     },
-    [CHARACTERS.YELLOW]: {
+    [CHARACTERS.ORANGE]: {
         "Vert": DIRECTIONS.UP,
         "Jaune": DIRECTIONS.DOWN,
         "Bleu": DIRECTIONS.LEFT,
@@ -32,11 +32,11 @@ const CONTROLS = {
 // la detection ne pouvait pas les separer de facon fiable. Voir COLOR_REFERENCES.
 const CHANGE_PLAYER_COLOR = "Magenta";
 
-const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.BLUE]), CHANGE_PLAYER_COLOR];
+const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.BROWN]), CHANGE_PLAYER_COLOR];
 
 /**
- * '#' mur, '.' sol, 'S' départ bleu, 'E' sortie du bleu,
- * 'J' départ jaune, 'I' interrupteur, 'G' grille, 'T' trésor.
+ * '#' mur, '.' sol, 'S' départ marron, 'E' sortie du marron,
+ * 'O' départ orange, 'I' interrupteur, 'G' grille, 'T' trésor.
  *
  * Level 1 : one character, they are learning the rules of the game
  *
@@ -54,7 +54,7 @@ const MAZE_LEVELS = [
     ],
     [
         "#########",
-        "#S..#J..#",
+        "#S..#O..#",
         "#.#.#.#.#",
         "#.#.#...#",
         "#.#.#G###",
@@ -116,7 +116,7 @@ export class ColorsEnigma extends Enigma {
     }
 
     /**
-     * Starts a new 3 seconds window : we count, frame by frame, how often each circle is hidden.
+     * Starts a new 6 seconds window : we count, frame by frame, how often each circle is hidden.
      */
     resetWindow(now = Date.now()) {
         this.windowStartTime = now;
