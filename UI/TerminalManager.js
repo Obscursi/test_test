@@ -4,8 +4,8 @@ import { ENIGMA_IDS } from '../Utils/Constant.js';
 import { HELP_IDS } from '../Utils/Constant.js';
 import { ENIGMA_STATUS, IRL_REWARDS } from '../Utils/Constant.js';
 import { showRewardAlert } from '../UI/AlertManager.js';
-import { showClueAlert } from './AlertManager.js';
 import audioManagerInstance from '../Audio/AudioManager.js';
+import { isAnagramOf } from '../Utils/UtilFunctions.js';
 
 export class TerminalManager {
     constructor() {
@@ -66,9 +66,20 @@ export class TerminalManager {
                     this.grantPhysicalReward(IRL_REWARDS.R_AFTER_DATE);
                     this.closeTerminal();
                 }
+                break;
 
+            case 'recruter':
+                this.feedbackText.innerText = "La réponse ne se trouve pas dans ce terminal... une AFFICHE t'aidera peut-être";
+                this.feedbackText.style.color = "light green";
+                this.inputField.value = '';
                 break;
             default:
+                if (isAnagramOf(codeText, 'plan')) {
+                    this.feedbackText.innerText = "La réponse ne se trouve pas dans ce terminal... c'est peut-être un SIGNE";
+                    this.feedbackText.style.color = "light green";
+                    this.inputField.value = '';
+                    break;
+                }
                 this.feedbackText.innerText = "Code invalide. Accès refusé.";
                 this.feedbackText.style.color = "red";
                 this.inputField.value = '';

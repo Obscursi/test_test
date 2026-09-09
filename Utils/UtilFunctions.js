@@ -43,3 +43,12 @@ export function levenshtein(a, b) {
 
     return row[b.length];
 }
+
+/**
+ * True if both words contains the same letters
+ */
+export function isAnagramOf(word, reference) {
+    if (word.length !== reference.length) return false;
+    const sort = (s) => s.split('').sort().join('');
+    return sort(word) === sort(reference);
+}
