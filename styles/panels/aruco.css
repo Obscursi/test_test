@@ -1,0 +1,78 @@
+/* --- Énigme Aruco : le bouton de vérification et les retours au joueur --- */
+
+/*
+ * Le bouton est le seul élément cliquable du panneau, et les joueurs l'actionnent debout à un
+ * mètre de l'écran : il est nettement plus grand que le bouton par défaut de base.css, et reprend
+ * le teal du jeu (celui de la boîte LSF et de la barre de maintien).
+ */
+#btnVerifier {
+    margin-top: 10px;
+    padding: 14px 42px;
+    background: linear-gradient(180deg, #00a3b3, #007f8b);
+    border: 1px solid rgba(120, 235, 250, 0.55);
+    border-radius: 30px;
+    color: #eaffff;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    box-shadow: 0 0 16px rgba(0, 200, 220, 0.35);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+#btnVerifier:hover {
+    background: linear-gradient(180deg, #00becf, #00909d);
+    box-shadow: 0 0 22px rgba(0, 200, 220, 0.6);
+}
+
+/* Le bouton s'enfonce : sans ça, rien ne signale que le clic est passé pendant les 25 frames
+   d'analyse qui suivent. */
+#btnVerifier:active {
+    transform: translateY(2px);
+}
+
+/*
+ * Le résultat de l'analyse ("Bravo !", le décompte des cartes). Même corps de texte qu'avant,
+ * mais posé sur un cartouche : de loin, on distingue le verdict des consignes qui le suivent.
+ */
+#result {
+    margin: 22px 0 0;
+    padding: 10px 24px;
+    min-height: 1.2em;  /* la place est réservée, le panneau ne saute pas à l'apparition du texte */
+    max-width: min(640px, 92%);
+    background: rgba(18, 8, 34, 0.85);
+    border: 1px solid rgba(165, 107, 255, 0.45);
+    border-radius: 30px;
+    color: #f0e6ff;
+    font-weight: bold;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Le cartouche ne doit pas rester visible en vide avant la première vérification */
+#result:empty {
+    display: none;
+}
+
+/* La liste des cartes non détectées : plus discrète que le verdict, c'est un détail à lire */
+#message {
+    margin: 14px 0 0;
+    max-width: min(640px, 92%);
+    color: #ff9f9a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* La marche à suivre : en retrait et en italique, elle se lit comme une note de bas de page */
+#message2 {
+    margin: 8px 0 0;
+    padding-left: 12px;
+    max-width: min(640px, 92%);
+    border-left: 2px solid rgba(165, 107, 255, 0.5);
+    color: #c9b6f0;
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.5;
+    text-align: left;
+}
+
+#message2:empty {
+    display: none;
+}
