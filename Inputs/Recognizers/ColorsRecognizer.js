@@ -71,8 +71,6 @@ export class ColorsRecognizer {
         // Non nul pendant un reglage : les 5 cercles figes, dans l'ordre de leurs numeros.
         this.calibrationCircles = null;
 
-        this.calibrationDone = false;
-
         //this.detectedColorsThisFrame = new Set(); not used anymore right now
 
     }
@@ -153,10 +151,6 @@ export class ColorsRecognizer {
 
             // Affichage : l'overlay est construit a partir du resultat de la detection
             this.drawCirclesOverlay(circlesDetected);
-
-            if (colorsDetected.size < COLOR_REFERENCES.length && !this.calibrationDone) {
-                this.drawCalibrationWarning();
-            }
 
             if (DEBUG_COLORS) this.logCircles(circlesDetected);
 
@@ -257,28 +251,6 @@ export class ColorsRecognizer {
         }
     }
 
-    /**
-     */
-    drawCalibrationWarning() {
-        const size = Math.round(this.canvas.width / 12);
-
-        // "center" + "middle" : le point donné à strokeText/fillText devient le milieu du texte,
-        // donc le milieu de l'image le centre vraiment, quelle que soit la longueur du message.
-        this.ctx.font = `bold ${size}px sans-serif`;
-        this.ctx.textAlign = "center";
-        this.ctx.textBaseline = "middle";
-
-        const x = this.canvas.width / 2;
-        const y = this.canvas.height / 2;
-
-        // Un contour noir sous le rouge : le message reste lisible sur n'importe quelle image
-        this.ctx.lineWidth = Math.max(2, size / 8);
-        this.ctx.strokeStyle = "#000000";
-        this.ctx.strokeText("CALIBRATION REQUISE", x, y);
-
-        this.ctx.fillStyle = "#FF0000";
-        this.ctx.fillText("CALIBRATION REQUISE", x, y);
-    }
 
     /**
      * the drawing on the picture of the number of each circle when calibrating
@@ -561,7 +533,6 @@ export class ColorsRecognizer {
         // Le réglage repart à zéro au rechargement de la page. Les teintes sont écrites dans la
         // console : les recopier dans COLOR_REFERENCES suffit à les rendre définitives.
         console.log("🎨 teintes réglées :", COLOR_REFERENCES.map(r => r.hue).join(", "));
-        this.calibrationDone = true;
     }
 
     /**
