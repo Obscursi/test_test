@@ -164,13 +164,13 @@
 }
 
 .maze-character.brown::after {
-    background: radial-gradient(circle at 35% 30%, #ffffff, #a0642d 60%, #5a3416);
-    box-shadow: 0 0 16px rgba(200, 140, 80, 0.95);
+    background: radial-gradient(circle at 35% 30%, #ffffff, #f0f0f0 60%, #cfcfcf);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.95);
 }
 
 .maze-character.orange::after {
-    background: radial-gradient(circle at 35% 30%, #ffffff, #ff8c1a 60%, #b85000);
-    box-shadow: 0 0 16px rgba(255, 140, 26, 0.95);
+    background: radial-gradient(circle at 35% 30%, #4a4a4a, #1a1a1a 60%, #000000);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.85);
 }
 
 /*
