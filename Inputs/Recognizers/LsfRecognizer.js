@@ -1,6 +1,8 @@
 import { whichLetterIsDetected } from '../../Utils/LsfDictionary.js';
 import { initMediapipe, DrawingUtils, HandLandmarker } from '../../Utils/LibraryLoading/LoadMediapipe.js';
 
+const PLAY_ZONE_ZOOM = 0.7;
+
 export class LsfRecognizer {
 
     constructor(videoElement, canvasElement) {
@@ -36,9 +38,7 @@ export class LsfRecognizer {
             this.lastVideoTime = this.video.currentTime;
             let nowInMs = Math.round(this.video.currentTime * 1000);
 
-            // Réduction avant analyse : MediaPipe est en delegate CPU, le coût de son
-            // prétraitement suit le nombre de pixels qu'on lui donne.
-            this.analysisCtx.drawImage(this.video, 0, 0, this.analysisWidth, this.analysisHeight);
+            this.drawPlayZoneIntoAnalysis();
 
             const results = this.handLandmarker.detectForVideo(this.analysisCanvas, nowInMs);
 
@@ -53,6 +53,29 @@ export class LsfRecognizer {
             this.detectingGestures(results, currentResults);
 
         }
+    }
+
+    /**
+     * Recopie la zone de jeu de la video dans le canvas d'analyse, etiree pour le remplir.
+    */
+    // we zoom so that the mediapipe detection is better, because
+    //the mediapipe resolution is always 192*192. So it's better
+    //to have a lower resolution at first, so that the crop to
+    //192*192 is not too big (because going to 1280*720 to 192*192
+    //will make all the pixels fusion, which is not ideal when you want
+    //to detect something)
+    drawPlayZoneIntoAnalysis() {
+        const sourceWidth = PLAY_ZONE_ZOOM * this.video.videoWidth;
+        const sourceHeight = PLAY_ZONE_ZOOM * this.video.videoHeight;
+
+        const sourceX = (this.video.videoWidth - sourceWidth) / 2;
+        const sourceY = (this.video.videoHeight - sourceHeight) / 2;
+
+        this.analysisCtx.drawImage(
+            this.video,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, this.analysisWidth, this.analysisHeight
+        );
     }
 
     detectingGestures(results, currentResults) {
