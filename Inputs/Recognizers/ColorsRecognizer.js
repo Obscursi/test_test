@@ -182,7 +182,7 @@ export class ColorsRecognizer {
         cv.GaussianBlur(this.gray, this.blurred, new cv.Size(5, 5), 1, 1);
 
         // Paramètres de détection de cercles
-        cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 38, 17, 30);
+        cv.HoughCircles(this.blurred, this.circles, cv.HOUGH_GRADIENT, 1, 50, 100, 38, 16, 27);
 
         if (this.circles.cols === 0) return { colorsDetected, circlesDetected };
 
