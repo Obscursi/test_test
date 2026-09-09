@@ -47,6 +47,9 @@ export class VisionController {
         }
     }
 
+    // Retourne une Promise qui ne se résout qu'une fois la caméra réellement affichée
+    // (frame décodée, dimensions connues), pour que l'appelant puisse attendre avant
+    // d'autoriser la suite (ex : activer le bouton de démarrage).
     toggleWebcam() {
         if (this.webcamRunning) {
             // Extinction volontaire
@@ -58,13 +61,14 @@ export class VisionController {
             this.colorsRecognizer.detachVideoSource();
             this.arucoRecognizer.detachVideoSource();
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            return Promise.resolve(false);
         } else {
             // Allumage avec gestion stricte des erreurs matérielles
             // 720p : le mode natif le plus bas de la camera, donc aucune perte de fps materielle.
             // "ideal" et non "exact" : si la camera refuse, on prend ce qu'elle donne plutot
             // que d'echouer. C'est attachVideoSource qui lit la resolution reellement accordee.
-            navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
-                .then((stream) => {
+            return navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
+                .then((stream) => new Promise((resolve) => {
                     this.video.srcObject = stream;
 
                     // =========================================================
@@ -95,8 +99,9 @@ export class VisionController {
                         this.arucoRecognizer.attachVideoSource();
 
                         this.webcamRunning = true;
+                        resolve(true);
                     }, { once: true });
-                })
+                }))
                 .catch(err => {
                     // =========================================================
                     // 2. L'ANALYSE DES PANNES D'ALLUMAGE
@@ -112,6 +117,8 @@ export class VisionController {
                     } else {
                         this.handleHardwareCrash(`Erreur matérielle inconnue : ${err.message} Veuillez recharger la page.`);
                     }
+
+                    return false;
                 });
         }
     }

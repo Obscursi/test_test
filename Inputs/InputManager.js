@@ -18,7 +18,7 @@ class InputManager {
     }
 
     toggleWebcam() {
-        this.vision.toggleWebcam();
+        return this.vision.toggleWebcam();
     }
 
 

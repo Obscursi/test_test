@@ -29,7 +29,13 @@ export class StartButton {
 
         //la caméra ne s'allume qu'une fois : on retire le bouton pour qu'un second clic ne l'éteigne pas
         if (this.btnCamera) this.btnCamera.style.display = "none";
+    }
 
+    /**
+     * Appelé une fois que le flux caméra est réellement décodé et affiché
+     * (VisionController.toggleWebcam résolu), pas seulement demandé.
+     */
+    enableStartButton() {
         this.btnStart.disabled = false; //la mission ne peut partir qu'une fois la caméra allumée
     }
 
