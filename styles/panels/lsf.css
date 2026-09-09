@@ -38,3 +38,8 @@
     /* court, sinon la barre traîne derrière la détection au lieu de la suivre */
     transition: width 0.08s linear;
 }
+
+/* la caméra est loin : les consignes doivent rester lisibles depuis le plateau */
+#panel-lsf .disclaimer {
+    font-size: 0.95rem;
+}
