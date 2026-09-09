@@ -7,6 +7,7 @@ import uiManagerInstance from '../../UI/UIManager.js';
 
 // One action is committed every 6 seconds, whatever the players do in between.
 const TICK_MS = 6000;
+const VOTING_MS = 1000; // seule la dernière seconde de la fenêtre décide de l'action
 
 /**
  * The players have to discover by themselves that hiding one circle moves the character in the given direction.
@@ -151,6 +152,12 @@ export class ColorsEnigma extends Enigma {
             return;
         }
 
+        // Seule la dernière seconde compte : tant qu'on n'y est pas, on repart de zéro
+        if (elapsed < TICK_MS - VOTING_MS) {
+            this.framesInWindow = 0;
+            for (const color of COLORS_USED) this.hiddenFrames[color] = 0;
+        }
+
         this.recordHiddenColors(playerState);
 
         const remaining = Math.max(0, TICK_MS - elapsed);
@@ -183,8 +190,8 @@ export class ColorsEnigma extends Enigma {
     commitAction() {
         if (this.framesInWindow === 0) return;
 
-        //if more than 1/2 of the time the circle is not seen it is considered hidden
-        const hiddenColors = COLORS_USED.filter(color => this.hiddenFrames[color] > this.framesInWindow / 2);
+        //if more than 3/4 of the last second the circle is not seen it is considered hidden
+        const hiddenColors = COLORS_USED.filter(color => this.hiddenFrames[color] > this.framesInWindow * 0.75);
 
         if (hiddenColors.length !== 1) {
             //Message masqué : dire aux joueurs quels cercles la caméra voit leur mâcherait le travail.
