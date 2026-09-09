@@ -163,12 +163,12 @@
     border-radius: 50%;
 }
 
-.maze-character.brown::after {
+.maze-character.white::after {
     background: radial-gradient(circle at 35% 30%, #ffffff, #f0f0f0 60%, #cfcfcf);
     box-shadow: 0 0 16px rgba(255, 255, 255, 0.95);
 }
 
-.maze-character.orange::after {
+.maze-character.grey::after {
     background: radial-gradient(circle at 35% 30%, #9e9e9e, #6b6b6b 60%, #4a4a4a);
     box-shadow: 0 0 16px rgba(80, 80, 80, 0.85);
 }

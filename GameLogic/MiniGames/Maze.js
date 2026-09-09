@@ -11,19 +11,19 @@ export const ACTIONS = {
 }
 
 export const CHARACTERS = {
-    BROWN: 'brown',
-    ORANGE: 'orange'
+    WHITE: 'white',
+    GREY: 'grey'
 };
 
 export const MAZE_SYMBOLS = {
     WALL: '#',
     FLOOR: '.',
-    START: 'S',        // départ du marron
-    EXIT: 'E',         // objectif du marron
-    START_ORANGE: 'O', // départ de l'orange
+    START: 'S',        // départ du blanc
+    EXIT: 'E',         // objectif du blanc
+    START_GREY: 'O',  // départ du gris
     SWITCH: 'I',       // interrupteur : ouvre la grille quand un personnage marche dessus
     GATE: 'G',         // grille : infranchissable tant que l'interrupteur est éteint
-    TREASURE: 'T'      // objectif de l'orange
+    TREASURE: 'T'      // objectif du gris
 };
 
 const MOVES = {
@@ -53,20 +53,20 @@ export class Maze {
         this.cols = this.grid[0].length;
 
         this.starts = {
-            [CHARACTERS.BROWN]: this.findCell(MAZE_SYMBOLS.START),
-            [CHARACTERS.ORANGE]: this.findCell(MAZE_SYMBOLS.START_ORANGE)
+            [CHARACTERS.WHITE]: this.findCell(MAZE_SYMBOLS.START),
+            [CHARACTERS.GREY]: this.findCell(MAZE_SYMBOLS.START_GREY)
         };
 
-        // Le marron sort par la porte au niveau 1 ; au niveau 2 il n'a pas d'objectif à lui,
-        // il sert seulement à ouvrir la voie à l'orange, qui vise le trésor.
+        // Le blanc sort par la porte au niveau 1 ; au niveau 2 il n'a pas d'objectif à lui,
+        // il sert seulement à ouvrir la voie au gris, qui vise le trésor.
         this.goals = {
-            [CHARACTERS.BROWN]: this.findCell(MAZE_SYMBOLS.EXIT),
-            [CHARACTERS.ORANGE]: this.findCell(MAZE_SYMBOLS.TREASURE)
+            [CHARACTERS.WHITE]: this.findCell(MAZE_SYMBOLS.EXIT),
+            [CHARACTERS.GREY]: this.findCell(MAZE_SYMBOLS.TREASURE)
         };
 
         this.switchCell = this.findCell(MAZE_SYMBOLS.SWITCH);
 
-        if (!this.starts[CHARACTERS.BROWN]) console.log("DEBUG Maze : ce labyrinthe n'a pas de départ 'S'");
+        if (!this.starts[CHARACTERS.WHITE]) console.log("DEBUG Maze : ce labyrinthe n'a pas de départ 'S'");
 
         this.reset();
     }

@@ -14,13 +14,13 @@ const VOTING_MS = 1000; // seule la dernière seconde de la fenêtre décide de 
  *
  */
 const CONTROLS = {
-    [CHARACTERS.BROWN]: {
+    [CHARACTERS.WHITE]: {
         "Rouge": DIRECTIONS.UP,
         "Bleu": DIRECTIONS.DOWN,
         "Jaune": DIRECTIONS.LEFT,
         "Vert": DIRECTIONS.RIGHT
     },
-    [CHARACTERS.ORANGE]: {
+    [CHARACTERS.GREY]: {
         "Vert": DIRECTIONS.UP,
         "Jaune": DIRECTIONS.DOWN,
         "Bleu": DIRECTIONS.LEFT,
@@ -33,11 +33,11 @@ const CONTROLS = {
 // la detection ne pouvait pas les separer de facon fiable. Voir COLOR_REFERENCES.
 const CHANGE_PLAYER_COLOR = "Magenta";
 
-const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.BROWN]), CHANGE_PLAYER_COLOR];
+const COLORS_USED = [...Object.keys(CONTROLS[CHARACTERS.WHITE]), CHANGE_PLAYER_COLOR];
 
 /**
- * '#' mur, '.' sol, 'S' départ marron, 'E' sortie du marron,
- * 'O' départ orange, 'I' interrupteur, 'G' grille, 'T' trésor.
+ * '#' mur, '.' sol, 'S' départ blanc, 'E' sortie du blanc,
+ * 'O' départ gris, 'I' interrupteur, 'G' grille, 'T' trésor.
  *
  * Level 1 : one character, they are learning the rules of the game
  *
