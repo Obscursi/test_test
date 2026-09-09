@@ -256,11 +256,6 @@ export class ColorsRecognizer {
      * the drawing on the picture of the number of each circle when calibrating
      */
     drawCircleNumber(number, x, y, scale) {
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, 13 * scale, 0, 2 * Math.PI);
-        this.ctx.fill();
-
         this.ctx.font = `bold ${Math.round(20 * scale)}px sans-serif`;
         this.ctx.textBaseline = "middle";
         this.ctx.fillStyle = "#FFFFFF";
