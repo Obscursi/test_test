@@ -20,6 +20,8 @@ import { showRewardAlert } from '../UI/AlertManager.js';
 
 import { initOpenCV } from '../Utils/LibraryLoading/LoadOpenCV.js';
 
+import { saveProgress, loadProgress, clearProgress } from '../Utils/SaveManager.js';
+
 
 class GameEngine {
     constructor() {
@@ -104,10 +106,18 @@ class GameEngine {
         this.isRunning = true;
         console.log("🎮 GameEngine: Démarrage de la boucle principale.");
 
-        this.timer.start();
+        //s'il y a une sauvegarde (page rechargée en cours de partie), on repart de là où l'équipe en était
+        const save = loadProgress();
 
-        //this.putEnigmaIntoTheActivePool(ENIGMA_IDS.COLORS); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
-        this.putEnigmaIntoTheActivePool(ENIGMA_IDS.ARUCO); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
+        this.timer.start(save ? save.timerStartTime : null);
+
+        if (save) {
+            this.restoreProgress(save);
+        } else {
+            this.putEnigmaIntoTheActivePool(ENIGMA_IDS.ARUCO); //we let the logic of the UI, (so that the buttons of the tabs does not show in the animation)
+        }
+
+        this.saveProgress();
 
 
         this.lastFrameTime = 0; // 0 so that the very first frame is never skipped
@@ -130,12 +140,60 @@ class GameEngine {
         this.putEnigmaIntoTheActivePool(idEnigma);
     }
 
+    /**
+     * Écrit dans le navigateur l'état de la partie : le statut de chaque onglet suffit à savoir
+     * ce qui est débloqué et ce qui est résolu. Appelée à chaque fois que la partie avance.
+     */
+    saveProgress() {
+        if (!this.isRunning) return; //partie pas commencée, ou déjà finie : rien à sauvegarder
+
+        const tabsStatus = {};
+        Object.entries(uiManagerInstance.tabManager.tabs).forEach(([id, tab]) => {
+            tabsStatus[id] = tab.status;
+        });
+
+        saveProgress({
+            tabs: tabsStatus,
+            timerStartTime: this.timer.startTime,
+            chatbotHasFoundCulprit: this.chatbotHasFoundCulprit
+        });
+    }
+
+    /**
+     * Remet la partie dans l'état sauvegardé : onglets débloqués (orange) ou résolus (vert),
+     * énigmes résolues marquées comme telles, et les autres remises dans le pool actif.
+     * Aucune animation ici : on ne rejoue pas les cinématiques déjà vues.
+     * @param {object} save - ce que loadProgress() a retrouvé
+     */
+    restoreProgress(save) {
+        console.log("💾 GameEngine : progression retrouvée, reprise de la partie.");
+
+        Object.entries(save.tabs).forEach(([idTab, status]) => {
+            const tab = uiManagerInstance.tabManager.tabs[idTab];
+            if (!tab || status === ENIGMA_STATUS.LOCKED) return;
+
+            tab.unlockTab(); //l'onglet redevient visible (orange)
+
+            if (status === ENIGMA_STATUS.RESOLVED) {
+                tab.makeTabCompleted(); //puis vert, et son panneau de victoire remplace le panneau normal
+
+                const enigma = this.dictionnaryOfEnigmas[idTab];
+                if (enigma) enigma.isResolved = true;
+            } else {
+                this.putEnigmaIntoTheActivePool(idTab); //énigme encore à faire : elle doit tourner
+            }
+        });
+
+        this.chatbotHasFoundCulprit = save.chatbotHasFoundCulprit === true;
+    }
+
     putEnigmaIntoTheActivePool(idEnigma) {
         const enigma = this.dictionnaryOfEnigmas[idEnigma];
         if (enigma && !this.activeEnigmas.includes(enigma)) {
             enigma.start(); // S'il y a des choses à initialiser dans la classe
             this.activeEnigmas.push(enigma);
             console.log(`▶️ Énigme [${idEnigma}] ajoutée au pool actif.`);
+            this.saveProgress();
         } else if (!enigma) {
             //normal for an enigma whose tab exists but whose logic is not written yet (the final one for instance)
             console.log(`DEBUG : l'énigme [${idEnigma}] n'a pas de classe, seul son onglet est déverrouillé.`);
@@ -223,6 +281,8 @@ class GameEngine {
 
         this.checkFinalVictory();
 
+        this.saveProgress();
+
         this.isTransitioning = false;
     }
 
@@ -243,6 +303,7 @@ class GameEngine {
      */
     notifyChatbotFoundCulprit() {
         this.chatbotHasFoundCulprit = true;
+        this.saveProgress();
         this.tryUnlockGuiltyEnigma();
     }
 
@@ -277,6 +338,8 @@ class GameEngine {
         uiManagerInstance.animations.launchUnlockingEnigmaAnimation(SCREEN_IDS.VICTORY);
         showVictoryScreen();
         this.isRunning = false;
+
+        clearProgress(); //partie terminée : la prochaine équipe repart d'une page vierge
     }
 
     /**
@@ -289,6 +352,8 @@ class GameEngine {
 
         this.isRunning = false;
         showDefeatScreen();
+
+        clearProgress(); //partie terminée : la prochaine équipe repart d'une page vierge
     }
 
     cleanMemory(enigmaToComplete) {

@@ -13,6 +13,9 @@ import { TerminalManager } from './TerminalManager.js';
 
 import { ChatBot } from '../GameLogic/Help/ChatBot.js';
 
+import { loadProgress, clearProgress } from '../Utils/SaveManager.js';
+import { showConfirmAlert } from './AlertManager.js';
+
 
 class UIManager {
 
@@ -26,6 +29,41 @@ class UIManager {
         this.startButton = new StartButton();
         this.terminalManager = new TerminalManager();
         this.chatBot = new ChatBot({ panelChatbot: this.panelManager.panelChatbot });
+
+        this.initResetProgressButton();
+    }
+
+    /**
+     * Le bouton d'effacement de la sauvegarde, sur l'accueil. Il n'apparaît que s'il y a
+     * effectivement une partie à reprendre : inutile de le montrer à une équipe qui commence.
+     * Une confirmation est demandée, puis on recharge la page pour repartir totalement à neuf.
+     */
+    initResetProgressButton() {
+        const btnReset = document.getElementById("btn-reset-progress");
+        if (!btnReset) {
+            console.log("DEBUG : le bouton d'effacement de la progression est introuvable");
+            return;
+        }
+
+        if (!loadProgress()) return; //aucune sauvegarde : le bouton reste caché
+
+        btnReset.style.display = "block";
+
+        btnReset.addEventListener("click", async () => {
+            const confirmed = await showConfirmAlert(
+                "Une partie sauvegardée existe : elle reprendra là où elle s'était arrêtée. L'effacer relancera une partie neuve, chronomètre au maximum. Cette action est définitive.",
+                {
+                    title: "Effacer la progression ?",
+                    confirmLabel: "Oui, tout effacer",
+                    cancelLabel: "Non, annuler"
+                }
+            );
+
+            if (!confirmed) return;
+
+            clearProgress();
+            window.location.reload();
+        });
     }
 
     async initBeginningOfTheGame() { //we transition from the welcome screen with the big button to first enigmas
@@ -75,6 +113,8 @@ class UIManager {
         }
 
         newTab.unlockTab(); //we unlock the tab visually (shows the button)
+
+        gameEngineInstance.saveProgress(); //un onglet de plus est débloqué : la sauvegarde doit le savoir
     }
 
     unlockNewTabWithAnimations(idOfNewTab) {

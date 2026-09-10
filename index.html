@@ -114,6 +114,11 @@
                 <button id="startButton" class="big-start-btn" disabled>DÉMARRER LA MISSION</button>
 
                 <span id="loadingMessage">Chargement des modules IA...</span>
+
+                <!-- n'apparaît que s'il existe une partie sauvegardée à reprendre (voir UIManager) -->
+                <button id="btn-reset-progress" class="btn-secondary reset-progress-btn" style="display: none;">
+                    🧹 Effacer la progression sauvegardée (à faire en cas de gros bug)
+                </button>
             </div>
         </div>
 
@@ -350,7 +355,7 @@
 
         <div id="confirm-modal" class="modal-overlay hidden">
             <div class="modal-content border-neon-teal">
-                <h2 class="alert-title confirm-title">Vérifiez avant de valider</h2>
+                <h2 id="confirm-title" class="alert-title confirm-title">Vérifiez avant de valider</h2>
 
                 <p id="confirm-message" class="alert-message"></p>
 

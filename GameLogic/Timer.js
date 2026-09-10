@@ -18,10 +18,14 @@ export class Timer {
         this.addEventListenerForAddTimeCheat();
     }
 
-    start() {
+    /**
+     * @param {number|null} savedStartTime - heure de départ retrouvée dans une sauvegarde,
+     * pour que le compte à rebours reprenne où il en était après un rechargement de la page
+     */
+    start(savedStartTime = null) {
         if (this.interval) return;
 
-        this.startTime = Date.now();
+        this.startTime = savedStartTime ?? Date.now();
         this.tick();
 
         this.interval = setInterval(() => this.tick(), 1000); //every second, we call tick to calculate the new time and render it.

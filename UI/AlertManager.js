@@ -74,20 +74,30 @@ export function showRewardAlert(reward) {
  * Sert de garde-fou contre les fautes de frappe qui déclencheraient une pénalité pour rien
  * (le cooldown de L'accusation, une tentative perdue sur l'énigme finale...).
  * @param {string} message - récapitule ce que le joueur s'apprête à valider
+ * @param {object} [textes] - pour réutiliser la même modale ailleurs que sur une réponse tapée
+ * @param {string} [textes.title] - le titre affiché en haut de la modale
+ * @param {string} [textes.confirmLabel] - le texte du bouton de validation
+ * @param {string} [textes.cancelLabel] - le texte du bouton d'annulation
  * @returns {Promise<boolean>} true si le joueur confirme, false s'il préfère modifier sa réponse
  */
-export function showConfirmAlert(message) {
+export function showConfirmAlert(message, textes = {}) {
     return new Promise(resolve => {
         const modal = document.getElementById('confirm-modal');
         const messageBox = document.getElementById('confirm-message');
         const confirmBtn = document.getElementById('confirm-ok-btn');
         const cancelBtn = document.getElementById('confirm-cancel-btn');
+        const titleBox = document.getElementById('confirm-title');
 
         if (!modal || !messageBox || !confirmBtn || !cancelBtn) {
             console.log("DEBUG showConfirmAlert : la modale de confirmation est introuvable, on valide directement");
             resolve(true);
             return;
         }
+
+        //les textes par défaut sont ceux de la vérification d'une réponse tapée
+        if (titleBox) titleBox.textContent = textes.title ?? "Vérifiez avant de valider";
+        confirmBtn.textContent = textes.confirmLabel ?? "Je confirme";
+        cancelBtn.textContent = textes.cancelLabel ?? "Modifier ma réponse";
 
         messageBox.textContent = message;
         modal.classList.remove('hidden');
