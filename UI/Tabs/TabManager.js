@@ -39,7 +39,6 @@ export class TabManager {
             chatbot: new Tab(HELP_IDS.CHATBOT, 'Chatbot susceptible', document.querySelector('.tab-button[data-target="chatbot"]'), document.getElementById("panel-chatbot")),
             guilty: new Tab(ENIGMA_IDS.GUILTY, "Mais qui est-ce donc le coupable ?", document.querySelector('.tab-button[data-target="guilty"]'), document.getElementById("panel-guilty"), document.getElementById("panel-guilty-victory")),
             final: new Tab(ENIGMA_IDS.FINAL, 'Final Reckoning', document.querySelector('.tab-button[data-target="final"]'), document.getElementById("panel-final"), document.getElementById("panel-final-victory")),
-            victory: new Tab(SCREEN_IDS.VICTORY, 'Veni vidi vici', document.querySelector('.tab-button[data-target="victory"]'), document.getElementById("panel-victory")),
             defeat: new Tab(SCREEN_IDS.DEFEAT, 'Temps écoulé', document.querySelector('.tab-button[data-target="defeat"]'), document.getElementById("panel-defeat"))
         };
     }

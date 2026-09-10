@@ -21,14 +21,9 @@ export function showError(messageInfo) {
 }
 
 
-export function showVictoryScreen() {
-    uiManagerInstance.tabManager.showTab(SCREEN_IDS.VICTORY);
-}
-
-
 /**
- * Fin de partie perdue : on ouvre l'onglet de défaite (comme l'écran de victoire, il n'a pas de
- * bouton dans la navigation) puis on coupe tous les accès au jeu.
+ * Fin de partie perdue : on ouvre l'onglet de défaite (il n'a pas de bouton dans la navigation)
+ * puis on coupe tous les accès au jeu.
  */
 export function showDefeatScreen() {
     uiManagerInstance.tabManager.tabs[SCREEN_IDS.DEFEAT].status = ENIGMA_STATUS.AVAILABLE;

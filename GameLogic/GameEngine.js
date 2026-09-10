@@ -9,12 +9,10 @@ import { FinalEnigma } from './Enigmas/FinalEnigma.js';
 import { ENIGMA_STATUS } from '../Utils/Constant.js';
 import { ENIGMA_IDS } from '../Utils/Constant.js';
 import { HELP_IDS } from '../Utils/Constant.js';
-import { SCREEN_IDS } from '../Utils/Constant.js';
 import { Timer } from './Timer.js';
 
 
 import { showError } from '../UI/AlertManager.js';
-import { showVictoryScreen } from '../UI/AlertManager.js';
 import { showDefeatScreen } from '../UI/AlertManager.js';
 import { showRewardAlert } from '../UI/AlertManager.js';
 
@@ -332,11 +330,6 @@ class GameEngine {
 
         if (!final || !final.isResolved) return;
 
-        //the victory tab has no button in the navigation bar, so we open it by hand instead of calling unlockTab()
-        uiManagerInstance.tabManager.tabs[SCREEN_IDS.VICTORY].status = ENIGMA_STATUS.AVAILABLE;
-
-        uiManagerInstance.animations.launchUnlockingEnigmaAnimation(SCREEN_IDS.VICTORY);
-        showVictoryScreen();
         this.isRunning = false;
 
         this.timer.stop(); //partie gagnée : le chrono se fige sur le temps restant

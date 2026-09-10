@@ -17,13 +17,13 @@ export const HELP_IDS = {
 };
 
 /**
- * The screens that are not enigmas : the welcome page and the two ends of the game.
- * They are tabs like the others, but no button in the navigation bar leads to them
- * (the welcome one is left by the big start button, the two others open by code).
+ * The screens that are not enigmas : the welcome page and the defeat screen (la victoire, elle,
+ * est le panneau de victoire de l'énigme finale). They are tabs like the others, but no button in
+ * the navigation bar leads to them (the welcome one is left by the big start button, the defeat
+ * one opens by code when the timer hits zero).
  */
 export const SCREEN_IDS = {
     WELCOME: 'welcome',
-    VICTORY: 'victory',
     DEFEAT: 'defeat'
 };
 

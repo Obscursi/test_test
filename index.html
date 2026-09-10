@@ -61,10 +61,7 @@
 
         <button class="tab-button active" data-target="dummy-button">Should not be displayed - dummy button</button>
 
-        <!-- l'écran de victoire s'ouvre par le code, jamais par un clic : le bouton reste caché (pas de classe available) -->
-        <button class="tab-button" data-target="victory">Should not be displayed - victory</button>
-
-        <!-- même principe pour l'écran de défaite, ouvert par le code quand le chrono tombe à zéro -->
+        <!-- l'écran de défaite s'ouvre par le code, jamais par un clic : le bouton reste caché (pas de classe available), ouvert par le code quand le chrono tombe à zéro -->
         <button class="tab-button" data-target="defeat">Should not be displayed - defeat</button>
 
         <!-- caché sur l'accueil, affiché partout ailleurs une fois la mission lancée -->
@@ -210,19 +207,6 @@
         </div>
 
 
-        <div id="panel-victory" class="view-panel" data-target="victory" style="text-align: center; color: #007f8b;">
-            <h2 style="font-size: 2.5rem;">MISSION ACCOMPLIE !</h2>
-            <p style="font-size: 1.2rem; font-weight: bold;">Félicitations, votre intervention a permis l'arrestation du
-                coupable !
-            </p>
-
-            <div class="end-qrcode">
-                <p class="end-qrcode-legend">Merci de remplir ce questionnaire pour nous aider à améliorer l'escape game
-                    :</p>
-                <img src="Utils/Pictures/qrcode_questionnaire.jpeg" alt="QR code vers le questionnaire">
-            </div>
-        </div>
-
         <div id="panel-defeat" class="view-panel defeat-panel-container">
             <div class="defeat-panel">
                 <h2 class="defeat-title">Temps écoulé</h2>
@@ -268,7 +252,7 @@
 
         <div id="panel-guilty-victory" class="view-panel">
             <div class="victory-panel">
-                <p class="victory-text">Et oui les IAs génératives ont tendance à avoir des biais, corrigés en parti
+                <p class="victory-text">Et oui les IA génératives ont tendance à avoir des biais, corrigés en partie
                     par
                     les gardes-fous que les entreprises mettent en place.</p>
             </div>
@@ -292,10 +276,17 @@
             <p id="final-result" class="final-result"></p>
         </div>
 
+        <!-- dernière énigme de la chaîne : son panneau de victoire est aussi l'écran de fin de partie -->
         <div id="panel-final-victory" class="view-panel">
             <div class="victory-panel">
-                <p class="victory-text">Vous êtes vachement balèze (bon c'est l'heure d'apprendre ce qu'est le machine
-                    learning maintenant)</p>
+                <h2 class="victory-title">MISSION ACCOMPLIE !</h2>
+                <p class="victory-text">Félicitations, votre intervention a permis l'arrestation du coupable !</p>
+
+                <div class="end-qrcode">
+                    <p class="end-qrcode-legend">Merci de remplir ce questionnaire pour nous aider à améliorer l'escape
+                        game :</p>
+                    <img src="Utils/Pictures/qrcode_questionnaire.jpeg" alt="QR code vers le questionnaire">
+                </div>
             </div>
         </div>
 

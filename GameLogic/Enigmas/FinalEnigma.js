@@ -2,7 +2,6 @@ import { Enigma } from './Enigma.js';
 import { ENIGMA_IDS, CURRENT_TEAM } from '../../Utils/Constant.js';
 
 import uiManagerInstance from '../../UI/UIManager.js';
-import gameEngineInstance from '../GameEngine.js';
 import { showConfirmAlert } from '../../UI/AlertManager.js';
 
 const MAX_TRIES = 2;
@@ -55,16 +54,6 @@ export class FinalEnigma extends Enigma {
      * Nothing to poll : the enigma waits for the player instead of being driven by the GameEngine loop.
      */
     update() { }
-
-    /**
-     * Same as the parent, minus the final showTab : this is the last enigma of the game, so completeEnigma
-     * opens the victory screen and we must not switch back to our own tab right after.
-     */
-    onSuccess() {
-        console.log(`L'énigme avec le nom : "${this.name}" et l'id : "${this.id}" a été résolue. `);
-        this.isResolved = true;
-        gameEngineInstance.completeEnigma(this.id, this.enigmesSuivantes);
-    }
 
     async runEnigma() {
         this.panel.setInputEnabled(true);
