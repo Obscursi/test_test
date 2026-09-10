@@ -7,7 +7,7 @@ import uiManagerInstance from '../../UI/UIManager.js';
 
 // One action is committed every 6 seconds, whatever the players do in between.
 const TICK_MS = 6000;
-const VOTING_MS = 1000; // seule la dernière seconde de la fenêtre décide de l'action
+const VOTING_MS = 1400; // seule 1,25s de la fenêtre décide de l'action
 
 /**
  * The players have to discover by themselves that hiding one circle moves the character in the given direction.
