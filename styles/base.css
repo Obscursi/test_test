@@ -31,7 +31,7 @@ body {
        arrondis d'un demi-pixel sur les bords, et sert de fond le temps du chargement. */
     background-color: #231f20;
 
-    background-image: url('../Utils/Pictures/background.png');
+    background-image: url('../Utils/Pictures/background.svg');
 
     /* L'image n'est pas une texture mais un cadre d'interface : ses bordures doivent
        toujours tomber sur les bords de la fenêtre. Avec « cover » elles se décalent
