@@ -339,6 +339,8 @@ class GameEngine {
         showVictoryScreen();
         this.isRunning = false;
 
+        this.timer.stop(); //partie gagnée : le chrono se fige sur le temps restant
+
         clearProgress(); //partie terminée : la prochaine équipe repart d'une page vierge
     }
 
