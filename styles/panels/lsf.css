@@ -32,6 +32,21 @@
     border: 1px solid var(--orr-dim);
     border-radius: 0;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+
+    transition: color 0.15s linear, border-color 0.15s linear, background-color 0.15s linear, box-shadow 0.15s linear;
+}
+
+/*
+ * Un signe est reconnu. Le vert est celui de la validation (et du code qui
+ * tombe sur l'affiche) : la boîte, la barre de maintien qui se remplit et
+ * l'écran de victoire racontent alors la même progression d'une seule couleur.
+ * La classe est posée par UI/PanelUI/PanelLsf.js à chaque image.
+ */
+.orrery .output-box.detecting {
+    color: #b6f0bd;
+    background: rgba(18, 44, 24, 0.78);
+    border-color: var(--orr-valid);
+    box-shadow: 0 0 22px rgba(79, 164, 86, 0.45);
 }
 
 

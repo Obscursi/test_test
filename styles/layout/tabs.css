@@ -1,20 +1,40 @@
 /* ==========================================================
    LA BARRE D'ONGLETS
-   Repris en direction « Orrery ». Trois états, et ils portent tous une
-   information : l'onglet est-il jouable, déjà résolu, ou est-ce l'aide ?
-   On les distingue donc par la FORME autant que par la couleur —
-   un aplat pour une énigme, un contour pour l'utilitaire — pour que ça
-   reste lisible même pour un joueur qui distingue mal les teintes.
+
+   Les joueurs la lisent debout, à un mètre de l'écran, et ce qu'ils y
+   cherchent est toujours la même chose : « qu'est-ce qu'il me reste à
+   faire ? ». Toute la hiérarchie découle de cette question.
+
+     - jouable   : aplat ORANGE. Hors palette, donc impossible à rater —
+                   c'est le complémentaire du bleu qui couvre l'écran.
+     - résolu    : éteint, avec une coche verte. Une énigme finie n'a plus
+                   rien à dire ; la garder en aplat vert lui faisait
+                   concurrencer les onglets encore à faire.
+     - aide      : éteint aussi, mais en cyan et sans coche.
+     - actif     : liseré blanc, plus grand, décollé de la barre.
+
+   L'état se lit donc par la FORME (plein contre éteint) et par la coche
+   autant que par la teinte : ça reste lisible pour qui distingue mal
+   l'orange du vert.
    ========================================================== */
 
 .btn-tab-container {
     display: flex;
-    border-bottom: 1px solid var(--orr-dim);
-    margin-bottom: 10px;
-
-    /* pas de gap : les onglets sont collés, c'est l'onglet actif qui crée l'espace en grossissant */
     /* flex-end : tous les onglets reposent sur la même ligne de base, l'actif grandit vers le haut */
     align-items: flex-end;
+    gap: 3px;
+
+    padding: 8px 12px 0;
+    margin-bottom: 14px;
+
+    /*
+     * Une barre sombre derrière toute la rangée. Sans elle, les onglets se
+     * posaient directement sur la bande du cadre, dont la grille et le liseré
+     * cyan mangeaient leur contraste : c'est ce fond neutre qui fait ressortir
+     * les aplats, bien plus que n'importe quel réglage de couleur.
+     */
+    background: rgba(6, 8, 18, 0.85);
+    border-bottom: 2px solid var(--orr-dim);
 }
 
 
@@ -26,18 +46,20 @@
     /* State 0 : locked, by default invisible */
     display: none;
     box-sizing: border-box;
-    padding: 10px 20px;
-    margin-top: 5px;
+
+    /* Plus grand qu'avant : la barre se lit depuis le plateau, pas depuis
+       une chaise à 50 cm de l'écran. */
+    padding: 13px 26px;
+    margin-top: 6px;
     cursor: pointer;
 
     font-family: var(--orr-font-display);
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 400;
-    letter-spacing: 0.14em;
-    text-indent: 0.14em;
+    letter-spacing: 0.13em;
+    text-indent: 0.13em;
     text-transform: uppercase;
 
-    color: var(--orr-void);
     /* La bordure de 3px est transparente : elle réserve la place du liseré de
        l'onglet actif, sinon les onglets sauteraient d'un clic à l'autre. */
     border: 3px solid transparent;
@@ -49,38 +71,72 @@
 
 
 /* ---------------------------------------------------
-    State 1 : available — l'énigme est jouable
+    State 1 : available — il reste quelque chose à faire
 --------------------------------------------------- */
+
+/*
+ * Le seul aplat de la barre, et la seule tache chaude de la page. La lueur
+ * est fixe et non clignotante : plusieurs énigmes sont ouvertes en même
+ * temps, et cinq onglets qui pulsent en même temps ne désignent plus rien.
+ */
 .tab-button.available {
     display: block;
-    background-color: var(--orr-accent);
-    border-bottom: 3px solid #2f5f96;
+    color: var(--orr-void);
+    background-color: var(--orr-todo);
+    border-bottom: 3px solid #b35c0c;
+    box-shadow: 0 0 18px rgba(245, 135, 31, 0.45);
 }
 
 
 /* ---------------------------------------------------
     State 2 : completed — l'énigme est résolue
 --------------------------------------------------- */
+
+/*
+ * Éteint. C'est le vrai levier de lisibilité de la barre : une énigme finie
+ * ne demande plus rien, donc elle s'efface et laisse toute la place aux
+ * onglets encore orange.
+ */
 .tab-button.completed {
     display: block;
-    background-color: var(--orr-valid);
-    border-bottom: 3px solid #2c6231;
+    color: var(--orr-valid);
+    background-color: rgba(11, 13, 28, 0.7);
+    border-bottom: 3px solid var(--orr-valid);
+    box-shadow: none;
 }
+
+/* La coche double l'information portée par la couleur : on voit qu'une énigme
+   est finie sans avoir à comparer des teintes. */
+.tab-button.completed::before {
+    content: "✓";
+    margin-right: 9px;
+    /* la coche ne suit pas l'espacement de lettres du libellé */
+    letter-spacing: normal;
+    font-weight: bold;
+}
+
 
 /* ---------------------------------------------------
     For the help tabs : there are never completed, theyre always the same
     (by security we style available AND completed in case they
     become completed somehow)
 
-    L'aide n'est pas une énigme : elle reste en contour, jamais en aplat.
-    C'est ce qui la sort de la série sans lui donner un troisième coloris.
+    L'aide n'est pas une énigme : elle est pleine comme un onglet jouable —
+    il faut qu'on la trouve quand on est bloqué — mais dans le bleu
+    d'identité et sans coche, donc elle ne se range ni parmi les choses à
+    faire ni parmi celles qui sont finies.
 --------------------------------------------------- */
 .tab-button.tab-help.available,
 .tab-button.tab-help.completed {
     display: block;
-    color: var(--orr-accent-pale);
-    background-color: rgba(11, 13, 28, 0.72);
-    border-bottom: 3px solid var(--orr-dim);
+    color: var(--orr-void);
+    background-color: var(--orr-accent);
+    border-bottom: 3px solid #2f5f96;
+    box-shadow: 0 0 18px rgba(88, 149, 214, 0.4);
+}
+
+.tab-button.tab-help.completed::before {
+    content: none;
 }
 
 
@@ -94,16 +150,20 @@
     /* On grossit avec padding + margin, et non avec transform : un transform ne change pas la mise
        en page, donc l'onglet actif recouvrirait ses voisins au lieu de les écarter.
        La marge à 0 en haut le fait aussi monter au-dessus de la ligne des autres. */
-    padding: 13px 26px;
+    padding: 17px 32px;
+    margin-top: 0;
 
     position: relative;
     z-index: 10;
 }
 
-/* L'onglet d'aide actif : le liseré blanc suffit, mais le texte passe en clair
-   pour ne pas rester plus pâle que les onglets pleins à côté. */
-.tab-button.tab-help.active {
+/* Un onglet résolu mais actif remonte en clair : c'est le seul état éteint
+   qui reste, et sans ça l'onglet ouvert pouvait être le plus pâle de la barre.
+   Les onglets pleins (jouable, aide) n'en ont pas besoin, le liseré blanc
+   suffit à les désigner. */
+.tab-button.completed.active {
     color: var(--orr-bone);
+    background-color: rgba(18, 20, 43, 0.92);
 }
 
 .tab-button:focus-visible {

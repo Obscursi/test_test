@@ -19,10 +19,10 @@ export class PanelLsf {
         const gestesValides = currentGestures.filter(g => g && g !== "");
 
         if (gestesValides.length > 0) {
-            this.lsfTextBox.style.backgroundColor = "#E91E63";
+            this.lsfTextBox.classList.add("detecting");
             this.lsfTextBox.innerText = `Signe(s) : ${gestesValides.join(" + ")}`;
         } else {
-            this.lsfTextBox.style.backgroundColor = "#007f8b";
+            this.lsfTextBox.classList.remove("detecting");
             this.lsfTextBox.innerText = "Aucun signe clair.";
         }
     }

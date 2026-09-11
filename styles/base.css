@@ -66,6 +66,11 @@
 
     --orr-valid: #4fa456;
     /* le vert du code de l'affiche : validation, progression aboutie */
+    --orr-todo: #f5871f;
+    /* « il reste quelque chose à faire ici ». Hors palette, et c'est exactement
+       pour ça qu'il marche : l'orange est le complémentaire du bleu qui couvre
+       tout l'écran, donc c'est la teinte la plus visible dont on dispose. On ne
+       s'en sert QUE pour les onglets jouables, sinon il perd son sens. */
     --orr-alert: #d9566a;
     /* avertissement et action destructive — la seule couleur hors palette,
        parce qu'un danger ne doit pas ressembler à une action normale */

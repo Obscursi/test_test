@@ -71,13 +71,43 @@
  * la taille et la couleur plutôt que par la finesse du trait.
  */
 .orrery .disclaimer {
+    position: relative;
     width: auto;
-    max-width: 64ch;
+    max-width: 62ch;
+    margin-top: 20px;
+    padding-top: 16px;
+
     font-family: var(--font-main);
     font-size: 0.82rem;
-    letter-spacing: 0.015em;
-    line-height: 1.65;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
     color: var(--orr-text-dim);
+}
+
+/*
+ * Le filet court qui fade aux deux bouts : c'est exactement celui posé sous les
+ * titres de victoire. Le réemployer ici range les mentions dans le même
+ * vocabulaire que le reste, sans les rendre plus bruyantes — une note reste
+ * une note. Il se dessine en ::before pour ne demander aucune balise en plus.
+ */
+.orrery .disclaimer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 64px;
+    height: 1px;
+    /* Le même bleu que le filet des titres de victoire : en --orr-dim il se
+       perdait dans le fond du cadre et ne se lisait plus comme un choix. */
+    background: linear-gradient(90deg, transparent, var(--orr-accent), transparent);
+}
+
+/* Deux mentions qui se suivent : la seconde se serre contre la première pour
+   qu'on les lise comme un bloc de notes, pas comme deux blocs séparés. */
+.orrery .disclaimer+.disclaimer {
+    margin-top: 4px;
 }
 
 
