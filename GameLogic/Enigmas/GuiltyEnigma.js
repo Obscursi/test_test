@@ -1,5 +1,5 @@
 import { Enigma } from './Enigma.js';
-import { ENIGMA_IDS, SUSPECTS_BY_TEAM, CURRENT_TEAM } from '../../Utils/Constant.js';
+import { ENIGMA_IDS, IRL_REWARDS, SUSPECTS_BY_TEAM, CURRENT_TEAM } from '../../Utils/Constant.js';
 import { normalizeText } from '../../Utils/UtilFunctions.js';
 
 import uiManagerInstance from '../../UI/UIManager.js';
@@ -19,7 +19,7 @@ const COOLDOWNS_SECONDS = [10, 40, 60, 180];
 export class GuiltyEnigma extends Enigma {
 
     constructor(equipe = CURRENT_TEAM) {
-        super(ENIGMA_IDS.GUILTY, "L'accusation", [ENIGMA_IDS.FINAL]);
+        super(ENIGMA_IDS.GUILTY, "L'accusation", [ENIGMA_IDS.FINAL], IRL_REWARDS.V_AFTER_GUILTY);
 
         this.equipe = equipe;
         this.culprit = SUSPECTS_BY_TEAM[equipe][0];
