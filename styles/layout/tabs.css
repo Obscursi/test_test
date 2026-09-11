@@ -1,6 +1,15 @@
+/* ==========================================================
+   LA BARRE D'ONGLETS
+   Repris en direction « Orrery ». Trois états, et ils portent tous une
+   information : l'onglet est-il jouable, déjà résolu, ou est-ce l'aide ?
+   On les distingue donc par la FORME autant que par la couleur —
+   un aplat pour une énigme, un contour pour l'utilitaire — pour que ça
+   reste lisible même pour un joueur qui distingue mal les teintes.
+   ========================================================== */
+
 .btn-tab-container {
     display: flex;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid var(--orr-dim);
     margin-bottom: 10px;
 
     /* pas de gap : les onglets sont collés, c'est l'onglet actif qui crée l'espace en grossissant */
@@ -18,55 +27,60 @@
     display: none;
     box-sizing: border-box;
     padding: 10px 20px;
-    cursor: pointer;
-    color: white;
-    border: 3px solid transparent;
-    border-radius: 8px 8px 0 0;
-    font-size: 1rem;
-    font-weight: bold;
     margin-top: 5px;
+    cursor: pointer;
+
+    font-family: var(--orr-font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-indent: 0.14em;
+    text-transform: uppercase;
+
+    color: var(--orr-void);
+    /* La bordure de 3px est transparente : elle réserve la place du liseré de
+       l'onglet actif, sinon les onglets sauteraient d'un clic à l'autre. */
+    border: 3px solid transparent;
+    border-radius: 2px 2px 0 0;
 
     /* on liste les propriétés au lieu de "all" : le navigateur n'en surveille que 4 au lieu de toutes */
     transition: padding 0.25s ease, margin 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
 }
 
+
 /* ---------------------------------------------------
-    State 1 : available (orange
+    State 1 : available — l'énigme est jouable
 --------------------------------------------------- */
 .tab-button.available {
     display: block;
-    background-color: #f57c00;
-    border-bottom: 3px solid #e65100;
+    background-color: var(--orr-accent);
+    border-bottom: 3px solid #2f5f96;
 }
 
 
 /* ---------------------------------------------------
-    State 2 : completed (green)
+    State 2 : completed — l'énigme est résolue
 --------------------------------------------------- */
 .tab-button.completed {
     display: block;
-    background-color: #2e7d32;
-    border-bottom: 3px solid #1b5e20;
+    background-color: var(--orr-valid);
+    border-bottom: 3px solid #2c6231;
 }
 
 /* ---------------------------------------------------
-    For the help tabs : there are never completed, theyre always in blue 
-    (by security we make then blue for available AND completed in case they 
-    become completed somehow) 
+    For the help tabs : there are never completed, theyre always the same
+    (by security we style available AND completed in case they
+    become completed somehow)
+
+    L'aide n'est pas une énigme : elle reste en contour, jamais en aplat.
+    C'est ce qui la sort de la série sans lui donner un troisième coloris.
 --------------------------------------------------- */
 .tab-button.tab-help.available,
 .tab-button.tab-help.completed {
-    background-color: #3185a3;
-    border-bottom: 3px solid #1d485b;
-}
-
-
-/* On trace le liseré avec outline et non avec la bordure : la bordure de 3px sert déjà à réserver
-   la place du contour blanc de l'onglet actif, la toucher ferait sauter les onglets d'un clic à l'autre.
-   L'offset négatif ramène le trait sur le bord extérieur, à la place qu'occupera le contour blanc. */
-.tab-button:not(.active) {
-    outline: 2px solid rgba(0, 0, 0, 0.6);
-    outline-offset: -1px;
+    display: block;
+    color: var(--orr-accent-pale);
+    background-color: rgba(11, 13, 28, 0.72);
+    border-bottom: 3px solid var(--orr-dim);
 }
 
 
@@ -74,16 +88,25 @@
     Modifier : Active or not
 --------------------------------------------------- */
 .tab-button.active {
-    border-color: #ffffff;
-    font-weight: 900;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    border-color: var(--orr-bone);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.45);
 
     /* On grossit avec padding + margin, et non avec transform : un transform ne change pas la mise
        en page, donc l'onglet actif recouvrirait ses voisins au lieu de les écarter.
        La marge à 0 en haut le fait aussi monter au-dessus de la ligne des autres. */
     padding: 13px 26px;
-    /* margin: 0 5px; */
 
     position: relative;
     z-index: 10;
+}
+
+/* L'onglet d'aide actif : le liseré blanc suffit, mais le texte passe en clair
+   pour ne pas rester plus pâle que les onglets pleins à côté. */
+.tab-button.tab-help.active {
+    color: var(--orr-bone);
+}
+
+.tab-button:focus-visible {
+    outline: 2px solid var(--orr-accent-pale);
+    outline-offset: 2px;
 }

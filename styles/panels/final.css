@@ -1,4 +1,5 @@
-/* --- Énigme finale : le code d'accès --- */
+/* --- Énigme finale : le code d'accès ---
+   Repris en direction « Orrery ». */
 
 #panel-final {
     padding: 20px;
@@ -6,17 +7,22 @@
 }
 
 .final-instruction {
-    max-width: 640px;
+    max-width: 56ch;
 }
 
-.final-visual {
+/* Le visuel de l'énigme : cadre fin et coins coupés, comme les autres blocs
+   du style, au lieu de l'arrondi et du halo teal d'avant. */
+.orrery .final-visual {
     display: block;
     width: min(520px, 90%);
-    margin: 20px 0;
-    border: 1px solid rgba(49, 133, 163, 0.5);
-    border-radius: 14px;
-    box-shadow: 0 0 25px rgba(0, 127, 139, 0.35);
+    margin: 24px 0;
+
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
+    box-shadow: none;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
+
 
 /* --- La saisie du code --- */
 
@@ -25,104 +31,86 @@
     align-items: center;
     gap: 10px;
     width: min(600px, 95%);
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
-.zone-code-final input {
+/*
+ * Le champ du code final. C'est la saisie la plus importante du jeu : chasse
+ * fixe, gros corps et lettres très espacées, pour qu'on relise le code
+ * caractère par caractère avant de valider.
+ */
+.orrery .zone-code-final input {
     flex: 1;
-    padding: 12px 18px;
+
     font-family: var(--font-mono);
-    font-size: 1.3rem;
-    letter-spacing: 3px;
+    font-size: 1.35rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
     text-align: center;
-    color: #17324d;
-    background-color: #ffffff;
-    border: 1px solid #d9dde2;
-    border-radius: 30px;
-    outline: none;
-    transition: border-color 0.2s ease;
 }
 
-.zone-code-final input:focus {
-    border-color: #3185a3;
-}
-
-.zone-code-final input:disabled {
-    background-color: #cfd8dc;
-    color: #78909c;
-    cursor: not-allowed;
-}
-
-.zone-code-final button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 30px;
-    background-color: #17324d;
-    color: #ffffff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.zone-code-final button:hover:not(:disabled) {
-    background-color: #3185a3;
-}
-
-.zone-code-final button:disabled {
-    background-color: #78909c;
-    cursor: not-allowed;
-}
-
-#btnValider-final {
-    padding: 18px 40px;
+/*
+ * Le bouton de validation. Il était en contour à filet supérieur ; il devient
+ * le bouton plein du style, en plus grand — c'est l'action qui termine la
+ * partie, elle doit être la plus visible du panneau.
+ */
+.orrery #btnValider-final {
     margin-top: 30px;
-    border-top: 2px solid #3185a3;
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-    font-size: 1.1rem;
+    padding: 18px 46px;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: 2px;
 }
 
-#btnValider-final:hover:not(:disabled) {
-    background-color: #3185a3;
-}
-
-#btnValider-final:disabled {
-    background-color: #78909c;
-    cursor: not-allowed;
-}
 
 /* --- Les retours affichés au joueur --- */
 
-.final-tries {
-    margin-top: 18px;
-    font-weight: bold;
+/* Compteur de tentatives et temps restant : le joueur agit là-dessus, donc la
+   police du site plutôt que la chasse fixe, trop maigre en petit corps sur le
+   cadre. Les capitales tracées gardent le ton « relevé d'instrument ». */
+.orrery .final-tries {
+    margin-top: 20px;
     min-height: 1.4em;
-    color: #b0bec5;
+
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orr-text-dim);
 }
 
-/* Dernière tentative : on prévient clairement */
-.final-tries.last {
-    color: #ffb74d;
+/* Dernière tentative : on prévient clairement. L'ambre n'appartient pas à la
+   palette, et c'est justement ce qui le rend lisible comme un avertissement
+   au milieu du bleu — sans être encore l'échec, qui est en rouge. */
+.orrery .final-tries.last {
+    color: #dda24a;
 }
 
-.final-tries.failed {
-    color: #ff8a80;
+.orrery .final-tries.failed {
+    color: var(--orr-alert);
 }
 
-.final-time {
-    font-weight: bold;
+.orrery .final-time {
     min-height: 1.4em;
-    color: #ff8a80;
+
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orr-alert);
 }
 
-.final-result {
+.orrery .final-result {
+    min-height: 1.4em;
+
+    font-family: var(--orr-font-display);
     font-size: 1.6rem;
-    font-weight: bold;
-    min-height: 1.4em;
+    letter-spacing: 0.18em;
+    text-indent: 0.18em;
+    text-transform: uppercase;
 }
 
-.final-result.success {
-    color: #69f0ae;
-    text-shadow: 0 0 12px rgba(105, 240, 174, 0.6);
+.orrery .final-result.success {
+    color: var(--orr-valid);
+    text-shadow: 0 0 20px rgba(79, 164, 86, 0.6);
 }

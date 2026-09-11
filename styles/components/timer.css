@@ -1,6 +1,8 @@
 /* ==========================================================
    CHRONOMÈTRE DE LA MISSION
    Commun à tous les onglets, masqué uniquement sur l'accueil.
+   Repris en direction « Orrery » : c'est le relevé d'instrument par
+   excellence, donc chasse fixe, gros corps, coins coupés et filet fin.
    ========================================================== */
 
 .mission-timer {
@@ -16,18 +18,22 @@
     font-family: var(--font-mono);
     font-size: 2.3rem;
     font-weight: bold;
-    letter-spacing: 2px;
-    color: #00c8dc;
+    letter-spacing: 0.1em;
+    /* tabular-nums : les chiffres ont tous la même chasse, donc le bloc ne
+       tressaute pas à chaque seconde qui change */
+    font-variant-numeric: tabular-nums;
+    color: var(--orr-accent-pale);
 
-    background: rgba(8, 20, 30, 0.85);
-    border: 1px solid rgba(0, 200, 220, 0.6);
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 200, 220, 0.25);
+    background: rgba(11, 13, 28, 0.85);
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
+    box-shadow: 0 0 20px rgba(88, 149, 214, 0.2);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
 /* Temps écoulé : le compteur reste affiché, figé à 00:00 */
 .mission-timer.finished {
-    color: #ff8a80;
-    border-color: rgba(255, 0, 60, 0.7);
-    box-shadow: 0 0 15px rgba(255, 0, 60, 0.35);
+    color: var(--orr-alert);
+    border-color: rgba(217, 86, 106, 0.7);
+    box-shadow: 0 0 20px rgba(217, 86, 106, 0.3);
 }

@@ -1,0 +1,312 @@
+/* ==========================================================
+   DIRECTION « ORRERY » — le vocabulaire commun des panneaux repris
+
+   Formes : les consoles de nef de Prometheus (Territory Studio).
+   Couleurs : la direction artistique du jeu — background.svg et
+   l'affiche de recrutement. Les jetons sont dans base.css.
+
+   Un panneau bascule dans cette identité en ajoutant la classe
+   "orrery" à côté de "view-panel" dans index.html.
+
+   IMPORTANT — un panneau de travail (accueil, LSF, Aruco) ne peint
+   AUCUN fond. Le contenu se pose directement sur le cadre du site
+   (background.svg), qui porte déjà sa grille et ses graduations :
+   une plaque de console par-dessus faisait une deuxième surface, et
+   l'empilement était trop lourd.
+   La seule exception est le panneau de victoire, tout en bas de ce
+   fichier : lui garde la plaque, parce que c'est un moment et non un
+   écran de travail — mais elle fait la largeur du message, pas celle
+   de la fenêtre.
+
+   Ce qui tient l'identité partout ailleurs :
+     - la typo (capitales très tracées, chasse fixe pour les étiquettes) ;
+     - la palette (une seule couleur saturée, le bleu #5895d6) ;
+     - les filets fins et les coins coupés là où un élément a
+       vraiment besoin d'un contour ;
+     - le bouton plein.
+   Pas de carte, pas de fond arrondi qui flotte.
+   ========================================================== */
+
+.orrery {
+    padding: clamp(18px, 3vw, 38px) clamp(16px, 3vw, 40px);
+    margin-top: 10px;
+
+    color: var(--orr-text);
+}
+
+
+/* --- Typographie ------------------------------------------------------- */
+
+/*
+ * Les titres sont très espacés. Sur un texte centré, la lettre-espacement
+ * s'ajoute aussi après la dernière lettre et décale le mot vers la gauche :
+ * le text-indent de même valeur remet le bloc optiquement au centre.
+ */
+.orrery h1,
+.orrery h2,
+.orrery h3 {
+    margin: 0;
+
+    font-family: var(--orr-font-display);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-indent: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.06;
+
+    color: var(--orr-bone);
+    text-shadow: 0 0 26px rgba(88, 149, 214, 0.45);
+}
+
+.orrery p {
+    color: var(--orr-text);
+    line-height: 1.62;
+}
+
+/* Le filet dégradé qui sépare un titre de son texte */
+.orrery .orr-rule {
+    width: 78px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--orr-accent), transparent);
+}
+
+/*
+ * Les petites étiquettes techniques (statut, numéro de module). En capitales
+ * très tracées et en chasse fixe : c'est ce qui donne le ton « relevé
+ * d'instrument » et ça coûte une police déjà présente.
+ */
+.orrery .orr-slug {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--orr-accent);
+}
+
+/*
+ * Les mentions. Elles étaient en chasse fixe, mais Courier a un trait très
+ * maigre : posé sur le cadre du site, en petit corps et lu depuis le plateau,
+ * ça devenait illisible. On reprend donc la police du site — la seule graisse
+ * embarquée est une grasse, ce qui tombe bien ici — et le retrait se fait par
+ * la taille et la couleur plutôt que par la finesse du trait.
+ */
+.orrery .disclaimer {
+    width: auto;
+    max-width: 64ch;
+    font-family: var(--font-main);
+    font-size: 0.82rem;
+    letter-spacing: 0.015em;
+    line-height: 1.65;
+    color: var(--orr-text-dim);
+}
+
+
+/* --- Actions ----------------------------------------------------------- */
+
+/*
+ * Le bouton plein, repris de la maquette Bio-Scan : un aplat bleu franc, du
+ * texte sombre dessus, un rayon minuscule. C'est la seule forme arrondie du
+ * style, et c'est volontaire — le bouton doit se détacher de la géométrie
+ * anguleuse qui l'entoure pour se lire immédiatement comme cliquable.
+ */
+.orrery button {
+    padding: 13px 34px;
+
+    font-family: var(--orr-font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    text-transform: uppercase;
+
+    color: var(--orr-void);
+    background: var(--orr-accent);
+    border: none;
+    border-radius: 2px;
+
+    transition: background 0.22s, box-shadow 0.22s, color 0.22s;
+}
+
+.orrery button:hover:not(:disabled) {
+    background: var(--orr-accent-pale);
+    box-shadow: 0 0 26px rgba(88, 149, 214, 0.5);
+}
+
+.orrery button:focus-visible {
+    outline: 2px solid var(--orr-accent-pale);
+    outline-offset: 3px;
+}
+
+.orrery button:disabled {
+    color: var(--orr-text-dim);
+    background: #1e2544;
+    box-shadow: none;
+}
+
+/*
+ * Les champs de saisie. Ils étaient blancs et arrondis, ce qui les faisait
+ * flotter comme des éléments d'un autre site. Ici c'est un creux : fond sombre,
+ * filet fin, et le bleu d'identité qui vient cercler le champ actif — le seul
+ * endroit où l'accent apparaît en dehors des boutons.
+ */
+.orrery input[type="text"] {
+    padding: 12px 18px;
+
+    font-family: var(--orr-font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+
+    color: var(--orr-bone);
+    background: rgba(11, 13, 28, 0.72);
+    border: 1px solid var(--orr-dim);
+    border-radius: 2px;
+    outline: none;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* opacity: 1 — Firefox applique sinon une transparence par défaut au placeholder */
+.orrery input[type="text"]::placeholder {
+    color: var(--orr-text-dim);
+    opacity: 1;
+}
+
+.orrery input[type="text"]:focus {
+    border-color: var(--orr-accent);
+    box-shadow: 0 0 0 1px var(--orr-accent), 0 0 18px rgba(88, 149, 214, 0.28);
+}
+
+.orrery input[type="text"]:disabled {
+    color: var(--orr-text-dim);
+    background: rgba(11, 13, 28, 0.45);
+    border-color: #232a4d;
+    cursor: not-allowed;
+}
+
+
+/* --- Panneaux de victoire ---------------------------------------------- */
+
+/*
+ * La victoire est le seul endroit qui garde la plaque de console : c'est un
+ * moment, pas un écran de travail, et il mérite une surface à lui.
+ *
+ * Elle ne s'étale pas pour autant : la plaque fait la largeur du message et
+ * pas un pixel de plus. C'est .view-panel.active qui le permet — son
+ * align-items: center empêche l'élément de s'étirer, donc la largeur vient du
+ * contenu. Le min-width évite qu'un message très court donne une plaque
+ * étriquée, le max-width que les textes longs partent en lignes trop larges.
+ *
+ * Le violet de components/victoryPanel.css est neutralisé ici ; les énigmes
+ * pas encore reprises le gardent.
+ */
+.orrery .victory-panel {
+    position: relative;
+    overflow: hidden;
+
+    width: auto;
+    min-width: min(430px, 100%);
+    /* La plaque s'arrête à 660px : assez pour qu'un message d'une ligne y tienne
+       sans se couper, assez peu pour qu'un message long reste sur une mesure
+       lisible au lieu de s'étaler. Le rembourrage est compté dedans, d'où les
+       marges intérieures modérées. */
+    max-width: min(660px, 100%);
+    margin-top: 0;
+    padding: clamp(30px, 3.5vw, 46px) clamp(26px, 3.5vw, 48px);
+
+    gap: 18px;
+
+    /* De haut en bas : le vignettage qui éteint les bords (et masque la coupe
+       des anneaux), la lueur bleue centrale, les anneaux concentriques, la
+       plaque. Les anneaux sont un repeating-radial-gradient : une seule
+       déclaration au lieu d'une trentaine de cercles en SVG. */
+    background:
+        radial-gradient(ellipse 80% 90% at 50% 44%, transparent 34%, rgba(11, 13, 28, 0.92) 86%),
+        radial-gradient(ellipse 62% 68% at 50% 44%, rgba(88, 149, 214, 0.12), transparent 70%),
+        repeating-radial-gradient(circle at 50% 44%, transparent 0 53px, rgba(58, 74, 146, 0.5) 53px 54px),
+        linear-gradient(180deg, var(--orr-plate), var(--orr-void));
+
+    border: none;
+    border-top: 1px solid var(--orr-dim);
+    border-bottom: 1px solid var(--orr-dim);
+    border-radius: 0;
+    box-shadow: none;
+
+    /* Deux coins coupés en diagonale : la signature de forme du style. */
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+/*
+ * L'anneau pointillé qui tourne. En position absolue, donc il n'entre pas dans
+ * le flux flex de la plaque (un pseudo-élément d'un conteneur flex devient
+ * sinon un élément flex à part entière et pousse le contenu).
+ */
+.orrery .victory-panel::before {
+    content: "";
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    width: 330px;
+    height: 330px;
+    margin: -165px 0 0 -165px;
+
+    border: 1px dashed rgba(58, 74, 146, 0.65);
+    border-radius: 50%;
+
+    pointer-events: none;
+    animation: orrSpin 78s linear infinite;
+}
+
+/* La réglette de graduation le long du bord haut */
+.orrery .victory-panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 6px;
+
+    background-image: repeating-linear-gradient(90deg, var(--orr-dim) 0 1px, transparent 1px 12px);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+@keyframes orrSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Le message repasse devant les anneaux */
+.orrery .victory-panel>* {
+    position: relative;
+    z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orrery .victory-panel::before {
+        animation: none;
+    }
+}
+
+.orrery .victory-title {
+    font-family: var(--orr-font-display);
+    font-size: clamp(1.9rem, 5vw, 2.9rem);
+    letter-spacing: 0.19em;
+    text-indent: 0.19em;
+    color: var(--orr-bone);
+    text-shadow: 0 0 26px rgba(88, 149, 214, 0.45);
+}
+
+/* Le trait sous le titre reprend le bleu au lieu du violet */
+.orrery .victory-title::after {
+    background: linear-gradient(90deg, transparent, var(--orr-accent), transparent);
+}
+
+.orrery .victory-text {
+    font-family: var(--orr-font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.035em;
+    line-height: 1.62;
+    color: var(--orr-text);
+}

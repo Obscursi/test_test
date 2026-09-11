@@ -1,55 +1,145 @@
 /* ==========================================================
-   MODALE DE CONFIRMATION
-   Reprend .modal-overlay / .modal-content (errorWindow.css) avec un
-   habillage teal au lieu du rouge d'alerte : ce n'est pas une erreur,
-   juste une vérification demandée avant de valider une réponse.
+   LES MODALES DU JEU
+   Deux modales partagent exactement le même habillage, parce qu'elles
+   jouent le même rôle : interrompre la partie pour faire lire une
+   phrase, puis repartir.
+     - #confirm-modal : la vérification avant de valider une accusation
+       ou le code final ;
+     - #reward-modal  : l'annonce d'un lieu débloqué (« J'ai récupéré
+       l'objet »).
+
+   Tout est listé sous ces deux identifiants et jamais sur les classes
+   seules : .modal-content, .alert-title, .alert-message et
+   .alert-instruction appartiennent aussi à la modale d'erreur
+   matérielle d'errorWindow.css, qui garde son rouge — une vraie panne
+   ne doit pas ressembler au reste du jeu.
    ========================================================== */
 
-.border-neon-teal {
-    border: 2px solid #00c8dc;
-    box-shadow: 0 0 30px rgba(0, 200, 220, 0.4);
+#confirm-modal .modal-content,
+#reward-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    max-width: 560px;
+    padding: clamp(30px, 4vw, 46px) clamp(28px, 4vw, 48px);
+
+    background: linear-gradient(180deg, var(--orr-plate), var(--orr-void));
+    border-radius: 0;
+    /* le halo rouge hérité d'errorWindow.css n'a rien à faire ici : on le
+       remplace par la lueur bleue du style */
+    box-shadow: 0 0 60px rgba(88, 149, 214, 0.18);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
 }
 
-.confirm-title {
-    color: #00c8dc;
+/* Le liseré : deux filets seulement, comme les plaques de victoire */
+#confirm-modal .border-neon-teal,
+#reward-modal .border-neon-teal {
+    border: none;
+    border-top: 1px solid var(--orr-accent);
+    border-bottom: 1px solid var(--orr-accent);
+}
+
+#confirm-modal .confirm-title,
+#reward-modal .confirm-title {
+    margin: 0;
+
+    font-family: var(--orr-font-display);
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-indent: 0.18em;
+    text-transform: uppercase;
+
+    color: var(--orr-bone);
+    text-shadow: 0 0 24px rgba(88, 149, 214, 0.45);
+}
+
+/*
+ * La ligne à retenir : la réponse qu'on s'apprête à envoyer, ou le lieu où
+ * aller chercher l'objet. C'est la plus lisible de la modale.
+ */
+#confirm-modal .alert-message,
+#reward-modal .alert-message {
+    margin: 0;
+    max-width: 44ch;
+
+    font-family: var(--orr-font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    color: var(--orr-text);
+}
+
+/* La consigne qui suit le message : présente, mais en retrait. */
+#reward-modal .alert-instruction {
+    margin: 0;
+    max-width: 46ch;
+
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--orr-text-dim);
 }
 
 .confirm-actions {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 14px;
 }
 
-.btn-secondary {
-    background-color: transparent;
-    border: 2px solid #78909c;
-    color: #cfd8dc;
-    padding: 13px 22px;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 5px;
+/*
+ * Deux poids différents : l'action attendue porte l'aplat bleu, le retour en
+ * arrière reste un contour. On lit la hiérarchie à la forme avant même
+ * d'avoir lu les mots. La modale des objets n'a qu'un seul bouton, et c'est
+ * le plein — il n'y a rien à refuser.
+ */
+#confirm-modal .btn-secondary,
+#confirm-modal .btn-confirm,
+#reward-modal .btn-confirm {
+    font-family: var(--orr-font-display);
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    text-transform: uppercase;
+    border-radius: 2px;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s;
 }
 
-.btn-secondary:hover {
-    border-color: #ffffff;
-    color: #ffffff;
+#confirm-modal .btn-secondary {
+    padding: 13px 24px;
+    font-size: 0.95rem;
+    color: var(--orr-text-dim);
+    background: transparent;
+    border: 1px solid var(--orr-dim);
 }
 
-.btn-confirm {
-    background-color: #00c8dc;
-    color: #08141e;
+#confirm-modal .btn-secondary:hover {
+    color: var(--orr-bone);
+    border-color: var(--orr-accent);
+}
+
+#confirm-modal .btn-confirm,
+#reward-modal .btn-confirm {
+    padding: 14px 32px;
+    font-size: 1.05rem;
+    color: var(--orr-void);
+    background: var(--orr-accent);
     border: none;
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.btn-confirm:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 200, 220, 0.6);
+#confirm-modal .btn-confirm:hover,
+#reward-modal .btn-confirm:hover {
+    background: var(--orr-accent-pale);
+    box-shadow: 0 0 26px rgba(88, 149, 214, 0.5);
+}
+
+#confirm-modal .btn-secondary:focus-visible,
+#confirm-modal .btn-confirm:focus-visible,
+#reward-modal .btn-confirm:focus-visible {
+    outline: 2px solid var(--orr-accent-pale);
+    outline-offset: 3px;
 }

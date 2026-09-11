@@ -1,49 +1,68 @@
-/* --- Panneau d'accueil : le grand bouton de démarrage et son message de chargement --- */
+/* --- Panneau d'accueil : le grand bouton de démarrage et son message de chargement ---
+   Repris en direction « Orrery » : tout est préfixé .orrery pour passer devant
+   components/orrery.css, qui cible les boutons par leur balise. */
 
-#loadingMessage {
-    color: #007f8b;
-    font-weight: bold;
+
+/*
+ * Le titre. groovyTitle.css lui met un contour cyan et une pulsation bleue, qui
+ * appartiennent à l'ancienne identité : on les éteint explicitement ici, sinon
+ * ils survivent (orrery.css ne déclare ni text-stroke ni animation).
+ */
+.orrery h1.groovy {
+    font-family: var(--orr-font-display);
+    font-size: clamp(2.6rem, 8vw, 5rem);
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+
+    color: var(--orr-bone);
+    -webkit-text-stroke: 0;
+
+    /* une seule lueur bleue, au lieu des cinq halos superposés */
+    text-shadow: 0 0 34px rgba(88, 149, 214, 0.55);
+
+    animation: orrTitleBreath 4s ease-in-out infinite alternate;
 }
 
+/* Le titre respire encore, mais par la lueur seule : plus de changement de
+   luminosité sur la lettre, qui faisait clignoter le panneau entier. */
+@keyframes orrTitleBreath {
+    from {
+        text-shadow: 0 0 22px rgba(88, 149, 214, 0.35);
+    }
 
-/* Le bouton de démarrage géant */
-.big-start-btn {
-    font-size: 1.5rem;
-    padding: 20px 40px;
-    border-radius: 50px;
-    background-color: #007f8b;
-    box-shadow: 0 10px 20px rgba(0, 127, 139, 0.4);
-    transition: transform 0.2s, background-color 0.3s;
+    to {
+        text-shadow: 0 0 46px rgba(88, 149, 214, 0.7);
+    }
+}
+
+/* Le sous-titre passe en étiquette technique : il annonce le module, il ne
+   rivalise plus avec le titre. */
+#panel-welcome h2 {
+    margin-top: 18px;
+
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+
+    color: var(--orr-accent);
+    text-shadow: none;
+}
+
+#panel-welcome>p {
+    max-width: 56ch;
+    margin-top: 22px;
+    font-size: 1.05rem;
+}
+
+#panel-welcome #loadingMessage {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: normal;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* Effet de survol */
-.big-start-btn:hover:not(:disabled) {
-    transform: scale(1.05);
-    background-color: #0096a6;
-}
-
-/* S'il est prêt, il palpite pour attirer l'attention */
-.big-start-btn:not(:disabled) {
-    animation: pulseStart 2s infinite alternate;
-}
-
-/* S'il est désactivé (chargement), on le grise et on coupe l'animation */
-.big-start-btn:disabled {
-    background-color: #7f8c8d;
-    box-shadow: none;
-    animation: none;
-}
-
-@keyframes pulseStart {
-    0% {
-        box-shadow: 0 0 10px rgba(0, 127, 139, 0.4);
-    }
-
-    100% {
-        box-shadow: 0 0 30px rgba(0, 127, 139, 0.9);
-    }
+    color: var(--orr-text-dim);
 }
 
 
@@ -54,18 +73,75 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
 }
 
-.reset-progress-btn {
+/*
+ * Le bouton de démarrage géant. Les joueurs l'actionnent debout à un mètre de
+ * l'écran : c'est le bouton plein d'orrery.css, simplement agrandi.
+ */
+.orrery .big-start-btn {
+    min-width: 420px;
+    padding: 20px 46px;
+
+    font-size: 1.35rem;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+
+    border-radius: 2px;
+    animation: none;
+}
+
+/* Prêt à être cliqué : la lueur respire. C'est le seul mouvement de l'accueil
+   avec l'anneau, et il désigne la seule chose à faire. */
+.orrery .big-start-btn:not(:disabled) {
+    animation: orrReady 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes orrReady {
+    from {
+        box-shadow: 0 0 0 rgba(88, 149, 214, 0);
+    }
+
+    to {
+        box-shadow: 0 0 28px rgba(88, 149, 214, 0.55);
+    }
+}
+
+.orrery .big-start-btn:hover:not(:disabled) {
+    transform: none;
+    animation: none;
+    background: var(--orr-accent-pale);
+}
+
+/* En chargement : éteint, sans lueur ni pulsation */
+.orrery .big-start-btn:disabled {
+    box-shadow: none;
+    animation: none;
+}
+
+/*
+ * L'effacement de progression est destructif : il reste en contour et en rouge,
+ * pour ne ressembler ni à l'action principale (bleu, pleine) ni au reste du
+ * panneau. La hiérarchie se lit à la forme autant qu'à la couleur.
+ */
+.orrery .reset-progress-btn {
     margin-top: 20px;
-    padding: 16px 32px;
-    font-size: 1.5rem;
-    opacity: 0.9;
-    background-color: #ff5555;
+    min-width: 0;
+    padding: 12px 26px;
 
+    font-size: 0.9rem;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+
+    color: var(--orr-alert);
+    background: transparent;
+    border: 1px solid rgba(217, 86, 106, 0.45);
+    animation: none;
 }
 
-.reset-progress-btn:hover {
-    opacity: 1;
+.orrery .reset-progress-btn:hover:not(:disabled) {
+    color: var(--orr-void);
+    background: var(--orr-alert);
+    box-shadow: none;
 }

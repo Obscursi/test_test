@@ -1,50 +1,124 @@
 /* ==========================================================
    ÉCRAN DE DÉFAITE
-   Affiché quand le compte à rebours atteint zéro : même mise en page que les
-   panneaux de victoire, mais en rouge pour marquer l'échec de la mission.
+   Affiché quand le compte à rebours atteint zéro.
+
+   C'est exactement la plaque de console des panneaux de victoire —
+   mêmes anneaux, mêmes coins coupés, même largeur réglée sur le texte —
+   mais le bleu d'identité y est remplacé par le rouge d'alerte. Le
+   parallèle est voulu : c'est le même instrument, dans son état
+   d'échec. Voir .victory-panel dans components/orrery.css.
    ========================================================== */
 
-.defeat-panel {
+.orrery .defeat-panel {
+    position: relative;
+    overflow: hidden;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 18px;
-
-    max-width: 700px;
-    margin-top: 40px;
-    padding: 40px 50px;
     box-sizing: border-box;
 
-    background: linear-gradient(160deg, rgba(80, 15, 25, 0.92), rgba(24, 5, 8, 0.95));
-    border: 1px solid rgba(255, 60, 90, 0.6);
-    border-radius: 18px;
-    box-shadow: 0 0 40px rgba(255, 0, 60, 0.25);
+    width: auto;
+    min-width: min(430px, 100%);
+    max-width: min(660px, 100%);
+    margin-top: 0;
+    padding: clamp(30px, 3.5vw, 46px) clamp(26px, 3.5vw, 48px);
 
     text-align: center;
+
+    /* Le fond reste le bleu-noir du style : c'est le liséré et le titre qui
+       disent l'échec. Une plaque entièrement rouge sortait de la palette et
+       faisait ressembler la fin de partie à une panne technique. */
+    background:
+        radial-gradient(ellipse 80% 90% at 50% 44%, transparent 34%, rgba(11, 13, 28, 0.92) 86%),
+        radial-gradient(ellipse 62% 68% at 50% 44%, rgba(217, 86, 106, 0.14), transparent 70%),
+        repeating-radial-gradient(circle at 50% 44%, transparent 0 53px, rgba(124, 48, 62, 0.5) 53px 54px),
+        linear-gradient(180deg, #1b1220, var(--orr-void));
+
+    border: none;
+    border-top: 1px solid var(--orr-alert);
+    border-bottom: 1px solid var(--orr-alert);
+    border-radius: 0;
+    box-shadow: none;
+
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
 }
 
-.defeat-title {
+/* L'anneau pointillé, en rouge. Position absolue pour qu'il ne devienne pas
+   un élément flex et ne pousse pas le contenu. */
+.orrery .defeat-panel::before {
+    content: "";
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    width: 330px;
+    height: 330px;
+    margin: -165px 0 0 -165px;
+
+    border: 1px dashed rgba(124, 48, 62, 0.7);
+    border-radius: 50%;
+
+    pointer-events: none;
+    animation: orrSpin 78s linear infinite;
+}
+
+/* La réglette de graduation le long du bord haut */
+.orrery .defeat-panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 6px;
+
+    background-image: repeating-linear-gradient(90deg, rgba(124, 48, 62, 0.9) 0 1px, transparent 1px 12px);
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.orrery .defeat-panel>* {
+    position: relative;
+    z-index: 1;
+}
+
+.orrery .defeat-title {
     margin: 0;
-    font-size: 2.1rem;
-    letter-spacing: 4px;
+
+    font-family: var(--orr-font-display);
+    font-size: clamp(1.9rem, 5vw, 2.9rem);
+    font-weight: 400;
+    letter-spacing: 0.19em;
+    text-indent: 0.19em;
     text-transform: uppercase;
-    color: #ffffff;
-    text-shadow: 0 0 18px rgba(255, 100, 120, 0.9);
+
+    color: var(--orr-bone);
+    text-shadow: 0 0 26px rgba(217, 86, 106, 0.7);
 }
 
 /* Trait dégradé sous le titre, comme sur les panneaux de victoire */
-.defeat-title::after {
+.orrery .defeat-title::after {
     content: "";
     display: block;
     width: 90px;
-    height: 2px;
+    height: 1px;
     margin: 16px auto 0;
-    background: linear-gradient(90deg, transparent, #ff3c5a, transparent);
+    background: linear-gradient(90deg, transparent, var(--orr-alert), transparent);
 }
 
-.defeat-text {
+.orrery .defeat-text {
     margin: 0;
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #ffd7dd;
+
+    font-family: var(--orr-font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.035em;
+    line-height: 1.62;
+    color: #e8c4cb;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orrery .defeat-panel::before {
+        animation: none;
+    }
 }

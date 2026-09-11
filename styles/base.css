@@ -20,6 +20,55 @@
        des variantes monochromes de certains signes et les afficher à la place des vrais emojis. */
     --font-main: 'JepeiaSans', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
     --font-mono: 'Courier New', Courier, monospace;
+
+    /* --- Direction « Orrery » ---------------------------------------------------
+       Les formes viennent des consoles de Prometheus (anneaux concentriques,
+       coins coupés, filets, capitales très tracées). Les COULEURS viennent de
+       la direction artistique du jeu, relevée sur deux pièces de référence :
+         - jepeia_site/background.svg, le cadre d'interface du site ;
+         - Impressions-23-09-21/2-DÉCOR/affiche de recrutement.pdf, dont le
+           fond indigo, le maillage bleu et le code vert donnent la palette.
+       Le bleu #5895d6 porte à lui seul le maillage ET les bandeaux de
+       l'affiche : c'est la couleur d'identité, celle qu'on dépense en un
+       seul endroit à la fois.
+
+       Ces variables ne changent rien à elles seules : un panneau y accède en
+       portant la classe .orrery (voir components/orrery.css).
+
+       Police d'affichage : le titre veut une grasse étroite. Aucune n'est
+       embarquée dans Utils/Fonts pour l'instant, donc la pile essaie les
+       condensées système avant de retomber sur JepeiaSans. Poser un fichier
+       Barlow Condensed à côté de dejavu-sans.bold.ttf suffirait à la servir
+       partout sans toucher au reste. */
+    --orr-font-display: 'Barlow Condensed', 'Oswald', 'Arial Narrow', var(--font-main);
+
+    --orr-void: #0b0d1c;
+    /* le noir bleuté du fond, un cran sous l'indigo de l'affiche */
+    --orr-plate: #12142b;
+    /* la plaque de console, à peine plus claire */
+    --orr-accent: #5895d6;
+    /* l'unique couleur saturée : accents et actions (maillage + bandeaux) */
+    --orr-accent-pale: #7fd4dc;
+    /* valeurs chiffrées, survols. C'est le cyan des angles de background.svg :
+       les deux pièces de référence n'ont pas tout à fait le même bleu (l'affiche
+       tire vers l'indigo, le cadre vers le cyan), et reprendre le cyan du cadre
+       ici raccroche les panneaux à ce qui les entoure. */
+    --orr-dim: #3a4a92;
+    /* filets, cadres, graduations — dérivé du bleu profond des bandeaux */
+    --orr-bone: #eef2fb;
+    /* les titres : le blanc de l'affiche, à peine bleuté */
+    --orr-text: #c6d5ea;
+    /* le corps de texte */
+    --orr-text-dim: #93a6c6;
+    /* mentions, disclaimers — assez clair pour se lire depuis le plateau ;
+       le bleu sombre au-dessus reste réservé aux filets et graduations, qui
+       n'ont pas de texte à porter */
+
+    --orr-valid: #4fa456;
+    /* le vert du code de l'affiche : validation, progression aboutie */
+    --orr-alert: #d9566a;
+    /* avertissement et action destructive — la seule couleur hors palette,
+       parce qu'un danger ne doit pas ressembler à une action normale */
 }
 
 body {

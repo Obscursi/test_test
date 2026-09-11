@@ -1,4 +1,5 @@
-/* --- Onglet L'accusation --- */
+/* --- Onglet L'accusation ---
+   Repris en direction « Orrery ». */
 
 #panel-guilty {
     padding: 20px;
@@ -10,61 +11,58 @@
     align-items: center;
     gap: 10px;
     width: min(600px, 95%);
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
-.zone-accusation input {
+.orrery .zone-accusation input {
     flex: 1;
-    padding: 12px 16px;
-    font-size: 16px;
-    color: #17324d;
-    background-color: #ffffff;
-    border: 1px solid #d9dde2;
-    border-radius: 30px;
-    outline: none;
-    transition: border-color 0.2s ease;
 }
 
-.zone-accusation input:focus {
-    border-color: #3185a3;
+/* Le bouton reprend celui d'orrery.css ; il faut juste annuler l'arrondi de 30px
+   hérité de l'ancienne feuille, que la seule source ordre ferait gagner. */
+.orrery .zone-accusation button {
+    padding: 13px 28px;
+    border-radius: 2px;
 }
 
-.zone-accusation button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 30px;
-    background-color: #17324d;
-    color: #ffffff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.zone-accusation button:hover {
-    background-color: #3185a3;
-}
 
 /* --- Retour donné au joueur après une accusation --- */
 
-.feedback-guilty {
-    margin-top: 18px;
-    font-weight: bold;
+.orrery .feedback-guilty {
+    margin-top: 20px;
     min-height: 1.4em;
+
+    font-family: var(--orr-font-display);
+    font-size: 1.15rem;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    text-transform: uppercase;
 }
 
-.feedback-guilty.wrong {
-    color: #ff8a80;
+/* Une accusation fausse et une accusation juste ne doivent jamais se confondre :
+   c'est le seul endroit du panneau où la couleur porte une information. */
+.orrery .feedback-guilty.wrong {
+    color: var(--orr-alert);
 }
 
-.feedback-guilty.right {
-    color: #69f0ae;
+.orrery .feedback-guilty.right {
+    color: var(--orr-valid);
+    text-shadow: 0 0 18px rgba(79, 164, 86, 0.5);
 }
+
 
 /* --- Cooldown affiché après une accusation erronée --- */
 
-.cooldown-guilty {
-    margin-top: 8px;
-    font-weight: bold;
+/* Le joueur doit lire ce décompte pour savoir quand réessayer : c'est de
+   l'information à agir, donc la police du site et pas la chasse fixe, dont le
+   trait maigre passe mal en petit corps sur le cadre. */
+.orrery .cooldown-guilty {
+    margin-top: 10px;
     min-height: 1.4em;
-    color: #ff8a80;
+
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orr-alert);
 }

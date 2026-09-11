@@ -1,7 +1,8 @@
-/* --- Onglet Aide / Chatbot --- */
+/* --- Onglet Aide / Chatbot ---
+   Repris en direction « Orrery ». Tout est préfixé .orrery pour passer devant
+   components/orrery.css, qui cible boutons et champs par leur balise. */
 
 #panel-chatbot {
-    /* display: flex; */
     flex-direction: column;
     align-items: center;
     height: 100%;
@@ -9,52 +10,63 @@
     box-sizing: border-box;
 }
 
-.chat-aide {
+/*
+ * Le journal de conversation. C'est le seul panneau de travail qui garde une
+ * surface à lui : la zone défile, donc elle a besoin d'un bord pour qu'on voie
+ * où elle commence et où elle s'arrête. Fond sombre et filet fin plutôt que le
+ * pavé gris clair, qui venait d'une autre identité.
+ */
+.orrery .chat-aide {
     /* On annule le centrage global des panneaux : les bulles doivent coller à un bord,
        c'est ce qui permet de distinguer d'un coup d'oeil le joueur du bot. */
     text-align: left;
 
     width: min(900px, 95%);
     height: 65vh;
-    margin-bottom: 20px;
-    padding: 18px;
-    background: rgba(209, 210, 214, 0.91);
-    /* fond clair */
-    border: 1px solid #d9dde2;
-    border-radius: 14px;
-    overflow-y: auto;
+    margin-bottom: 18px;
+    padding: 20px;
     box-sizing: border-box;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.03);
+    overflow-y: auto;
+
+    background: rgba(11, 13, 28, 0.72);
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
+    box-shadow: none;
+    /* coins coupés, en écho au reste du style */
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
 }
 
-.chat-aide .message {
+.orrery .chat-aide .message {
     margin: 10px 0;
-    padding: 10px 16px;
-    border-radius: 16px;
-    max-width: 65%;
-    line-height: 1.4;
+    padding: 11px 16px;
+    max-width: 68%;
+    line-height: 1.5;
     font-size: 15px;
     word-wrap: break-word;
+    border-radius: 3px;
 }
 
-.chat-aide .message.bot {
-    background-color: #3185a3;
-    /* bulle claire */
-    color: #ffffff;
-    /* texte bleu foncé */
-    border-bottom-left-radius: 4px;
+/*
+ * Le bot parle le plus et donne les indices : c'est lui qui doit être le plus
+ * lisible, donc texte clair sur fond sombre, avec un filet d'accent à gauche
+ * pour marquer qui parle sans colorer toute la bulle.
+ */
+.orrery .chat-aide .message.bot {
+    color: var(--orr-text);
+    background: #182142;
+    border-left: 2px solid var(--orr-accent);
 }
 
-.chat-aide .message.user {
-    background-color: #1d485b;
-    /* bulle bleu foncé */
-    color: #ffffff;
-    /* texte clair */
+/* Le joueur : bulle pleine dans le bleu d'identité, alignée à droite. */
+.orrery .chat-aide .message.user {
     margin-left: auto;
     text-align: right;
-    border-bottom-right-radius: 4px;
+    color: var(--orr-bone);
+    background: var(--orr-dim);
 }
 
+
+/* --- La saisie --- */
 
 .zone-saisie-aide {
     width: min(900px, 95%);
@@ -63,37 +75,24 @@
     gap: 10px;
 }
 
-.zone-saisie-aide input {
+.orrery .zone-saisie-aide input {
     flex: 1;
-    padding: 10px 14px;
-    font-size: 15px;
-    color: #17324d;
-    background-color: #ffffff;
-    border: 1px solid #d9dde2;
-    border-radius: 30px;
-    outline: none;
-    transition: border-color 0.2s ease;
 }
 
-.zone-saisie-aide input:focus {
-    border-color: #3185a3;
-}
-
-.zone-saisie-aide button {
-    width: 42px;
-    height: 42px;
+/*
+ * Le bouton d'envoi porte une icône, pas un mot : on annule le rembourrage et
+ * l'espacement de lettres du bouton standard, qui sont faits pour du texte.
+ */
+.orrery .zone-saisie-aide button {
+    width: 46px;
+    height: 46px;
     flex-shrink: 0;
+    padding: 0;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    border: none;
-    border-radius: 50%;
-    background-color: #17324d;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
 
-.zone-saisie-aide button:hover {
-    background-color: #3185a3;
+    letter-spacing: normal;
+    text-indent: 0;
 }

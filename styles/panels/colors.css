@@ -1,12 +1,21 @@
 /* --- Énigme des couleurs : le labyrinthe --- */
 
 #panel-colors {
-    /* Palette violette du labyrinthe, regroupée ici pour se retoucher d'un seul endroit */
-    --maze-wall-light: #6b3fb0;
-    --maze-wall-dark: #2d1550;
-    --maze-floor: #0b0616;
-    --maze-accent: #a56bff;
-    --maze-exit: #69f0ae;
+    /*
+     * Palette du labyrinthe, regroupée ici pour se retoucher d'un seul endroit.
+     * Reprise en direction « Orrery » : les murs et l'accent passent au bleu.
+     * Deux couleurs ne bougent PAS, parce qu'elles portent une information de
+     * jeu et non du décor :
+     *   - l'or de l'interrupteur et du trésor, seule tache chaude de la grille,
+     *     donc impossible à confondre avec un mur ou la sortie ;
+     *   - le blanc et le gris des deux personnages, que les joueurs doivent
+     *     justement distinguer l'un de l'autre.
+     */
+    --maze-wall-light: #4a68b4;
+    --maze-wall-dark: #151d3c;
+    --maze-floor: #070a16;
+    --maze-accent: var(--orr-accent);
+    --maze-exit: #5fd97a;
 
     /* Taille d'une case : le JS lit la même variable, donc les media queries plus bas suffisent
        à rétrécir tout le labyrinthe (murs, personnages, colonnes de la grille) d'un seul endroit. */
@@ -40,10 +49,11 @@
     flex: 0 0 auto;
     display: grid;
     padding: 10px;
-    background: #07030f;
-    border: 1px solid rgba(165, 107, 255, 0.55);
-    border-radius: 14px;
-    box-shadow: 0 0 25px rgba(165, 107, 255, 0.3);
+    background: #050813;
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
+    box-shadow: 0 0 30px rgba(88, 149, 214, 0.18);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
 .maze-cell {
@@ -66,7 +76,7 @@
         linear-gradient(145deg, var(--maze-wall-light), var(--maze-wall-dark));
     border-radius: 4px;
     box-shadow:
-        inset 1px 1px 0 rgba(205, 165, 255, 0.45),
+        inset 1px 1px 0 rgba(150, 185, 245, 0.45),
         inset -1px -1px 0 rgba(0, 0, 0, 0.55);
 }
 
@@ -74,16 +84,16 @@
 .maze-cell.floor,
 .maze-cell.start {
     background: var(--maze-floor);
-    border: 1px solid rgba(165, 107, 255, 0.14);
+    border: 1px solid rgba(88, 149, 214, 0.14);
 }
 
 .maze-cell.start {
-    background: radial-gradient(circle, rgba(165, 107, 255, 0.28), var(--maze-floor) 70%);
+    background: radial-gradient(circle, rgba(88, 149, 214, 0.28), var(--maze-floor) 70%);
 }
 
 /* Vert vif : la seule tache non violette de la grille, donc l'oeil va droit dessus */
 .maze-cell.exit {
-    background: radial-gradient(circle, rgba(105, 240, 174, 0.55), rgba(105, 240, 174, 0.25));
+    background: radial-gradient(circle, rgba(95, 217, 122, 0.55), rgba(95, 217, 122, 0.25));
     border: 1px solid var(--maze-exit);
     border-radius: 4px;
     animation: exitPulse 1.8s infinite alternate;
@@ -91,11 +101,11 @@
 
 @keyframes exitPulse {
     0% {
-        box-shadow: inset 0 0 10px rgba(105, 240, 174, 0.5);
+        box-shadow: inset 0 0 10px rgba(95, 217, 122, 0.5);
     }
 
     100% {
-        box-shadow: inset 0 0 24px rgba(180, 255, 220, 1);
+        box-shadow: inset 0 0 24px rgba(175, 255, 195, 1);
     }
 }
 
@@ -112,9 +122,9 @@
 .maze-cell.gate {
     background:
         repeating-linear-gradient(90deg,
-            rgba(230, 200, 255, 0.85) 0 4px,
+            rgba(196, 222, 255, 0.85) 0 4px,
             transparent 4px 11px),
-        rgba(90, 50, 140, 0.6);
+        rgba(40, 60, 120, 0.6);
     border-radius: 4px;
     transition: opacity 0.4s ease;
 }
@@ -210,7 +220,7 @@
 
 .countdown-track {
     fill: none;
-    stroke: rgba(165, 107, 255, 0.22);
+    stroke: rgba(88, 149, 214, 0.22);
     stroke-width: 6;
 }
 
@@ -219,7 +229,7 @@
     stroke: var(--maze-accent);
     stroke-width: 6;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 4px rgba(165, 107, 255, 0.85));
+    filter: drop-shadow(0 0 5px rgba(88, 149, 214, 0.9));
     transition: stroke-dashoffset 0.1s linear;
 }
 
@@ -228,9 +238,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-family: var(--orr-font-display);
     font-size: 2rem;
-    font-weight: bold;
-    color: #e8fbff;
+    font-weight: 400;
+    color: var(--orr-bone);
 }
 
 /* --- Les pastilles de couleurs --- */
@@ -247,10 +258,10 @@
     align-items: center;
     gap: 10px;
     padding: 7px 14px;
-    background: rgba(18, 8, 34, 0.85);
-    border: 1px solid rgba(165, 107, 255, 0.45);
-    border-radius: 30px;
-    color: #f0e6ff;
+    background: rgba(11, 13, 28, 0.82);
+    border: 1px solid var(--orr-dim);
+    border-radius: 2px;
+    color: var(--orr-text);
     font-size: 0.9rem;
     font-weight: bold;
     transition: opacity 0.2s ease, filter 0.2s ease;
@@ -288,24 +299,24 @@
 }
 
 .maze-feedback.moved {
-    color: #7fe9ff;
+    color: var(--orr-accent-pale);
 }
 
 .maze-feedback.blocked {
-    color: #ff8a80;
+    color: var(--orr-alert);
 }
 
 .maze-feedback.none {
-    color: #b0bec5;
+    color: var(--orr-text-dim);
 }
 
 .maze-feedback.victory {
-    color: #69f0ae;
+    color: var(--orr-valid);
 }
 
 /* Le changement de personnage (magenta) : vert, pour ne pas se confondre avec un déplacement */
 .maze-feedback.character {
-    color: #69f0ae;
+    color: var(--orr-valid);
 }
 
 
@@ -382,7 +393,7 @@
 .colors-calibration {
     margin-top: 18px;
     padding-top: 14px;
-    border-top: 1px solid rgba(165, 107, 255, 0.25);
+    border-top: 1px solid var(--orr-dim);
 }
 
 .calibration-actions {
@@ -393,21 +404,42 @@
     margin-top: 14px;
 }
 
-.calibration-button {
-    padding: 8px 18px;
-    background: rgba(120, 12, 24, 0.85);
-    border: 2px solid rgba(255, 70, 90, 0.7);
-    border-radius: 30px;
-    color: #ffe8ea;
-    font-size: 0.9rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
+/*
+ * Recalibrer, corriger, remettre à zéro : aucune de ces actions n'est
+ * destructive, elles étaient pourtant toutes en rouge. Elles passent en
+ * contour — c'est du réglage, ça ne doit pas crier plus fort que le jeu.
+ */
+.orrery .calibration-button {
+    padding: 10px 20px;
+
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
+
+    color: var(--orr-text);
+    background: transparent;
+    border: 1px solid var(--orr-dim);
+    border-radius: 2px;
 }
 
-.calibration-button:hover {
-    background: rgba(220, 40, 60, 0.45);
-    border-color: #ff4b5c;
+.orrery .calibration-button:hover:not(:disabled) {
+    color: var(--orr-bone);
+    background: transparent;
+    border-color: var(--orr-accent);
+    box-shadow: none;
+}
+
+/* Valider est la seule qui fait avancer la partie : elle garde l'aplat plein. */
+.orrery #btn-calibration-validate {
+    color: var(--orr-void);
+    background: var(--orr-accent);
+    border-color: var(--orr-accent);
+}
+
+.orrery #btn-calibration-validate:hover:not(:disabled) {
+    color: var(--orr-void);
+    background: var(--orr-accent-pale);
+    border-color: var(--orr-accent-pale);
 }
 
 /*
@@ -418,7 +450,7 @@
 .calibration-message {
     margin: 10px 0 0;
     min-height: 1.2em;      /* la place est réservée, le bandeau ne saute pas quand le texte arrive */
-    color: #f4eeff;
+    color: var(--orr-bone);
     font-size: 1.25rem;
     font-weight: bold;
     text-align: center;
@@ -448,10 +480,10 @@
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    background: rgba(18, 8, 34, 0.85);
-    border: 1px solid rgba(165, 107, 255, 0.45);
-    border-radius: 30px;
-    color: #f0e6ff;
+    background: rgba(11, 13, 28, 0.82);
+    border: 1px solid var(--orr-dim);
+    border-radius: 2px;
+    color: var(--orr-text);
     font-size: 0.85rem;
 }
 
@@ -462,15 +494,15 @@
 
 /* Le numéro deviné, simplement lu : tant que la devinette est juste, il n'y a rien à manipuler. */
 .calibration-number {
-    color: #c9b6f0;
+    color: var(--orr-text-dim);
     font-size: 0.8rem;
 }
 
 .calibration-select {
-    background: rgba(11, 6, 22, 0.9);
-    border: 1px solid rgba(165, 107, 255, 0.45);
-    border-radius: 6px;
-    color: #f0e6ff;
+    background: rgba(11, 13, 28, 0.9);
+    border: 1px solid var(--orr-dim);
+    border-radius: 2px;
+    color: var(--orr-text);
     font-size: 0.8rem;
     padding: 3px 6px;
     cursor: pointer;

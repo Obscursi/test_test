@@ -1,3 +1,24 @@
+/* ==========================================================
+   LE TERMINAL D'ACCÈS
+   Repris en direction « Orrery », avec une nuance : le terminal reste
+   vert sur noir. C'est un système dans lequel on entre par effraction,
+   pas un écran du site — le garder distinct est voulu. Le vert n'est
+   plus le #0f0 néon d'avant mais celui du code qui tombe sur l'affiche
+   de recrutement, donc il appartient à la direction artistique.
+   ========================================================== */
+
+#terminal-modal,
+.fixed-terminal-btn {
+    /* Le vert phosphore, dérivé de --orr-valid mais un cran plus clair :
+       du texte sur fond noir a besoin de plus de lumière qu'un liséré. */
+    --term-green: #6fcf76;
+    --term-green-dim: #2f6a35;
+}
+
+/*
+ * Le bouton flottant. C'est un utilitaire permanent, pas l'action principale
+ * d'un panneau : il reste en contour pour ne pas peser autant qu'un « Valider ».
+ */
 .fixed-terminal-btn {
     display: none;
     position: fixed;
@@ -9,6 +30,32 @@
     bottom: max(20px, 11vh);
     right: max(20px, 2.5vw);
     z-index: 100;
+
+    padding: 11px 22px;
+
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: normal;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    color: var(--term-green);
+    background: rgba(7, 10, 8, 0.88);
+    border: 1px solid var(--term-green-dim);
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+
+    transition: background 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+
+.fixed-terminal-btn:hover {
+    border-color: var(--term-green);
+    box-shadow: 0 0 22px rgba(111, 207, 118, 0.35);
+}
+
+.fixed-terminal-btn:focus-visible {
+    outline: 2px solid var(--term-green);
+    outline-offset: 3px;
 }
 
 .modal-hidden {
@@ -22,7 +69,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(4, 6, 10, 0.88);
     z-index: 200;
     /* Au-dessus de tout le reste */
     justify-content: center;
@@ -30,11 +77,106 @@
 }
 
 .terminal-content {
-    background-color: #111;
-    color: #0f0;
-    border: 1px solid #0f0;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+
+    width: min(460px, 90vw);
+    padding: 30px 32px;
+
     font-family: var(--font-mono);
+    color: var(--term-green);
+    background: #070a08;
+    border: 1px solid var(--term-green-dim);
+    /* coins coupés, comme les autres blocs du style */
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.terminal-content h3 {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: normal;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--term-green);
+}
+
+#terminal-input {
+    padding: 12px 14px;
+
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+
+    color: var(--term-green);
+    background: rgba(20, 34, 22, 0.55);
+    border: 1px solid var(--term-green-dim);
+    border-radius: 0;
+    outline: none;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#terminal-input::placeholder {
+    color: var(--term-green-dim);
+    opacity: 1;
+}
+
+#terminal-input:focus {
+    border-color: var(--term-green);
+    box-shadow: 0 0 0 1px var(--term-green), 0 0 16px rgba(111, 207, 118, 0.25);
+}
+
+.terminal-content button {
+    padding: 11px 20px;
+
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: normal;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+
+    border-radius: 0;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+/* Exécuter : l'action du terminal, donc pleine */
+#btn-submit-code {
+    color: #070a08;
+    background: var(--term-green);
+    border: 1px solid var(--term-green);
+}
+
+#btn-submit-code:hover {
+    background: #9ae6a0;
+    border-color: #9ae6a0;
+}
+
+/* Fermer : on quitte sans rien faire, donc en retrait */
+#btn-close-terminal {
+    color: var(--term-green);
+    background: transparent;
+    border: 1px solid var(--term-green-dim);
+}
+
+#btn-close-terminal:hover {
+    border-color: var(--term-green);
+}
+
+.terminal-content button:focus-visible {
+    outline: 2px solid var(--term-green);
+    outline-offset: 2px;
+}
+
+#terminal-feedback {
+    margin: 0;
+    min-height: 1.3em;
+    /* la place est réservée : la modale ne saute pas à l'arrivée du message */
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--term-green);
 }
 
 
@@ -48,13 +190,13 @@
         opacity: 0;
         transform: scale(0.8) translateY(20px);
         filter: blur(10px);
-        box-shadow: 0 0 0 #0f0;
+        box-shadow: 0 0 0 rgba(111, 207, 118, 0);
     }
 
     20% {
         opacity: 1;
         filter: blur(0px);
-        box-shadow: 0 0 20px #0f0;
+        box-shadow: 0 0 24px rgba(111, 207, 118, 0.8);
     }
 
     25% {
@@ -75,6 +217,6 @@
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
-        box-shadow: 0 0 5px #0f0;
+        box-shadow: 0 0 8px rgba(111, 207, 118, 0.4);
     }
 }

@@ -1,45 +1,72 @@
-/* --- Énigme LSF : la boîte des signes détectés et la barre de maintien --- */
+/* --- Énigme LSF : la boîte des signes détectés et la barre de maintien ---
+   Repris en direction « Orrery ». */
 
 /* La boîte qui affiche les signes reconnus. Elle vivait dans webcam.css, mais elle n'a rien
    à voir avec la caméra : c'est l'affichage propre à cette énigme. */
-.output-box {
+.orrery .output-box {
+    /* 640px pile, comme le flux vidéo au-dessus : la boîte et l'image restent
+       alignées bord à bord. En border-box, le cadre ne décale plus le total. */
+    box-sizing: border-box;
+    width: 640px;
+    max-width: 100%;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     margin-top: 15px;
-    padding: 12px;
-    background-color: #007f8b;
-    color: white;
-    font-size: 1.1rem;
-    border-radius: 5px;
-    width: 616px;
-    min-height: 24px;
-    text-align: center;
-    font-weight: bold;
+    padding: 12px 20px;
+
+    font-family: var(--orr-font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
+    text-transform: uppercase;
+
+    color: var(--orr-accent-pale);
+    background: rgba(11, 13, 28, 0.72);
+
+    /* pas de fond plein ni d'arrondi : un cadre et des coins coupés */
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 
 
 /* --- La barre de maintien des lettres --- */
 
-.lsf-hold {
-    width: min(600px, 95%);
-    height: 14px;
+.orrery .lsf-hold {
+    width: 640px;
+    max-width: 100%;
+    height: 12px;
     margin-top: 18px;
-    background: rgba(8, 20, 30, 0.8);
-    border: 1px solid rgba(49, 133, 163, 0.5);
-    border-radius: 30px;
+
+    background: rgba(11, 13, 28, 0.8);
+    border: 1px solid var(--orr-dim);
+    border-radius: 0;
     overflow: hidden;
 }
 
-.lsf-hold-bar {
+.orrery .lsf-hold-bar {
     width: 0%;
     height: 100%;
-    border-radius: 30px;
-    /* du teal vers le vert : plus la barre avance, plus on est proche de la validation */
-    background: linear-gradient(90deg, #007f8b, #00c8dc 60%, #69f0ae);
-    box-shadow: 0 0 12px rgba(0, 200, 220, 0.8);
+    border-radius: 0;
+
+    /* du bleu profond vers le vert : plus la barre avance, plus on est proche
+       de la validation. Le vert est celui du code qui tombe sur l'affiche, donc
+       il appartient déjà à la direction artistique. */
+    background: linear-gradient(90deg, var(--orr-dim), var(--orr-accent) 55%, var(--orr-valid));
+    box-shadow: 0 0 14px rgba(88, 149, 214, 0.6);
+
     /* court, sinon la barre traîne derrière la détection au lieu de la suivre */
     transition: width 0.08s linear;
 }
 
 /* la caméra est loin : les consignes doivent rester lisibles depuis le plateau */
 #panel-lsf .disclaimer {
+    max-width: 62ch;
     font-size: 0.95rem;
+    line-height: 1.6;
 }

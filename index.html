@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="styles/components/endQrcode.css">
     <link rel="stylesheet" href="styles/components/groovyTitle.css">
 
+    <!-- La direction visuelle « Orrery ». Doit rester après groovyTitle.css, qu'elle
+         neutralise sur l'accueil, et avant panels/ qui l'affine panneau par panneau. -->
+    <link rel="stylesheet" href="styles/components/orrery.css">
+
     <!-- Un fichier par panneau -->
     <link rel="stylesheet" href="styles/panels/welcome.css">
     <link rel="stylesheet" href="styles/panels/lsf.css">
@@ -91,7 +95,7 @@
     </div>
 
     <main id="panels-container">
-        <div id="panel-welcome" class="view-panel active">
+        <div id="panel-welcome" class="view-panel orrery active">
             <h1 class="groovy" data-target="big-title">SYSTÈME VERROUILLÉ</h1>
 
             <h2>Interface de Connexion Centrale</h2>
@@ -117,7 +121,7 @@
             </div>
         </div>
 
-        <div id="panel-lsf" class="view-panel">
+        <div id="panel-lsf" class="view-panel orrery">
             <div id="lsf-sign-box" class="output-box">En atteinte de signes à détecter..</div>
 
             <!-- se remplit tant que les bonnes lettres restent détectées, se vide dès qu'on les perd -->
@@ -132,13 +136,13 @@
 
         </div>
 
-        <div id="panel-lsf-victory" class="view-panel">
+        <div id="panel-lsf-victory" class="view-panel orrery">
             <div class="victory-panel">
                 <p class="victory-text">Félicitations, vous avez signé le mot « Plan »...</p>
             </div>
         </div>
 
-        <div id="panel-aruco-victory" class="view-panel">
+        <div id="panel-aruco-victory" class="view-panel orrery">
             <div class="victory-panel">
                 <p class="victory-text">Bravo vous avez résolu votre première (mais pas dernière) énigme sur le site !
                     Tous les indices ne s'utilisent qu'une seule fois et leur obtention ne signifie pas qu'ils sont
@@ -147,14 +151,14 @@
             </div>
         </div>
 
-        <div id="panel-colors-victory" class="view-panel">
+        <div id="panel-colors-victory" class="view-panel orrery">
             <div class="victory-panel">
                 <h2 class="victory-title">Apprentissage réussi</h2>
                 <p class="victory-text">Comme quoi le machine learning à la main c'est pas simple...</p>
             </div>
         </div>
 
-        <div id="panel-aruco" class="view-panel">
+        <div id="panel-aruco" class="view-panel orrery">
             <button id="btnVerifier" type="button"> Vérifier </button>
 
             <p id="result"></p>
@@ -164,7 +168,7 @@
             <p id="message2"></p>
         </div>
 
-        <div id="panel-colors" class="view-panel">
+        <div id="panel-colors" class="view-panel orrery">
 
             <div id="maze-layout" class="maze-layout" hidden>
                 <div id="maze-grid" class="maze-grid"></div>
@@ -205,7 +209,7 @@
         </div>
 
 
-        <div id="panel-defeat" class="view-panel defeat-panel-container">
+        <div id="panel-defeat" class="view-panel orrery defeat-panel-container">
             <div class="defeat-panel">
                 <h2 class="defeat-title">Temps écoulé</h2>
                 <p class="defeat-text">Le compte à rebours est arrivé à zéro : la mission est un échec, le coupable
@@ -219,7 +223,7 @@
             </div>
         </div>
 
-        <div id="panel-chatbot" class="view-panel">
+        <div id="panel-chatbot" class="view-panel orrery">
             <div id="chat-aide" class="chat-aide"></div>
             <div class="zone-saisie-aide">
                 <input type="text" id="inputMessage-aide" maxlength="50" />
@@ -233,7 +237,7 @@
             <p class="disclaimer">Chatbot est une IA, et peut se tromper.</p>
         </div>
 
-        <div id="panel-guilty" class="view-panel">
+        <div id="panel-guilty" class="view-panel orrery">
             <h2>Qui accusez-vous ?</h2>
             <p>Entrez le prénom de la personne que vous
                 jugez coupable.</p>
@@ -248,7 +252,7 @@
             <p id="cooldown-guilty" class="cooldown-guilty"></p>
         </div>
 
-        <div id="panel-guilty-victory" class="view-panel">
+        <div id="panel-guilty-victory" class="view-panel orrery">
             <div class="victory-panel">
                 <p class="victory-text">Et oui les IA génératives ont tendance à avoir des biais, corrigés en partie
                     par
@@ -256,7 +260,7 @@
             </div>
         </div>
 
-        <div id="panel-final" class="view-panel">
+        <div id="panel-final" class="view-panel orrery">
             <p class="final-instruction">Attention : le nombre de
                 tentatives est limité.</p>
 
@@ -275,7 +279,7 @@
         </div>
 
         <!-- dernière énigme de la chaîne : son panneau de victoire est aussi l'écran de fin de partie -->
-        <div id="panel-final-victory" class="view-panel">
+        <div id="panel-final-victory" class="view-panel orrery">
             <div class="victory-panel">
                 <h2 class="victory-title">MISSION ACCOMPLIE !</h2>
                 <p class="victory-text">Félicitations, votre intervention a permis l'arrestation du coupable !</p>
