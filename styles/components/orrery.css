@@ -63,26 +63,6 @@
     line-height: 1.62;
 }
 
-/* Le filet dégradé qui sépare un titre de son texte */
-.orrery .orr-rule {
-    width: 78px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--orr-accent), transparent);
-}
-
-/*
- * Les petites étiquettes techniques (statut, numéro de module). En capitales
- * très tracées et en chasse fixe : c'est ce qui donne le ton « relevé
- * d'instrument » et ça coûte une police déjà présente.
- */
-.orrery .orr-slug {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
-    color: var(--orr-accent);
-}
-
 /*
  * Les mentions. Elles étaient en chasse fixe, mais Courier a un trait très
  * maigre : posé sur le cadre du site, en petit corps et lu depuis le plateau,
@@ -196,12 +176,17 @@
  * contenu. Le min-width évite qu'un message très court donne une plaque
  * étriquée, le max-width que les textes longs partent en lignes trop larges.
  *
- * Le violet de components/victoryPanel.css est neutralisé ici ; les énigmes
- * pas encore reprises le gardent.
+ * Ce bloc est désormais la SEULE définition du panneau de victoire :
  */
 .orrery .victory-panel {
     position: relative;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    text-align: center;
 
     width: auto;
     min-width: min(430px, 100%);
@@ -297,12 +282,20 @@
     text-shadow: 0 0 26px rgba(88, 149, 214, 0.45);
 }
 
-/* Le trait sous le titre reprend le bleu au lieu du violet */
+/* Le trait sous le titre : sépare titre et texte sans ajouter d'élément dans le HTML */
 .orrery .victory-title::after {
+    content: "";
+    display: block;
+    width: 90px;
+    height: 1px;
+    margin: 16px auto 0;
     background: linear-gradient(90deg, transparent, var(--orr-accent), transparent);
 }
 
 .orrery .victory-text {
+    /* margin: 0 — l'espacement vient du gap de la plaque, pas de la marge
+       par défaut du navigateur, qui s'y ajouterait */
+    margin: 0;
     font-family: var(--orr-font-display);
     font-size: 1.25rem;
     font-weight: 400;

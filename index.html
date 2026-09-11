@@ -22,13 +22,11 @@
     <link rel="stylesheet" href="styles/components/confirmModal.css">
     <link rel="stylesheet" href="styles/components/cinematics.css">
     <link rel="stylesheet" href="styles/components/successFlash.css">
-    <link rel="stylesheet" href="styles/components/victoryPanel.css">
     <link rel="stylesheet" href="styles/components/defeatPanel.css">
     <link rel="stylesheet" href="styles/components/endQrcode.css">
-    <link rel="stylesheet" href="styles/components/groovyTitle.css">
 
-    <!-- La direction visuelle « Orrery ». Doit rester après groovyTitle.css, qu'elle
-         neutralise sur l'accueil, et avant panels/ qui l'affine panneau par panneau. -->
+    <!-- La direction visuelle « Orrery » : le vocabulaire commun à tous les
+         panneaux. Doit rester avant panels/, qui l'affine panneau par panneau. -->
     <link rel="stylesheet" href="styles/components/orrery.css">
 
     <!-- Un fichier par panneau -->
@@ -209,7 +207,7 @@
         </div>
 
 
-        <div id="panel-defeat" class="view-panel orrery defeat-panel-container">
+        <div id="panel-defeat" class="view-panel orrery">
             <div class="defeat-panel">
                 <h2 class="defeat-title">Temps écoulé</h2>
                 <p class="defeat-text">Le compte à rebours est arrivé à zéro : la mission est un échec, le coupable

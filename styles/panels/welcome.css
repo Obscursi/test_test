@@ -4,9 +4,9 @@
 
 
 /*
- * Le titre. groovyTitle.css lui met un contour cyan et une pulsation bleue, qui
- * appartiennent à l'ancienne identité : on les éteint explicitement ici, sinon
- * ils survivent (orrery.css ne déclare ni text-stroke ni animation).
+ * Le titre de l'accueil. La classe .groovy vient de l'ancienne identité (un
+ * contour cyan et une pulsation bleue, ; elle ne sert plus que de point d'accroche pour ce bloc,
+ * qui est maintenant sa seule définition.
  */
 .orrery h1.groovy {
     font-family: var(--orr-font-display);
@@ -16,9 +16,7 @@
     text-indent: 0.2em;
 
     color: var(--orr-bone);
-    -webkit-text-stroke: 0;
 
-    /* une seule lueur bleue, au lieu des cinq halos superposés */
     text-shadow: 0 0 34px rgba(88, 149, 214, 0.55);
 
     animation: orrTitleBreath 4s ease-in-out infinite alternate;
